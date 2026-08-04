@@ -40,3 +40,16 @@ test("event schemas use versioned event titles", async () => {
     assert.match(schema.title, /^[a-z]+\.[a-z_]+\.[a-z_]+\.v\d+$/);
   }
 });
+
+test("repository adoption docs exist", async () => {
+  const requiredDocs = [
+    "docs/adoption-guide.md",
+    "docs/contract-change-checklist.md",
+    "docs/repositories/implementation-template.md",
+  ];
+
+  for (const file of requiredDocs) {
+    const content = await readFile(file, "utf8");
+    assert.ok(content.startsWith("# "), `${file} must start with a title`);
+  }
+});
