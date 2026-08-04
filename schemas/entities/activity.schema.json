@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/entities/activity.schema.json",
+  "title": "Activity",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["activityId", "workspaceId", "capabilityName", "status", "createdAt"],
+  "properties": {
+    "activityId": { "type": "string", "pattern": "^act_[A-Za-z0-9_-]+$" },
+    "workspaceId": { "type": "string", "pattern": "^wks_[A-Za-z0-9_-]+$" },
+    "projectId": { "type": "string", "pattern": "^prj_[A-Za-z0-9_-]+$" },
+    "capabilityName": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["queued", "running", "completed", "failed", "cancelled"]
+    },
+    "domainRefs": {
+      "type": "object",
+      "additionalProperties": { "type": "string" }
+    },
+    "usage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inputTokens": { "type": "integer", "minimum": 0 },
+        "outputTokens": { "type": "integer", "minimum": 0 },
+        "requestCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "completedAt": { "type": "string", "format": "date-time" }
+  }
+}
