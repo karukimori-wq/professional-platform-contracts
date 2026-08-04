@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/entities/customer.schema.json",
+  "title": "Customer",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["customerId", "workspaceId", "professionalId", "status", "createdAt", "updatedAt"],
+  "properties": {
+    "customerId": { "type": "string", "pattern": "^cus_[A-Za-z0-9_-]+$" },
+    "workspaceId": { "type": "string", "pattern": "^wks_[A-Za-z0-9_-]+$" },
+    "professionalId": { "type": "string", "pattern": "^pro_[A-Za-z0-9_-]+$" },
+    "displayName": { "type": "string" },
+    "nickname": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["lead", "prospect", "client", "inactive", "archived"]
+    },
+    "acquisitionSource": { "type": "string" },
+    "externalRefs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["provider", "externalId"],
+        "properties": {
+          "provider": { "type": "string" },
+          "externalId": { "type": "string" }
+        }
+      }
+    },
+    "createdAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  }
+}
