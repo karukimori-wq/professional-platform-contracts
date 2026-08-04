@@ -45,7 +45,10 @@ examples/          Example payloads
 2. Use `docs/contracts/shared-glossary.md` for naming.
 3. Use `schemas/entities/*.schema.json` when storing or exchanging shared entities.
 4. Use `schemas/events/*.schema.json` for asynchronous events.
-5. Add an Architecture Decision Record when a contract changes.
+5. Use `docs/contracts/api-catalog.md` and `docs/contracts/event-catalog.md` when wiring repositories together.
+6. Use `docs/adoption-guide.md` when applying these contracts to an implementation repository.
+7. Use `docs/contract-change-checklist.md` before changing shared contracts.
+8. Add an Architecture Decision Record when a contract changes.
 
 ## Validation
 
