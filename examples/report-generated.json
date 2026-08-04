@@ -1,0 +1,21 @@
+{
+  "eventId": "evt_example_report_generated",
+  "eventType": "studio.report.generated.v1",
+  "occurredAt": "2026-08-05T00:00:00.000Z",
+  "workspaceId": "wks_example",
+  "projectId": "prj_numeria_studio",
+  "sourceSystem": "numeria-studio",
+  "correlationId": "corr_example",
+  "actor": {
+    "type": "user",
+    "id": "pro_example"
+  },
+  "data": {
+    "reportId": "rep_example",
+    "sessionId": "ses_example",
+    "customerId": "cus_example",
+    "professionalId": "pro_example",
+    "studioType": "numeria",
+    "reportType": "numerology"
+  }
+}
