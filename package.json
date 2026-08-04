@@ -1,0 +1,10 @@
+{
+  "name": "professional-platform-contracts",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Shared contracts for Growth Engine, Professional Studio, AI Platform Core, and SNS Planner.",
+  "scripts": {
+    "test": "node --test tests/*.test.mjs"
+  }
+}
