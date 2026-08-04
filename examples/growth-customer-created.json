@@ -1,0 +1,19 @@
+{
+  "eventId": "evt_example_customer_created",
+  "eventType": "growth.customer.created.v1",
+  "occurredAt": "2026-08-05T00:00:00.000Z",
+  "workspaceId": "wks_example",
+  "projectId": "prj_growth_engine",
+  "sourceSystem": "growth-engine",
+  "correlationId": "corr_example",
+  "actor": {
+    "type": "user",
+    "id": "pro_example"
+  },
+  "data": {
+    "customerId": "cus_example",
+    "professionalId": "pro_example",
+    "status": "lead",
+    "acquisitionSource": "instagram"
+  }
+}
