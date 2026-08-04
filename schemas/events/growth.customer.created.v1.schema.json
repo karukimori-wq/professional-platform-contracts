@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/events/growth.customer.created.v1.schema.json",
+  "title": "growth.customer.created.v1",
+  "allOf": [
+    { "$ref": "./event-envelope.schema.json" },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": { "const": "growth.customer.created.v1" },
+        "sourceSystem": { "const": "growth-engine" },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["customerId", "professionalId"],
+          "properties": {
+            "customerId": { "type": "string", "pattern": "^cus_[A-Za-z0-9_-]+$" },
+            "professionalId": { "type": "string", "pattern": "^pro_[A-Za-z0-9_-]+$" },
+            "status": { "type": "string" },
+            "acquisitionSource": { "type": "string" }
+          }
+        }
+      }
+    }
+  ]
+}
