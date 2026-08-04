@@ -121,10 +121,43 @@ export const canonicalOwners = {
 
 export const versionedEvents = [
   "growth.customer.created.v1",
+  "growth.customer.updated.v1",
   "growth.lead.converted.v1",
+  "growth.reservation.created.v1",
+  "growth.reservation.cancelled.v1",
+  "studio.session.started.v1",
   "studio.session.completed.v1",
   "studio.report.generated.v1",
+  "studio.service_reference.updated.v1",
+  "ai.activity.created.v1",
   "ai.activity.completed.v1",
+  "ai.activity.failed.v1",
+  "ai.usage.recorded.v1",
+  "sns.post_draft.created.v1",
+  "sns.post_draft.updated.v1",
+];
+
+export const apiOperations = [
+  "Customer.Create",
+  "Customer.Get",
+  "Customer.Find",
+  "Customer.UpdateStatus",
+  "Reservation.Create",
+  "Reservation.Get",
+  "Session.Start",
+  "Session.Complete",
+  "Report.Generate",
+  "Report.Preview",
+  "Report.ExportPdf",
+  "ServiceReference.List",
+  "Capability.Register",
+  "Activity.Create",
+  "Activity.Get",
+  "Usage.List",
+  "PromptTemplate.Render",
+  "PostDraft.Generate",
+  "PostDraft.Rewrite",
+  "PostTemplate.List",
 ];
 
 export const aiCapabilities = [
@@ -174,6 +207,10 @@ export function isEventUseCase(useCase) {
 
 export function isVersionedEvent(eventName) {
   return versionedEvents.includes(eventName);
+}
+
+export function isApiOperation(operationName) {
+  return apiOperations.includes(operationName);
 }
 
 export function createGrowthSharePayload(source) {
