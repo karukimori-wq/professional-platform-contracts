@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   aiCapabilities,
+  apiOperations,
   canonicalOwners,
   createGrowthSharePayload,
   getCanonicalOwner,
@@ -11,6 +12,7 @@ import {
   integrationPolicy,
   isGrowthShareField,
   isApiUseCase,
+  isApiOperation,
   isEventUseCase,
   isVersionedEvent,
   platformApps,
@@ -77,8 +79,17 @@ test("API and event use cases are separated", () => {
 test("Events are versioned and use current naming", () => {
   assert.ok(versionedEvents.includes("growth.customer.created.v1"));
   assert.ok(versionedEvents.includes("studio.report.generated.v1"));
+  assert.ok(versionedEvents.includes("sns.post_draft.created.v1"));
   assert.equal(isVersionedEvent("growth.customer.created.v1"), true);
   assert.equal(isVersionedEvent("Customer.Created"), false);
+});
+
+test("API operations include cross-repository contract operations", () => {
+  assert.ok(apiOperations.includes("Customer.Create"));
+  assert.ok(apiOperations.includes("Report.Generate"));
+  assert.ok(apiOperations.includes("PostDraft.Generate"));
+  assert.equal(isApiOperation("Customer.Create"), true);
+  assert.equal(isApiOperation("growth.customer.created.v1"), false);
 });
 
 test("Growth Engine share payload only includes allowlisted fields", () => {
