@@ -1,0 +1,43 @@
+# Identity Contract
+
+Shared identifiers allow repositories to integrate without duplicating ownership.
+
+## Identifier Format
+
+Use stable string IDs.
+
+| ID | Format | Owner | Purpose |
+| --- | --- | --- | --- |
+| `workspaceId` | `wks_...` | AI Platform Core | Tenant boundary |
+| `projectId` | `prj_...` | AI Platform Core | Application or service boundary |
+| `professionalId` | `pro_...` | Professional Studio / Growth Engine | Paying professional |
+| `customerId` | `cus_...` | Growth Engine | Canonical customer |
+| `leadId` | `lead_...` | Growth Engine | Lead lifecycle record |
+| `sessionId` | `ses_...` | Professional Studio | Professional service session |
+| `reportId` | `rep_...` | Professional Studio | Generated report |
+| `capabilityId` | `cap_...` | AI Platform Core | Registered capability |
+| `activityId` | `act_...` | AI Platform Core | AI execution record |
+| `eventId` | `evt_...` | Event Engine | Published event |
+
+## Cross-System Rule
+
+Systems exchange IDs, not duplicated master records.
+
+Example:
+
+- Numeria Studio stores `customerId` on a report.
+- Growth Engine stores the customer profile.
+- AI Platform Core stores `activityId` and links usage to `workspaceId`, `projectId`, and optional domain references.
+
+## External IDs
+
+External service IDs must be namespaced.
+
+Examples:
+
+- `line:user:...`
+- `instagram:profile:...`
+- `x:profile:...`
+- `google:calendar:...`
+
+External IDs are never used as primary IDs.
