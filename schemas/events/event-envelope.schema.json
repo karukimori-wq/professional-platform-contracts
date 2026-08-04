@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/events/event-envelope.schema.json",
+  "title": "EventEnvelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "eventType", "occurredAt", "workspaceId", "sourceSystem", "data"],
+  "properties": {
+    "eventId": { "type": "string", "pattern": "^evt_[A-Za-z0-9_-]+$" },
+    "eventType": { "type": "string" },
+    "occurredAt": { "type": "string", "format": "date-time" },
+    "workspaceId": { "type": "string", "pattern": "^wks_[A-Za-z0-9_-]+$" },
+    "projectId": { "type": "string", "pattern": "^prj_[A-Za-z0-9_-]+$" },
+    "sourceSystem": {
+      "type": "string",
+      "enum": ["growth-engine", "numeria-studio", "professional-studio", "sns-planner", "ai-platform-core", "event-engine"]
+    },
+    "correlationId": { "type": "string" },
+    "actor": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "type": { "type": "string", "enum": ["user", "system", "integration"] },
+        "id": { "type": "string" }
+      }
+    },
+    "data": { "type": "object" }
+  }
+}
