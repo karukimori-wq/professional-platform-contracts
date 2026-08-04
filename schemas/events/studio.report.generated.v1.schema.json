@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/events/studio.report.generated.v1.schema.json",
+  "title": "studio.report.generated.v1",
+  "allOf": [
+    { "$ref": "./event-envelope.schema.json" },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": { "const": "studio.report.generated.v1" },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["reportId", "sessionId", "customerId", "professionalId"],
+          "properties": {
+            "reportId": { "type": "string", "pattern": "^rep_[A-Za-z0-9_-]+$" },
+            "sessionId": { "type": "string", "pattern": "^ses_[A-Za-z0-9_-]+$" },
+            "customerId": { "type": "string", "pattern": "^cus_[A-Za-z0-9_-]+$" },
+            "professionalId": { "type": "string", "pattern": "^pro_[A-Za-z0-9_-]+$" },
+            "studioType": { "type": "string" },
+            "reportType": { "type": "string" }
+          }
+        }
+      }
+    }
+  ]
+}
