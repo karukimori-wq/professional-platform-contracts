@@ -13,6 +13,7 @@ It is not an application repository. It exists so each product can be built inde
 | Numeria Studio | The first Professional Studio implementation for fortune-telling professionals |
 | SNS Planner | SNS post creation support used by Growth Engine |
 | AI Platform Core | AI activity runtime, capability registry, usage tracking, prompt/tool/workflow platform |
+| Platform Admin | Operator-only monitoring, contract compliance, workspace visibility, and integration health |
 | Event Engine | State-change notification between systems |
 
 ## Core Rule
@@ -25,6 +26,7 @@ Each system owns its own business responsibility.
 - SNS Planner does not decide business strategy.
 - Professional Studio does not own customer acquisition or nurturing.
 - Growth Engine owns the canonical customer base and business workflow state.
+- Platform Admin observes and audits app health; it does not become the source of truth for business data.
 
 ## Repository Structure
 
@@ -43,12 +45,14 @@ examples/          Example payloads
 
 1. Read `docs/contracts/platform-boundaries.md` before implementing cross-product features.
 2. Use `docs/contracts/shared-glossary.md` for naming.
-3. Use `schemas/entities/*.schema.json` when storing or exchanging shared entities.
-4. Use `schemas/events/*.schema.json` for asynchronous events.
-5. Use `docs/contracts/api-catalog.md` and `docs/contracts/event-catalog.md` when wiring repositories together.
-6. Use `docs/adoption-guide.md` when applying these contracts to an implementation repository.
-7. Use `docs/contract-change-checklist.md` before changing shared contracts.
-8. Add an Architecture Decision Record when a contract changes.
+3. Use `docs/contracts/app-responsibilities.md` to confirm canonical ownership by app.
+4. Use `schemas/entities/*.schema.json` when storing or exchanging shared entities.
+5. Use `schemas/events/*.schema.json` for asynchronous events.
+6. Use `docs/contracts/api-catalog.md` and `docs/contracts/event-catalog.md` when wiring repositories together.
+7. Use `docs/adoption-guide.md` when applying these contracts to an implementation repository.
+8. Use `docs/repositories/platform-admin.md` when implementing the operator-only admin app.
+9. Use `docs/contract-change-checklist.md` before changing shared contracts.
+10. Add an Architecture Decision Record when a contract changes.
 
 ## Validation
 
