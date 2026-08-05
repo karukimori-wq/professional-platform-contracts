@@ -40,4 +40,5 @@ Growth Engine decides business purpose, target, offer, and CTA. SNS Planner turn
 
 - `docs/contracts/shared-glossary.md`
 - `docs/contracts/platform-boundaries.md`
-- `docs/contracts/api-contract.md`
+- `docs/contracts/api-catalog.md`
+- `docs/contracts/event-catalog.md`
