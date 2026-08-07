@@ -49,10 +49,12 @@ examples/          Example payloads
 4. Use `schemas/entities/*.schema.json` when storing or exchanging shared entities.
 5. Use `schemas/events/*.schema.json` for asynchronous events.
 6. Use `docs/contracts/api-catalog.md` and `docs/contracts/event-catalog.md` when wiring repositories together.
-7. Use `docs/adoption-guide.md` when applying these contracts to an implementation repository.
-8. Use `docs/repositories/platform-admin.md` when implementing the operator-only admin app.
-9. Use `docs/contract-change-checklist.md` before changing shared contracts.
-10. Add an Architecture Decision Record when a contract changes.
+7. Use `docs/contracts/event-flow.md` for approved MVP integration flows.
+8. Use `docs/contracts/observability-contract.md` for logs, trace IDs, correlation IDs, and error formats.
+9. Use `docs/adoption-guide.md` when applying these contracts to an implementation repository.
+10. Use `docs/repositories/platform-admin.md` when implementing the operator-only admin app.
+11. Use `docs/contract-change-checklist.md` before changing shared contracts.
+12. Add an Architecture Decision Record when a contract changes.
 
 ## Validation
 
