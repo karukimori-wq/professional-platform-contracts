@@ -1,14 +1,14 @@
-# Proposal: Velvet synchronous AI capabilities
+# Velvet synchronous AI capabilities
 
-Status: proposed / not yet approved for the shared API catalog.
+Status: approved in `docs/contracts/api-catalog.md`.
 
 ## Purpose
 
-Velvet needs user-triggered synchronous AI assistance while keeping Velvet business data canonical in Velvet and AI usage canonical in AI Platform Core.
+Velvet uses user-triggered synchronous AI assistance while keeping Velvet business data canonical in Velvet and AI usage canonical in AI Platform Core.
 
-The UI must remain Pull-first. These capabilities are never an unsolicited daily coaching mechanism.
+The UI remains Pull-first. These capabilities are not an unsolicited daily coaching mechanism.
 
-## Proposed operations
+## Approved operations
 
 ### `VelvetCapture.Structure`
 Caller: Velvet
@@ -16,40 +16,36 @@ Caller: Velvet
 Purpose: interpret a raw user-created post-visit memo into candidate structured updates.
 
 Request should prefer:
-- workspaceId
-- userId / ownerUserId reference
-- captureId
-- capability input containing only the user-selected/raw Capture text necessary for this invocation
+- workspaceId when applicable
+- userId / ownerUserId reference when required for usage/account scope
+- captureId/reference when needed
+- only the raw Capture text necessary for this invocation
 - traceId / correlationId / requestId
 
 Response:
 - candidate list only
-- candidate type, normalized value, confidence/ambiguity metadata as needed
+- candidate type and normalized value, with confidence/ambiguity metadata where useful
 - no direct mutation of Velvet canonical data
 
-Velvet must show lightweight confirmation before applying inferred candidates.
+Velvet shows lightweight confirmation before applying inferred candidates.
 
 ### `VelvetSearch.ParseIntent`
 Caller: Velvet
 
 Purpose: parse a user-entered natural-language search into a safe structured query intent.
 
-Request should contain:
-- workspaceId
-- userId / ownerUserId reference
-- raw search query
-- traceId / correlationId / requestId
+Request should contain only the query plus the minimum identity/reference and observability metadata required by the shared contract.
 
-Response should contain structured search intent/filters only.
+Response contains structured search intent/terms/filters only.
 
-AI Platform Core must not receive the user's entire Velvet guest database for this operation. Velvet executes the resulting query against owner-scoped Velvet data.
+AI Platform Core does not receive the user's entire Velvet guest database for this operation. Velvet executes the resulting query against owner-scoped Velvet data.
 
 ## Data boundaries
 
 Do not automatically send:
 - full guest/contact dataset
 - raw full visit history unrelated to the requested operation
-- payment or receivable history unless a future explicitly approved capability requires it
+- payment or receivable history
 - private relationship graph
 - image library
 - unrelated Capture entries
@@ -69,6 +65,6 @@ Top-level operational status uses only:
 
 Preserve traceId, correlationId and requestId. Operational logs/events must not contain private guest content.
 
-## Approval work
+## Transport mapping
 
-If approved, add stable PascalCase operation names to `docs/contracts/api-catalog.md` and define transport mappings/capability IDs in the relevant repositories. Until then, Velvet should report the synchronous AI contract as not ready and may use deterministic/local fallback behavior without pretending AI Platform Core integration is complete.
+Stable operation names are approved in `docs/contracts/api-catalog.md`. Concrete HTTP paths remain deployment/repository-specific and must be configured by the product runtime rather than inferred from operation names.
