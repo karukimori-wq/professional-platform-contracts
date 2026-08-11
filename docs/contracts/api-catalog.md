@@ -33,8 +33,27 @@ APIs are used when the caller needs an immediate result. State changes that down
 | `Capability.Register` | Product repository | `capabilityId` | None |
 | `Activity.Create` | Product runtime | `activityId` | `ai.activity.created.v1` |
 | `Activity.Get` | Product runtime | Activity status | None |
-| `Usage.List` | Growth Engine, Studio admin | Usage summary | None |
+| `Usage.List` | Growth Engine, Studio admin, Velvet | Usage summary / point-accounting state | None |
 | `PromptTemplate.Render` | Product runtime | Rendered prompt | None |
+| `VelvetCapture.Structure` | Velvet | Structured candidates only; no Velvet mutation | `ai.activity.created.v1` / completion events |
+| `VelvetSearch.ParseIntent` | Velvet | Search intent / terms only; no Velvet dataset results | `ai.activity.created.v1` / completion events |
+
+### Velvet AI contract constraints
+
+`VelvetCapture.Structure`
+- Caller: Velvet only.
+- Input is limited to the user-triggered raw Capture text plus reference/observability metadata needed for the request.
+- Do not send the user's full People dataset, unrelated contact details, payment/receivable data, image library, or unrelated private notes.
+- Response returns candidate structured items only. AI Platform Core must not write Velvet canonical Person, Knowledge, Gift, Schedule, Relationship, Visit, or Capture state.
+- Velvet performs user confirmation before applying any inferred mutation.
+
+`VelvetSearch.ParseIntent`
+- Caller: Velvet only.
+- Input is limited to the user-entered search query plus reference/observability metadata.
+- Response returns a normalized search intent such as terms/filters; it does not query or return the user's Velvet dataset.
+- Velvet executes owner-scoped retrieval locally against Velvet-owned data.
+
+Both operations must preserve or return `traceId`, `correlationId`, and `requestId` according to the shared observability contract. AI usage accounting remains canonical in AI Platform Core.
 
 ## SNS Planner APIs
 
