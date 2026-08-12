@@ -11,9 +11,12 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | Area | Canonical Owner |
 | --- | --- |
 | Customer management | Growth Engine |
-| Reservation management | Growth Engine |
+| Reservation / Visit Schedule management | Growth Engine |
 | Stripe payment state | Growth Engine |
-| Sales management | Growth Engine |
+| Payment | Growth Engine |
+| Sales / Revenue | Growth Engine |
+| Customer-level sales aggregation | Growth Engine |
+| Repeat / referral / contact-measure Business state | Growth Engine |
 | Public site | Growth Engine |
 | Service and menu publishing | Growth Engine |
 | Appraisal session | Numeria Studio |
@@ -24,62 +27,63 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | AI activity execution | AI Platform Core |
 | AI usage tracking | AI Platform Core |
 | Capability registry | AI Platform Core |
-| Velvet personal guest/person management | Velvet |
-| Velvet visit history | Velvet |
-| Velvet personal guest knowledge and relationships | Velvet |
-| Velvet gifts and personal sales-memory records | Velvet |
-| Velvet personal schedule entries | Velvet |
-| Velvet self-investment records | Velvet |
+| Velvet professional visit history | Velvet |
+| Velvet service / conversation notes | Velvet |
+| Velvet preferences / cautions / previous handling | Velvet |
+| Velvet customer-specific professional timeline | Velvet |
+| Velvet Capture and professional-memory suggestion state | Velvet |
+| Velvet gifts / relationship memory / self-investment | Velvet |
 | Contract definitions | professional-platform-contracts |
 | Cross-app monitoring | Platform Admin |
 
 ## Growth Engine
 
-Growth Engine owns the business workflow for each workspace.
+Growth Engine owns the Business foundation for each workspace and is the canonical source for shared customer and commercial state.
 
 ### Owns
 
 - Customer
-- Reservation
+- Lead / Prospect
+- Reservation / Visit Schedule
 - Payment
-- Sales
+- Stripe payment state
+- Sales / Revenue
+- Customer-level sales aggregation
+- Repeat / referral / contact-measure Business state
 - Public Site
 - Service/Menu
-- Lead and nurturing state
 - Campaign intent
 - Business plan feature access
 
 ### Must Not Own
 
+- Velvet confidential service-note bodies as canonical data
+- Velvet conversation-note bodies as canonical data
+- Velvet professional customer timeline
 - Appraisal calculations
 - Report/PDF rendering
 - SNS post editor internals
 - AI runtime internals
 - Independent AI usage ledger
-- Velvet personal Guest/Person records or Velvet private relationship memory
 
 ### Integration Role
 
-Growth Engine passes references and workflow context to other apps.
+Growth Engine passes reference IDs and minimum workflow context to Professional Apps.
 
-Examples:
-
-- `customerId`
-- `reservationId`
+For Velvet, default input is reference-first:
 - `workspaceId`
 - `userId`
-- payment eligibility or payment status snapshots
-- campaign intent
-- public site destination URL
+- `customerId`
+- `reservationId` or `visitScheduleId`
+- `intent`
 
-Growth Engine remains the canonical owner for payment and sales state inside the shared Professional Platform business domain.
+Growth Engine must not unnecessarily send `paymentStatus`, `salesAmount`, Stripe secrets, payment credentials or unrelated commercial payloads to Velvet.
 
 ## Numeria Studio
 
 Numeria Studio owns professional work output for fortune-telling professionals.
 
 ### Owns
-
 - Session
 - Report
 - Appraisal input
@@ -88,34 +92,21 @@ Numeria Studio owns professional work output for fortune-telling professionals.
 - Domain-specific appraisal logic
 
 ### Must Not Own
-
 - Customer master
 - Payment source of truth
 - Sales source of truth
 - Public site publishing
 - Lead lifecycle
 - SNS campaign strategy
-- Velvet personal Guest/Person master
 
 ### Integration Role
-
-Numeria Studio references Growth Engine records by ID.
-
-Required reference pattern:
-
-- Store `workspaceId` as the primary scope.
-- Store `customerId` only as a reference to Growth Engine.
-- Store `reservationId` only when a session was created from a reservation.
-- Treat payment fields from Growth Engine as read-only snapshots or eligibility signals.
-
-External deliverables must use `Report`, not `Document`.
+Numeria Studio references Growth Engine records by ID. External deliverables must use `Report`, not `Document`.
 
 ## SNS Planner
 
 SNS Planner owns SNS content creation support.
 
 ### Owns
-
 - PostDraft
 - Post text variants
 - Post status
@@ -124,10 +115,8 @@ SNS Planner owns SNS content creation support.
 - Hashtag and image prompt suggestions
 
 ### Must Not Own
-
 - Customer master
-- Velvet Guest/Person master
-- Velvet private guest knowledge, visit history, gifts, contacts, or relationships
+- Velvet confidential professional memory
 - Payment state
 - Sales state
 - Reservation state
@@ -136,19 +125,13 @@ SNS Planner owns SNS content creation support.
 - Appraisal reports
 
 ### Integration Role
-
-SNS Planner receives posting intent from Growth Engine or an explicit user-selected handoff from Velvet and returns post draft state.
-
-Velvet must only send context intentionally selected for SNS creation. It must not automatically send private guest records, contact information, visit histories, gift histories, or raw personal notes.
-
-SNS Planner may use AI Platform Core for text generation, but AI usage is recorded by AI Platform Core.
+SNS Planner receives posting intent from Growth Engine or an explicit user-selected handoff from a Professional App. Business strategy and sales/repeat decisions remain in Growth Engine.
 
 ## AI Platform Core
 
 AI Platform Core owns common AI runtime and usage tracking.
 
 ### Owns
-
 - Activity
 - Usage
 - Capability
@@ -158,10 +141,8 @@ AI Platform Core owns common AI runtime and usage tracking.
 - API key and runtime configuration for AI calls
 
 ### Must Not Own
-
 - Customer master
-- Velvet Guest/Person master
-- Velvet private relationship memory as canonical business data
+- Velvet professional memory as canonical business data
 - Reservation workflow
 - Payment workflow
 - Sales state
@@ -170,76 +151,106 @@ AI Platform Core owns common AI runtime and usage tracking.
 - Public site publishing
 
 ### Integration Role
-
-AI Platform Core is called by apps when they need AI execution.
-
-It records usage by:
-
-- `workspaceId`
-- `userId`
-- calling app
-- capability
-- activity
-- usage metrics
-
-For Velvet, AI execution is user-triggered. Velvet sends only the minimum scoped input required for capabilities such as Capture structuring or natural-language retrieval. AI Platform Core must not become the canonical store for Velvet guest/contact/history data.
-
-It does not decide whether a customer or Velvet guest should be nurtured, billed, booked, contacted, or otherwise acted upon.
+AI Platform Core is called by apps when they need AI execution. For Velvet, AI execution is user-triggered and receives only the minimum scoped input required.
 
 ## Velvet
 
-Velvet is an independent, individual-use night-work sales assistant. It owns a private personal-sales domain for the user and is not a store/operator CRM.
+Velvet is an adult night-work Professional App connected to Growth Engine. Its paid value is split into professional recall/service quality (Pro) and Growth Engine-powered business growth (Business).
 
-### Owns
+### Pro — JPY 10,000/month
+Core value: **顧客を忘れない・接客品質を上げる**.
 
-- Velvet Guest/Person record
-- Visit and participant history
-- arrival/departure timestamps and calculated stay duration
-- visit context and user-entered personal sales record
-- GuestKnowledge / preferences / remembered facts
-- GuestRelationship and referral links
-- gifts received and given
-- personal contact backup held in Velvet
-- personal ScheduleEntry relevant to night-work activity
-- SelfInvestmentEntry
-- Capture raw input and confirmed structured result
-- Velvet user dictionary and suggestion state
-- Velvet plan-access state specific to Velvet features
+Pro owns/provides the professional experience for:
+- customer recall projection keyed by Growth Engine `customerId`
+- input-complete-only customer display
+- customer quick card
+- professional timeline
+- professional visit history
+- service notes
+- preferences and cautions
+- conversation notes
+- previous handling
+- next-contact / next-topic memo
+- AI memo organization
+- AI reply/contact-message drafts
+- professional-memory search
+- important-customer pinning
 
-### Must Not Own
+Target outcome: important customer context can be recalled in roughly 10 seconds before service.
 
-- Growth Engine Customer as a competing shared-platform source of truth
-- Growth Engine Reservation
-- Growth Engine Stripe payment state
-- Growth Engine canonical Sales/Revenue ledger
+### Business — JPY 30,000/month
+Core value: **来店・売上・リピートを増やす**.
+
+Business is Growth Engine-powered business mode. It may expose:
+- planned visits
+- customer-level sales
+- sales trends
+- visit-interval analysis
+- repeat-visit candidates
+- priority-response candidates
+- contact candidates
+- dormant-customer lists
+- referral management
+- sales dashboard
+- contact-measure management
+- SNS Planner integration
+- AI sales suggestions
+
+Customer, Reservation, Payment, Sales and repeat/business state used by these features remain canonical in Growth Engine.
+
+### Velvet Owns
+- professional Visit history
+- ServiceNote / conversation notes
+- preferences / cautions / remembered service facts
+- previous handling and next-topic memo
+- customer-specific professional timeline
+- Capture raw input and confirmed professional-memory result
+- Velvet-specific suggestion/dictionary state
+- gifts / relationship memory / self-investment where used as professional memory
+
+### Velvet Must Not Own
+- Customer master
+- Payment source of truth
+- Sales / Revenue source of truth
+- Reservation / Visit Schedule source of truth
+- `paymentStatus`
+- `salesAmount`
+- Stripe secrets or credentials
+- canonical cross-business sales analytics
 - SNS Planner PostDraft internals
 - AI Platform Core AI Usage ledger
 - Platform Admin operational monitoring source of truth
 
-### Customer vs Velvet Guest Rule
+### Customer Rule
+Growth Engine `Customer` is canonical. Velvet must not maintain an independent competing Guest/Person master.
 
-`Customer` and Velvet `Guest/Person` are different domains.
-
-- `Customer` is the Growth Engine canonical business CRM entity.
-- Velvet `Guest/Person` is the individual's private relationship and visit-memory entity for Velvet.
-- Neither entity automatically creates or overwrites the other.
-- A future mapping may exist only through an explicit reference such as `growthCustomerRef` with documented user intent and synchronization rules.
-- Similar fields such as display name or sales amount do not make the records interchangeable.
+Velvet may retain a `customerId` reference plus minimum display/cache fields explicitly allowed by contract. Professional memory is attached to the reference; it does not redefine Customer ownership.
 
 ### Sales and Payment Rule
+Velvet does not persist canonical `salesAmount`, `paymentStatus`, Payment or Sales records. Business sales views query/reference Growth Engine. Stripe secrets and payment credentials must never be stored in Velvet.
 
-Velvet may store user-entered personal visit amounts, payment-method notes, and receivable/売掛 notes as part of the user's private visit history. These are not the Growth Engine canonical Payment or Sales ledger and must not silently update those sources of truth.
+### Growth Engine Integration
+Growth Engine -> Velvet:
+- `workspaceId`
+- `userId`
+- `customerId`
+- `reservationId` or `visitScheduleId`
+- `intent`
 
-### Integration Role
+Velvet -> Growth Engine where needed:
+- `visitId`
+- `noteId`
+- `lastVisitAt`
+- `nextActionRef`
+- `summaryRef`
 
-Velvet uses AI Platform Core for user-triggered AI capabilities and usage accounting, SNS Planner for explicit user-selected SNS creation handoff, and Platform Admin for operational visibility. Growth Engine integration is optional/reference-based unless a future contract defines a specific workflow.
+Raw confidential service notes and full conversation-note bodies must not be returned merely because Growth Engine has a customer reference. Cross-app payloads are minimum-necessary and reference-ID centered.
 
 ## Platform Admin
 
 Platform Admin owns cross-app operational visibility for the platform operator.
 
 ### Owns
-
 - App connection registry
 - Health check status
 - Contract compliance status
@@ -249,32 +260,24 @@ Platform Admin owns cross-app operational visibility for the platform operator.
 - Workspace summary view
 
 ### Must Not Own
-
 - Customer master
-- Velvet Guest/Person master
+- Velvet professional memory
 - Appraisal work
 - SNS post creation
 - Payment execution
 - Sales ledger
 - AI execution itself
 
-### Integration Role
-
-Platform Admin observes and audits other apps. It may store operational snapshots, but snapshots are not canonical business data.
-
 ## MVP Identity Rule
 
 MVP must not require `professionalId`.
 
 Use:
-
 - `workspaceId` as the primary business scope where platform scope is required.
 - `userId` as the acting logged-in user.
-- `ownerUserId` as the workspace owner.
+- `ownerUserId` as the workspace owner where applicable.
 
 `professionalId` is reserved for future multi-brand, multi-professional, or staff operations.
-
-Velvet is individual-use in v1.0. Its records must remain scoped to the owning user/workspace and must not be shared with other staff by default.
 
 ## MVP Payment Rule
 
@@ -282,5 +285,4 @@ MVP supports Stripe only for client-to-professional payment flows owned by Growt
 
 - Growth Engine owns Stripe payment state.
 - Other apps must not store Stripe payment data as a source of truth.
-- Other apps may consume read-only eligibility or status snapshots from Growth Engine.
-- Velvet personal visit payment-method notes do not constitute Stripe payment state.
+- Stripe secrets and credentials never cross into Professional Apps.
