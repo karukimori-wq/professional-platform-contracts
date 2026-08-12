@@ -19,6 +19,7 @@ This document defines canonical ownership for shared data.
 | Report | Numeria Studio | Growth Engine |
 | Domain appraisal data | Numeria Studio | AI Platform Core by scoped execution only |
 | SNS post draft | SNS Planner | Growth Engine, Velvet by reference only where needed |
+| SNS message draft | SNS Planner | Growth Engine, Velvet by reference only where needed |
 | Campaign intent | Growth Engine | SNS Planner |
 | Velvet professional Visit | Velvet | Growth Engine by reference/summary where needed |
 | Velvet ServiceNote / conversation note | Velvet | Other apps only by minimum necessary reference/summary |
@@ -55,6 +56,27 @@ A Velvet Visit may reference:
 - `visitScheduleId`
 
 The reference does not transfer Reservation ownership to Velvet.
+
+## SNS Planner Drafts vs Growth Engine Business State
+
+SNS Planner owns PostDraft and MessageDraft creation state.
+
+Growth Engine owns the business reason for the draft:
+- campaign intent
+- contact-measure intent
+- repeat / referral / lead lifecycle state
+- audience selection where derived from Customer, Lead, Sales or Reservation data
+
+A MessageDraft may reference:
+- `workspaceId`
+- `userId`
+- `messageDraftId`
+- `channel`
+- `purpose`
+- `targetStudio`
+- `inputRef`
+
+SNS Planner must not persist or receive Customer master records, canonical `paymentStatus`, canonical `salesAmount`, Payment records, Sales records, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts as MessageDraft source data.
 
 ## Sales and Payment Rule
 
@@ -114,6 +136,7 @@ Not allowed duplication:
 - independent Customer master in Velvet, Numeria Studio or SNS Planner
 - independent Payment or Sales ledger in Velvet
 - Velvet-persisted canonical `salesAmount` or `paymentStatus`
+- SNS Planner-persisted canonical `paymentStatus` or `salesAmount`
 - independent AI usage ledger in application repositories
 - independent business lifecycle state in SNS Planner or Velvet
 - AI Platform Core storing Velvet professional memory as its canonical business record
