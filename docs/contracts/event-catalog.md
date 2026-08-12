@@ -38,6 +38,26 @@ Events are state-change notifications. They must be versioned and past tense.
 | --- | --- | --- | --- |
 | `sns.post_draft.created.v1` | SNS Planner | Growth Engine | A post draft was created |
 | `sns.post_draft.updated.v1` | SNS Planner | Growth Engine | A post draft was updated |
+| `sns.message_draft.created.v1` | SNS Planner | Growth Engine | A contact or follow-up message draft was created |
+| `sns.message_draft.updated.v1` | SNS Planner | Growth Engine | A contact or follow-up message draft was updated |
+
+### SNS MessageDraft Event Constraints
+
+MessageDraft events are stable contracts for communication-draft creation and update flows.
+
+Allowed event payload is reference-first:
+- `workspaceId`
+- `userId`
+- `messageDraftId`
+- `channel`
+- `purpose`
+- `targetStudio`
+- `inputRef`
+- `traceId`
+- `correlationId`
+- `eventId`
+
+MessageDraft events must not include Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts.
 
 ## Pending Events
 
