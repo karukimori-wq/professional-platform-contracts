@@ -23,6 +23,7 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | Report and PDF generation | Numeria Studio |
 | Domain appraisal logic | Numeria Studio |
 | SNS post draft | SNS Planner |
+| SNS message draft | SNS Planner |
 | SNS post calendar | SNS Planner |
 | AI activity execution | AI Platform Core |
 | AI usage tracking | AI Platform Core |
@@ -63,6 +64,7 @@ Growth Engine owns the Business foundation for each workspace and is the canonic
 - Appraisal calculations
 - Report/PDF rendering
 - SNS post editor internals
+- SNS message editor internals
 - AI runtime internals
 - Independent AI usage ledger
 
@@ -104,14 +106,18 @@ Numeria Studio references Growth Engine records by ID. External deliverables mus
 
 ## SNS Planner
 
-SNS Planner owns SNS content creation support.
+SNS Planner owns content and communication draft creation support.
 
 ### Owns
 - PostDraft
+- MessageDraft
 - Post text variants
+- Message text variants
 - Post status
+- Message draft status
 - Post schedule
 - SNS-specific formatting
+- Contact-message formatting
 - Hashtag and image prompt suggestions
 
 ### Must Not Own
@@ -123,9 +129,13 @@ SNS Planner owns SNS content creation support.
 - Public site source of truth
 - Business lifecycle decisions
 - Appraisal reports
+- Lead lifecycle source of truth
+- Repeat / referral / contact-measure Business source of truth
 
 ### Integration Role
-SNS Planner receives posting intent from Growth Engine or an explicit user-selected handoff from a Professional App. Business strategy and sales/repeat decisions remain in Growth Engine.
+SNS Planner receives posting or message-draft intent from Growth Engine or an explicit user-selected handoff from a Professional App. Business strategy, audience selection, sales/repeat decisions, and customer lifecycle state remain in Growth Engine.
+
+MessageDraft integrations are reference-first. SNS Planner may receive `workspaceId`, `userId`, `sourceApp`, `targetStudio`, `channel`, `purpose`, `audienceSegment`, `tone`, `cta`, and `inputRef`. It must not receive Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts.
 
 ## AI Platform Core
 
@@ -264,6 +274,7 @@ Platform Admin owns cross-app operational visibility for the platform operator.
 - Velvet professional memory
 - Appraisal work
 - SNS post creation
+- SNS message creation
 - Payment execution
 - Sales ledger
 - AI execution itself
