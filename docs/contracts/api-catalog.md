@@ -62,6 +62,42 @@ Both operations must preserve or return `traceId`, `correlationId`, and `request
 | `PostDraft.Generate` | Growth Engine | Draft variants | `sns.post_draft.created.v1` |
 | `PostDraft.Rewrite` | Growth Engine | Updated draft | `sns.post_draft.updated.v1` |
 | `PostTemplate.List` | Growth Engine | Template list | None |
+| `MessageDraft.Generate` | Growth Engine | Contact or follow-up message draft | `sns.message_draft.created.v1` |
+| `MessageDraft.Rewrite` | Growth Engine | Updated contact or follow-up message draft | `sns.message_draft.updated.v1` |
+| `PostDraft.Metadata` | Growth Engine, Platform Admin | Post draft capability metadata | None |
+| `MessageDraft.Metadata` | Growth Engine, Platform Admin | Message draft capability metadata | None |
+
+### SNS MessageDraft HTTP Mapping
+
+MVP HTTP mapping:
+- `POST /api/message-drafts` maps to `MessageDraft.Generate`.
+- `GET /api/message-drafts/metadata` maps to `MessageDraft.Metadata`.
+- `GET /api/post-drafts/metadata` maps to `PostDraft.Metadata`.
+
+`POST /api/message-drafts` request must be reference-first and minimum necessary:
+- `workspaceId`
+- `userId`
+- `sourceApp`
+- `targetStudio`
+- `channel`
+- `purpose`
+- `audienceSegment`
+- `tone`
+- `cta`
+- `inputRef`
+
+Response should include:
+- top-level `status` using `success`, `warning`, `error`, or `skipped`
+- `messageDraftId`
+- `messageDraftStatus`, such as `draft_created`
+- `channel`
+- `purpose`
+- `eventName: sns.message_draft.created.v1`
+- `traceId`
+- `correlationId`
+- `requestId`
+
+`MessageDraft` must not receive or return Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts.
 
 ## Naming Rules
 
