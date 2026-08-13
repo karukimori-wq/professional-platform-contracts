@@ -25,6 +25,7 @@ This document defines canonical ownership for shared data.
 | Velvet ServiceNote / conversation note | Velvet | Other apps only by minimum necessary reference/summary |
 | Velvet preferences / cautions / previous handling | Velvet | Velvet; AI Platform Core only as scoped execution input |
 | Velvet professional timeline | Velvet | Velvet; Growth Engine only through contracted refs/summaries |
+| Velvet next action / summary reference | Velvet | Growth Engine by contracted reference only |
 | Velvet Gift / relationship memory | Velvet | Velvet |
 | Velvet SelfInvestmentEntry | Velvet | Velvet |
 | Velvet Capture | Velvet | AI Platform Core may process scoped content; Velvet remains canonical owner |
@@ -51,23 +52,35 @@ Velvet owns the professional service-history record created during/after service
 Growth Engine owns the canonical Reservation / Visit Schedule business record.
 
 A Velvet Visit may reference:
+
 - `customerId`
 - `reservationId`
 - `visitScheduleId`
 
-The reference does not transfer Reservation ownership to Velvet.
+Velvet may return these contracted references/summaries to Growth Engine when a business workflow needs them:
+
+- `visitId`
+- `summaryRef`
+- `nextActionRef`
+- `lastVisitAt`
+- `traceId`
+- `correlationId`
+
+The reference does not transfer Reservation, Visit Schedule, Customer, Payment, or Sales ownership to Velvet. A summary reference does not transfer the full professional note body to Growth Engine.
 
 ## SNS Planner Drafts vs Growth Engine Business State
 
 SNS Planner owns PostDraft and MessageDraft creation state.
 
 Growth Engine owns the business reason for the draft:
+
 - campaign intent
 - contact-measure intent
 - repeat / referral / lead lifecycle state
 - audience selection where derived from Customer, Lead, Sales or Reservation data
 
 A MessageDraft may reference:
+
 - `workspaceId`
 - `userId`
 - `messageDraftId`
@@ -83,6 +96,7 @@ SNS Planner must not persist or receive Customer master records, canonical `paym
 Growth Engine is the canonical owner of Payment, Sales and Revenue.
 
 Velvet must not persist:
+
 - canonical `salesAmount`
 - canonical `paymentStatus`
 - Payment records
@@ -95,12 +109,14 @@ Growth Engine should not send `paymentStatus`, `salesAmount` or Stripe data to V
 
 ## Velvet Plan Value Boundary
 
-### Pro — JPY 10,000/month
+### Pro - JPY 10,000/month
+
 Professional value: **顧客を忘れない・接客品質を上げる**.
 
 Velvet owns the professional memory/recall capabilities that support this value.
 
-### Business — JPY 30,000/month
+### Business - JPY 30,000/month
+
 Business value: **来店・売上・リピートを増やす**.
 
 Business uses Growth Engine canonical business data and state. Velvet must not duplicate those sources of truth merely to render Business features.
@@ -108,24 +124,31 @@ Business uses Growth Engine canonical business data and state. Velvet must not d
 ## Reference-first Integration
 
 Growth Engine -> Velvet default references:
+
 - `workspaceId`
 - `userId`
 - `customerId`
 - `reservationId` or `visitScheduleId`
 - `intent`
+- `traceId`
+- `correlationId`
 
 Velvet -> Growth Engine default references/summaries where needed:
+
 - `visitId`
 - `noteId`
 - `lastVisitAt`
 - `nextActionRef`
 - `summaryRef`
+- `traceId`
+- `correlationId`
 
 Raw confidential note bodies and full conversation text are not default cross-app payloads.
 
 ## Duplication Rules
 
 Allowed duplication:
+
 - minimal cached display name where contractually justified
 - historical report snapshots
 - external-service metadata needed for traceability
@@ -133,10 +156,13 @@ Allowed duplication:
 - derived UI-only values that do not become a competing source of truth
 
 Not allowed duplication:
+
 - independent Customer master in Velvet, Numeria Studio or SNS Planner
 - independent Payment or Sales ledger in Velvet
 - Velvet-persisted canonical `salesAmount` or `paymentStatus`
 - SNS Planner-persisted canonical `paymentStatus` or `salesAmount`
+- Growth Engine-stored full Velvet professional note bodies as canonical data
+- Growth Engine-stored full Velvet professional memory bodies as canonical data
 - independent AI usage ledger in application repositories
 - independent business lifecycle state in SNS Planner or Velvet
 - AI Platform Core storing Velvet professional memory as its canonical business record
