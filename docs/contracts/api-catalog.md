@@ -26,6 +26,50 @@ APIs are used when the caller needs an immediate result. State changes that down
 | `Report.ExportPdf` | Studio UI | PDF artifact | `studio.report.generated.v1` when newly generated |
 | `ServiceReference.List` | Growth Engine | Service references | None |
 
+## Velvet APIs
+
+| Operation | Caller | Response | Event |
+| --- | --- | --- | --- |
+| `VelvetVisit.Start` | Growth Engine, Velvet UI | `visitId` | `velvet.visit.started.v1` |
+| `VelvetVisit.Complete` | Velvet UI | `visitId`, `summaryRef`, `lastVisitAt` | `velvet.visit.completed.v1` |
+| `VelvetMemory.Get` | Velvet UI | Customer professional memory projection | None |
+| `VelvetMemory.Update` | Velvet UI | `memoryId` | `velvet.memory.updated.v1` |
+| `VelvetNote.Create` | Velvet UI | `noteId` | `velvet.note.created.v1` |
+| `VelvetTimeline.List` | Velvet UI | Timeline entries | None |
+| `VelvetNextAction.Create` | Velvet UI | `nextActionRef` | `velvet.next_action.created.v1` |
+| `VelvetHandoff.Start` | Growth Engine | `visitId` or handoff status | `velvet.visit.started.v1` when visit starts |
+
+### Velvet HTTP Mapping
+
+MVP HTTP mapping:
+- `POST /api/visits` maps to `VelvetVisit.Start`.
+- `PATCH /api/visits/{visitId}` maps to `VelvetVisit.Complete`.
+- `GET /api/customers/{customerId}/memory` maps to `VelvetMemory.Get`.
+- `PATCH /api/customers/{customerId}/memory` maps to `VelvetMemory.Update`.
+- `POST /api/customers/{customerId}/notes` maps to `VelvetNote.Create`.
+- `GET /api/customers/{customerId}/timeline` maps to `VelvetTimeline.List`.
+- `POST /api/customers/{customerId}/next-actions` maps to `VelvetNextAction.Create`.
+
+Growth Engine to Velvet requests must be reference-first:
+- `workspaceId`
+- `userId`
+- `customerId`
+- `reservationId` or `visitScheduleId`
+- `intent`
+- `traceId`
+- `correlationId`
+
+Velvet to Growth Engine responses must be reference-first:
+- `visitId`
+- `noteId`
+- `lastVisitAt`
+- `nextActionRef`
+- `summaryRef`
+- `traceId`
+- `correlationId`
+
+Velvet APIs must not receive or return Customer master records, `paymentStatus`, `salesAmount`, Stripe data, Payment records, Sales records, full professional note bodies, full conversation histories, API keys, access tokens, or secret prompts unless a future explicit contract approves a minimum scoped subset.
+
 ## AI Platform Core APIs
 
 | Operation | Caller | Response | Event |
