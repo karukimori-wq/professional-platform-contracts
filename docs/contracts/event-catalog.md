@@ -23,6 +23,36 @@ Events are state-change notifications. They must be versioned and past tense.
 | `studio.report.generated.v1` | Professional Studio | Growth Engine, AI Platform Core | A report was generated |
 | `studio.service_reference.updated.v1` | Professional Studio | Growth Engine | A sellable service reference changed |
 
+## Velvet Events
+
+| Event | Publisher | Consumers | Purpose |
+| --- | --- | --- | --- |
+| `velvet.visit.started.v1` | Velvet | Growth Engine | A professional visit record was started |
+| `velvet.visit.completed.v1` | Velvet | Growth Engine | A professional visit record was completed |
+| `velvet.memory.updated.v1` | Velvet | Velvet, Growth Engine by reference only | Customer professional memory was updated |
+| `velvet.note.created.v1` | Velvet | Velvet | A professional note was created |
+| `velvet.next_action.created.v1` | Velvet | Growth Engine | A next action reference was created |
+
+### Velvet Event Constraints
+
+Velvet events are stable contracts for professional-memory and visit-record workflows.
+
+Allowed cross-app payload is reference-first:
+- `workspaceId`
+- `userId`
+- `customerId`
+- `visitId`
+- `reservationId` or `visitScheduleId`
+- `noteId`
+- `summaryRef`
+- `nextActionRef`
+- `lastVisitAt`
+- `traceId`
+- `correlationId`
+- `eventId`
+
+Velvet events must not include Customer master records, `paymentStatus`, `salesAmount`, Stripe data, Payment records, Sales records, full professional note bodies, full conversation histories, API keys, access tokens, or secret prompts unless a future explicit contract approves a minimum scoped subset.
+
 ## AI Platform Core Events
 
 | Event | Publisher | Consumers | Purpose |
