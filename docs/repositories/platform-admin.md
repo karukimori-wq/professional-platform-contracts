@@ -2,7 +2,7 @@
 
 Platform Admin is the operator-only control surface for the Professional Platform family.
 
-It is not a customer-facing app, fortune-teller workflow app, SNS editor, payment processor, or AI runtime. It exists to monitor app health, contract alignment, workspace state, integration logs, and operational errors.
+It is not a customer-facing app, Professional App workflow app, SNS editor, payment processor, or AI runtime. It exists to monitor app health, contract alignment, workspace state, integration logs, and operational errors.
 
 ## Must Implement
 
@@ -17,13 +17,16 @@ It is not a customer-facing app, fortune-teller workflow app, SNS editor, paymen
 - Event logs
 - Error summaries
 - Contract compliance checks
+- Velvet Professional App API/event monitoring
+- Growth Engine -> Velvet handoff monitoring
+- SNS Planner PostDraft / MessageDraft metadata monitoring
 
 ## Must Not Implement
 
 - Customer master management as a source of truth
-- Appraisal sessions
+- Professional sessions or visits as canonical data
 - Report/PDF generation
-- SNS post creation
+- SNS post/message draft creation
 - AI execution runtime
 - Payment execution
 - Sales ledger
@@ -36,8 +39,38 @@ Platform Admin monitors these apps:
 
 1. Growth Engine
 2. Numeria Studio
-3. SNS Planner
-4. AI Platform Core
+3. Velvet
+4. SNS Planner
+5. AI Platform Core
+
+## Velvet Monitoring
+
+Platform Admin should observe, without becoming canonical owner:
+
+- `/health`
+- `/version`
+- `/contracts/status`
+- `VelvetVisit.Start`
+- `VelvetVisit.Complete`
+- `VelvetMemory.Get`
+- `VelvetMemory.Update`
+- `VelvetNote.Create`
+- `VelvetTimeline.List`
+- `VelvetNextAction.Create`
+- `velvet.visit.started.v1`
+- `velvet.visit.completed.v1`
+- `velvet.memory.updated.v1`
+- `velvet.note.created.v1`
+- `velvet.next_action.created.v1`
+
+Platform Admin should also observe:
+
+- Growth Engine -> Velvet handoff result
+- `GET /api/message-drafts/metadata`
+- `GET /api/post-drafts/metadata`
+- MessageDraft operation/event names and contract version
+
+Monitoring snapshots must not contain full Velvet professional notes, full conversation histories, Customer master data, `paymentStatus`, `salesAmount`, Payment/Sales records, or Stripe secrets.
 
 ## Required Contracts
 
@@ -48,6 +81,7 @@ Platform Admin monitors these apps:
 - `docs/contracts/data-ownership.md`
 - `docs/contracts/api-catalog.md`
 - `docs/contracts/event-catalog.md`
+- `docs/contracts/event-flow.md`
 
 ## Data Ownership
 
@@ -62,14 +96,17 @@ Examples:
 - workspace summary
 - Stripe connection status snapshot
 - public site status snapshot
+- integration test result
+- API/event contract metadata
 
 These snapshots are not canonical business data.
 
 Canonical ownership remains:
 
-- Growth Engine: Customer, Reservation, Payment, Sales, Public Site
+- Growth Engine: Customer, Reservation / Visit Schedule, Payment, Sales, Public Site, business workflow state
 - Numeria Studio: Session, Report, appraisal work
-- SNS Planner: PostDraft and SNS post planning
+- Velvet: professional Visit, professional Memory, service notes, professional Timeline, Gift/Relationship memory
+- SNS Planner: PostDraft and MessageDraft
 - AI Platform Core: Activity, Usage, Capability, AI execution logs
 
 ## MVP Screens
@@ -124,6 +161,8 @@ Shows:
 - current app contract version
 - compliance status
 - unresolved issues
+- Velvet stable API/event coverage
+- PostDraft / MessageDraft metadata coverage
 
 ## MVP Identity Rule
 
