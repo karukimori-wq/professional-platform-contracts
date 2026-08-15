@@ -53,6 +53,47 @@ Allowed cross-app payload is reference-first:
 
 Velvet events must not include Customer master records, `paymentStatus`, `salesAmount`, Stripe data, Payment records, Sales records, full professional note bodies, full conversation histories, API keys, access tokens, or secret prompts unless a future explicit contract approves a minimum scoped subset.
 
+## Communication Planner Events
+
+| Event | Publisher | Consumers | Purpose |
+| --- | --- | --- | --- |
+| `communication.message.received.v1` | Communication Planner | Growth Engine, Platform Admin by operational reference | A channel message was received and linked to a person/conversation |
+| `communication.message.sent.v1` | Communication Planner | Growth Engine, Platform Admin by operational reference | A user-approved reply was sent through a channel adapter |
+| `communication.context.updated.v1` | Communication Planner | Communication Planner, AI Platform Core by activity reference | A conversation context projection was updated |
+| `communication.promise.created.v1` | Communication Planner | Growth Engine by reference where contracted | A communication promise was created from conversation context |
+| `communication.next_action.created.v1` | Communication Planner | Growth Engine by reference where contracted | A communication next action was created |
+| `communication.reply_draft.created.v1` | Communication Planner | Communication Planner, Platform Admin by operational reference | A conversation-contextual reply draft was created |
+| `communication.reply_safety.checked.v1` | Communication Planner | Communication Planner, Platform Admin by operational reference | A reply safety check was completed |
+| `communication.person_channel.linked.v1` | Communication Planner | Growth Engine by reference where customer linkage exists | A channel identity was linked to a communication person |
+
+### Communication Planner Event Constraints
+
+Communication Planner events are stable contracts for 1-to-1 conversation, reply, and safety workflows.
+
+Allowed cross-app payload is reference-first:
+- `workspaceId`
+- `userId`
+- `personId`
+- `customerId` only as a Growth Engine reference when linked
+- `conversationId`
+- `channelIdentityId`
+- `messageId`
+- `contextId`
+- `topicId`
+- `promiseId`
+- `nextActionId`
+- `replyDraftId`
+- `safetyCheckId`
+- `channel`
+- `safetyStatus`
+- `traceId`
+- `correlationId`
+- `eventId`
+
+Communication Planner events must not include Customer master records, payment state, sales amounts, Stripe data, full message bodies, full conversation histories, full ConversationContext bodies, full Velvet professional memory bodies, full Report bodies, API keys, access tokens, or secret prompts.
+
+`communication.message.sent.v1` must be emitted only after SafetyCheck is completed or explicitly accepted by the user according to the send contract.
+
 ## AI Platform Core Events
 
 | Event | Publisher | Consumers | Purpose |
@@ -68,12 +109,12 @@ Velvet events must not include Customer master records, `paymentStatus`, `salesA
 | --- | --- | --- | --- |
 | `sns.post_draft.created.v1` | SNS Planner | Growth Engine | A post draft was created |
 | `sns.post_draft.updated.v1` | SNS Planner | Growth Engine | A post draft was updated |
-| `sns.message_draft.created.v1` | SNS Planner | Growth Engine | A contact or follow-up message draft was created |
-| `sns.message_draft.updated.v1` | SNS Planner | Growth Engine | A contact or follow-up message draft was updated |
+| `sns.message_draft.created.v1` | SNS Planner | Growth Engine | A simple contact or follow-up message draft was created |
+| `sns.message_draft.updated.v1` | SNS Planner | Growth Engine | A simple contact or follow-up message draft was updated |
 
 ### SNS MessageDraft Event Constraints
 
-MessageDraft events are stable contracts for communication-draft creation and update flows.
+MessageDraft events are stable contracts for simple business-initiated contact draft creation and update flows. They do not cover live conversation reply, channel send, or safety-check workflows; those belong to Communication Planner.
 
 Allowed event payload is reference-first:
 - `workspaceId`
@@ -87,7 +128,7 @@ Allowed event payload is reference-first:
 - `correlationId`
 - `eventId`
 
-MessageDraft events must not include Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts.
+MessageDraft events must not include Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, full conversation histories, API keys, access tokens, or secret prompts.
 
 ## Pending Events
 
