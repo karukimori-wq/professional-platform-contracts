@@ -70,6 +70,66 @@ Velvet to Growth Engine responses must be reference-first:
 
 Velvet APIs must not receive or return Customer master records, `paymentStatus`, `salesAmount`, Stripe data, Payment records, Sales records, full professional note bodies, full conversation histories, API keys, access tokens, or secret prompts unless a future explicit contract approves a minimum scoped subset.
 
+## Communication Planner APIs
+
+| Operation | Caller | Response | Event |
+| --- | --- | --- | --- |
+| `CommunicationChannelEvent.ReceiveMessage` | Channel Adapter | `messageId`, `personId`, `conversationId` | `communication.message.received.v1` |
+| `CommunicationInbox.List` | Communication Planner UI, Growth Engine by reference where contracted | Inbox rows | None |
+| `CommunicationPerson.Get` | Communication Planner UI | Person projection with linked channels | None |
+| `CommunicationConversation.List` | Communication Planner UI | Conversation list | None |
+| `CommunicationContext.Get` | Communication Planner UI | Conversation context projection | None |
+| `CommunicationContext.Update` | Communication Planner, AI-assisted workflow | `contextId` | `communication.context.updated.v1` |
+| `CommunicationPromise.Create` | Communication Planner, AI-assisted workflow | `promiseId` | `communication.promise.created.v1` |
+| `CommunicationNextAction.Create` | Communication Planner, AI-assisted workflow | `nextActionId` | `communication.next_action.created.v1` |
+| `CommunicationReplyDraft.Create` | Communication Planner UI | `replyDraftId` | `communication.reply_draft.created.v1` |
+| `CommunicationReplySafety.Check` | Communication Planner UI | `safetyCheckId`, safety status | `communication.reply_safety.checked.v1` |
+| `CommunicationReplyDraft.Send` | Communication Planner UI | `messageId`, send status | `communication.message.sent.v1` |
+| `CommunicationPersonChannel.Link` | Communication Planner UI | `personId`, `channelIdentityId` | `communication.person_channel.linked.v1` |
+
+### Communication Planner HTTP Mapping
+
+MVP HTTP mapping:
+- `POST /api/channel-events/messages` maps to `CommunicationChannelEvent.ReceiveMessage`.
+- `GET /api/inbox` maps to `CommunicationInbox.List`.
+- `GET /api/persons/{personId}` maps to `CommunicationPerson.Get`.
+- `GET /api/persons/{personId}/conversations` maps to `CommunicationConversation.List`.
+- `GET /api/persons/{personId}/context` maps to `CommunicationContext.Get`.
+- `POST /api/conversations/{conversationId}/reply-drafts` maps to `CommunicationReplyDraft.Create`.
+- `POST /api/reply-drafts/{replyDraftId}/safety-check` maps to `CommunicationReplySafety.Check`.
+- `POST /api/reply-drafts/{replyDraftId}/send` maps to `CommunicationReplyDraft.Send`.
+- `POST /api/persons/{personId}/channel-identities` maps to `CommunicationPersonChannel.Link`.
+
+Communication Planner requests must be scoped and reference-first:
+- `workspaceId`
+- `userId`
+- `personId`
+- `conversationId`
+- `channelIdentityId`
+- `customerId` only as a Growth Engine reference when linked
+- `inputRef`
+- `traceId`
+- `correlationId`
+
+Reply generation must require `personId` and `conversationId`. Context lookup must be limited to `workspaceId + personId`.
+
+`CommunicationReplySafety.Check` must verify that generated reply content is supported by the target person's conversation context. If another person's context is detected, the response should be `warning` or `blocked` according to the safety result.
+
+`CommunicationReplyDraft.Send` must require a successful or explicitly accepted SafetyCheck. Send responses should include:
+- top-level `status` using `success`, `warning`, `error`, or `skipped`
+- `replyDraftId`
+- `messageId`
+- `sendStatus`
+- `personId`
+- `conversationId`
+- `channel`
+- `eventName: communication.message.sent.v1`
+- `traceId`
+- `correlationId`
+- `requestId`
+
+Communication Planner APIs must not receive or return Customer master records, payment state, sales amounts, Stripe data, full Report bodies, full Velvet professional memory bodies, unrelated full conversation histories, API keys, access tokens, or secret prompts.
+
 ## AI Platform Core APIs
 
 | Operation | Caller | Response | Event |
@@ -77,10 +137,17 @@ Velvet APIs must not receive or return Customer master records, `paymentStatus`,
 | `Capability.Register` | Product repository | `capabilityId` | None |
 | `Activity.Create` | Product runtime | `activityId` | `ai.activity.created.v1` |
 | `Activity.Get` | Product runtime | Activity status | None |
-| `Usage.List` | Growth Engine, Studio admin, Velvet | Usage summary / point-accounting state | None |
+| `Usage.List` | Growth Engine, Studio admin, Velvet, Communication Planner | Usage summary / point-accounting state | None |
 | `PromptTemplate.Render` | Product runtime | Rendered prompt | None |
 | `VelvetCapture.Structure` | Velvet | Structured candidates only; no Velvet mutation | `ai.activity.created.v1` / completion events |
 | `VelvetSearch.ParseIntent` | Velvet | Search intent / terms only; no Velvet dataset results | `ai.activity.created.v1` / completion events |
+| `CommunicationContext.Summarize` | Communication Planner | Context summary candidates only; no Communication mutation | `ai.activity.created.v1` / completion events |
+| `CommunicationTopic.Extract` | Communication Planner | Topic candidates only; no Communication mutation | `ai.activity.created.v1` / completion events |
+| `CommunicationPromise.Extract` | Communication Planner | Promise candidates only; no Communication mutation | `ai.activity.created.v1` / completion events |
+| `CommunicationNextAction.Suggest` | Communication Planner | Next-action candidates only; no Communication mutation | `ai.activity.created.v1` / completion events |
+| `CommunicationReply.Generate` | Communication Planner | Reply draft candidates only; no send | `ai.activity.created.v1` / completion events |
+| `CommunicationReply.SafetyCheck` | Communication Planner | Safety assessment only; no send | `ai.activity.created.v1` / completion events |
+| `CommunicationIntent.Classify` | Communication Planner | Intent classification only; no Communication mutation | `ai.activity.created.v1` / completion events |
 
 ### Velvet AI contract constraints
 
@@ -99,6 +166,24 @@ Velvet APIs must not receive or return Customer master records, `paymentStatus`,
 
 Both operations must preserve or return `traceId`, `correlationId`, and `requestId` according to the shared observability contract. AI usage accounting remains canonical in AI Platform Core.
 
+### Communication Planner AI contract constraints
+
+Communication Planner AI operations are execution-only. They must not write canonical Communication records directly.
+
+Allowed AI input is limited to minimum scoped context selected by Communication Planner:
+- `workspaceId`
+- `userId`
+- `personId`
+- `conversationId`
+- `contextId`
+- relevant message references or short scoped excerpts selected for the operation
+- `traceId`
+- `correlationId`
+
+Do not send Customer master records, payment state, sales amounts, Stripe data, full unrelated conversation histories, other-person memory, full Report bodies, full Velvet professional memory bodies, API keys, access tokens, or secret prompts.
+
+AI responses return candidates or safety assessments only. Communication Planner owns confirmation, mutation, SafetyCheck records, and final send decisions.
+
 ## SNS Planner APIs
 
 | Operation | Caller | Response | Event |
@@ -106,8 +191,8 @@ Both operations must preserve or return `traceId`, `correlationId`, and `request
 | `PostDraft.Generate` | Growth Engine | Draft variants | `sns.post_draft.created.v1` |
 | `PostDraft.Rewrite` | Growth Engine | Updated draft | `sns.post_draft.updated.v1` |
 | `PostTemplate.List` | Growth Engine | Template list | None |
-| `MessageDraft.Generate` | Growth Engine | Contact or follow-up message draft | `sns.message_draft.created.v1` |
-| `MessageDraft.Rewrite` | Growth Engine | Updated contact or follow-up message draft | `sns.message_draft.updated.v1` |
+| `MessageDraft.Generate` | Growth Engine | Simple contact or follow-up message draft | `sns.message_draft.created.v1` |
+| `MessageDraft.Rewrite` | Growth Engine | Updated simple contact or follow-up message draft | `sns.message_draft.updated.v1` |
 | `PostDraft.Metadata` | Growth Engine, Platform Admin | Post draft capability metadata | None |
 | `MessageDraft.Metadata` | Growth Engine, Platform Admin | Message draft capability metadata | None |
 
@@ -141,7 +226,9 @@ Response should include:
 - `correlationId`
 - `requestId`
 
-`MessageDraft` must not receive or return Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts.
+SNS `MessageDraft` is limited to simple business-initiated contact or follow-up drafts that do not require live ConversationContext, channel send, or SafetyCheck. Conversation-contextual replies and send safety belong to Communication Planner.
+
+`MessageDraft` must not receive or return Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, full conversation histories, API keys, access tokens, or secret prompts.
 
 ## Naming Rules
 
