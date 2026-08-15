@@ -18,7 +18,8 @@ Each flow must preserve canonical ownership:
 - Growth Engine owns customers, reservations, payments, sales, public sites, and business workflow state.
 - Numeria Studio owns sessions, reports, and domain appraisal output.
 - Velvet owns professional visits, professional memory, service notes, and customer-specific professional timelines.
-- SNS Planner owns SNS post drafts and message drafts.
+- SNS Planner owns SNS post drafts and simple message drafts.
+- Communication Planner owns 1-to-1 conversations, conversation context, reply drafts, and safety checks.
 - AI Platform Core owns AI activities and usage tracking.
 - Platform Admin observes status and logs. It does not become a business source of truth.
 
@@ -27,7 +28,13 @@ Each flow must preserve canonical ownership:
 | Flow | API Operation | Event Outcome | Status |
 | --- | --- | --- | --- |
 | Growth Engine to SNS Planner PostDraft | `PostDraft.Generate` | `sns.post_draft.created.v1` | Stable |
-| Growth Engine to SNS Planner MessageDraft | `MessageDraft.Generate` | `sns.message_draft.created.v1` | Stable |
+| Growth Engine to SNS Planner MessageDraft | `MessageDraft.Generate` | `sns.message_draft.created.v1` | Stable, simple draft only |
+| Channel to Communication Planner Message Receive | `CommunicationChannelEvent.ReceiveMessage` | `communication.message.received.v1` | Stable |
+| Communication Planner ReplyDraft | `CommunicationReplyDraft.Create` | `communication.reply_draft.created.v1` | Stable |
+| Communication Planner SafetyCheck | `CommunicationReplySafety.Check` | `communication.reply_safety.checked.v1` | Stable |
+| Communication Planner Send | `CommunicationReplyDraft.Send` | `communication.message.sent.v1` | Stable |
+| Communication Planner Context Update | `CommunicationContext.Update` | `communication.context.updated.v1` | Stable |
+| Communication Planner to AI Platform Core | `Activity.Create` / communication capabilities | `ai.activity.created.v1` | Stable |
 | SNS Planner to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable |
 | Numeria Studio to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable, environment caveat |
 | Growth Engine to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable |
@@ -78,7 +85,7 @@ Ownership rules:
 
 ## 2. Growth Engine to SNS Planner MessageDraft
 
-Purpose: Growth Engine asks SNS Planner to create a customer communication draft from business intent.
+Purpose: Growth Engine asks SNS Planner to create a simple customer communication draft from business intent.
 
 Required API:
 
@@ -122,10 +129,190 @@ Event outcome:
 Ownership rules:
 
 - Growth Engine owns the business reason for the communication.
-- SNS Planner owns the message draft.
-- SNS Planner must not receive customer master records, payment state, sales amount, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts.
+- SNS Planner owns simple message draft state only.
+- SNS Planner must not receive customer master records, payment state, sales amount, Stripe data, full professional notes, full report bodies, full conversation histories, API keys, access tokens, or secret prompts.
+- Live conversation context, channel sending, and SafetyCheck belong to Communication Planner.
 
-## 3. SNS Planner to AI Platform Core
+## 3. Channel to Communication Planner Message Receive
+
+Purpose: A ChannelAdapter receives an inbound message and Communication Planner links it to a person and conversation.
+
+Required API:
+
+- Operation: `CommunicationChannelEvent.ReceiveMessage`
+- Caller: Channel Adapter
+- Receiver: Communication Planner
+
+Required payload shape:
+
+```json
+{
+  "workspaceId": "ws_test_001",
+  "userId": "user_test_owner_001",
+  "sourceApp": "channel-adapter",
+  "channel": "instagram",
+  "externalAccountId": "acct_test_001",
+  "externalUserId": "external_user_test_001",
+  "externalConversationId": "external_conv_test_001",
+  "externalMessageId": "external_msg_test_001",
+  "direction": "inbound",
+  "contentRef": "message_content_ref_001",
+  "receivedAt": "2026-08-15T00:00:00.000Z"
+}
+```
+
+Communication Planner returns:
+
+- `personId`
+- `channelIdentityId`
+- `conversationId`
+- `messageId`
+- `requiresReply`
+- `traceId`
+- `correlationId`
+- `requestId`
+
+Event outcome:
+
+- Communication Planner publishes or records `communication.message.received.v1`.
+
+Ownership rules:
+
+- Communication Planner owns Conversation and Message.
+- `contentRef` may point to Communication Planner-owned message content; cross-app events must not include full message bodies.
+- Growth Engine Customer may be linked by `customerId`, but Customer master remains Growth Engine.
+
+## 4. Communication Planner Reply and Safety Flow
+
+Purpose: Communication Planner generates or records a reply draft, checks it against person-scoped context, and sends only after safety confirmation.
+
+Required APIs:
+
+- `CommunicationReplyDraft.Create`
+- `CommunicationReplySafety.Check`
+- `CommunicationReplyDraft.Send`
+
+Required ReplyDraft request shape:
+
+```json
+{
+  "workspaceId": "ws_test_001",
+  "userId": "user_test_owner_001",
+  "personId": "person_test_001",
+  "conversationId": "conversation_test_001",
+  "channel": "instagram",
+  "purpose": "reply",
+  "inputRef": {
+    "contextId": "context_test_001",
+    "messageId": "message_test_001"
+  }
+}
+```
+
+SafetyCheck must verify:
+
+- `workspaceId + personId` context scope
+- generated reply evidence references
+- unsupported claims
+- cross-person risk
+- target person and channel before send
+
+Event outcomes:
+
+- `communication.reply_draft.created.v1`
+- `communication.reply_safety.checked.v1`
+- `communication.message.sent.v1` after approved send
+
+Ownership rules:
+
+- Communication Planner owns ReplyDraft, SafetyCheck and send workflow.
+- AI Platform Core may generate candidates or safety assessments, but must not send messages.
+- Platform Admin may receive operational status only, not message bodies or full context bodies.
+
+## 5. Communication Planner Context, Promise and NextAction Flow
+
+Purpose: Communication Planner keeps person-centered conversation state current without mixing context between people.
+
+Relevant APIs:
+
+- `CommunicationContext.Update`
+- `CommunicationPromise.Create`
+- `CommunicationNextAction.Create`
+
+Event outcomes:
+
+- `communication.context.updated.v1`
+- `communication.promise.created.v1`
+- `communication.next_action.created.v1`
+
+Allowed cross-app references:
+
+- `workspaceId`
+- `userId`
+- `personId`
+- `customerId` where linked
+- `conversationId`
+- `contextId`
+- `topicId`
+- `promiseId`
+- `nextActionId`
+- `messageRef`
+
+Ownership rules:
+
+- Communication Planner owns communication context, topics, promises and communication next actions.
+- Growth Engine owns business Follow-up, repeat/referral state and lifecycle decisions.
+- A Communication NextAction does not become Growth Engine Follow-up source of truth unless imported or referenced through an explicit contract.
+
+## 6. Communication Planner to AI Platform Core
+
+Purpose: Communication Planner records and uses AI-assisted communication tasks through AI Platform Core.
+
+Required API:
+
+- Operation: `Activity.Create` and communication capabilities
+- Caller: Communication Planner
+- Receiver: AI Platform Core
+
+Capability candidates:
+
+- `communication.context.summarize`
+- `communication.topic.extract`
+- `communication.promise.extract`
+- `communication.next_action.suggest`
+- `communication.reply.generate`
+- `communication.reply.safety_check`
+- `communication.intent.classify`
+
+Required payload shape:
+
+```json
+{
+  "workspaceId": "ws_test_001",
+  "userId": "user_test_owner_001",
+  "sourceApp": "communication-planner",
+  "activityType": "communication.reply.generated",
+  "capability": "communication.reply.generate",
+  "inputRef": {
+    "personId": "person_test_001",
+    "conversationId": "conversation_test_001",
+    "contextId": "context_test_001",
+    "replyDraftId": "reply_draft_test_001"
+  }
+}
+```
+
+Event outcome:
+
+- AI Platform Core records `ai.activity.created.v1`.
+
+Ownership rules:
+
+- AI Platform Core owns AI activity and usage only.
+- AI Platform Core must not own Conversation, Message, ConversationContext, ReplyDraft, SafetyCheck or send workflow.
+- Communication Planner selects minimum scoped input and applies user confirmation before mutation or send.
+
+## 7. SNS Planner to AI Platform Core
 
 Purpose: SNS Planner records AI-assisted draft generation as an AI Activity.
 
@@ -151,7 +338,7 @@ Required payload shape:
 }
 ```
 
-For MessageDraft, `activityType` and `capability` should identify message generation, and `inputRef` should contain only `messageDraftId`, `channel`, and other approved reference IDs.
+For SNS MessageDraft, `activityType` and `capability` should identify simple message generation, and `inputRef` should contain only `messageDraftId`, `channel`, and other approved reference IDs.
 
 Event outcome:
 
@@ -162,7 +349,7 @@ Ownership rules:
 - AI Platform Core records AI activity and usage only.
 - AI Platform Core must not own SNS post drafts, message drafts, or campaign/contact decisions.
 
-## 4. Numeria Studio to AI Platform Core
+## 8. Numeria Studio to AI Platform Core
 
 Purpose: Numeria Studio records AI-assisted report generation as an AI Activity.
 
@@ -205,7 +392,7 @@ MVP environment caveat:
 - ChatGPT Sites to ChatGPT Sites server-side fetch may return 522.
 - If direct AI Platform Core POST succeeds and payload validation passes, this flow may be marked `conditional_pass` for MVP.
 
-## 5. Growth Engine to AI Platform Core
+## 9. Growth Engine to AI Platform Core
 
 Purpose: Growth Engine records AI-assisted business recommendations, follow-up suggestions, or analysis as an AI Activity.
 
@@ -242,7 +429,7 @@ Ownership rules:
 - AI Platform Core records AI usage only.
 - Do not send customer personal information, payment details, sales amount, or `paymentStatus`.
 
-## 6. Growth Engine to Numeria Studio
+## 10. Growth Engine to Numeria Studio
 
 Purpose: Growth Engine starts a Numeria Studio appraisal session from a reservation or customer workflow.
 
@@ -287,7 +474,7 @@ Ownership rules:
 - `customerId` is a reference only.
 - Numeria Studio must not store a competing customer master, payment state, sales amount, or `paymentStatus`.
 
-## 7. Growth Engine to Velvet
+## 11. Growth Engine to Velvet
 
 Purpose: Growth Engine starts a Velvet professional visit or handoff from a customer, reservation, or visit schedule workflow.
 
@@ -334,7 +521,7 @@ Ownership rules:
 - Velvet must not create a competing Customer master, Payment source of truth, or Sales source of truth.
 - Growth Engine must not copy full Velvet professional notes or full professional memory bodies by default.
 
-## 8. Velvet Visit Completion and Memory Flow
+## 12. Velvet Visit Completion and Memory Flow
 
 Purpose: Velvet records professional visit outcomes and memory updates while keeping Growth Engine as the source of truth for customer and business data.
 
@@ -373,7 +560,7 @@ Ownership rules:
 - Velvet must not return full professional note bodies, full conversation histories, or full professional memory bodies to Growth Engine by default.
 - Velvet must not emit payment state, sales amount, Stripe data, or customer master records in events.
 
-## 9. Platform Admin to Apps
+## 13. Platform Admin to Apps
 
 Purpose: Platform Admin checks app health, version, contract status, and MVP connection test results.
 
@@ -391,7 +578,7 @@ Event outcome:
 Ownership rules:
 
 - Platform Admin stores operational snapshots only.
-- Platform Admin must not become the source of truth for customers, reservations, sessions, reports, visits, professional memory, post drafts, message drafts, payments, sales, or AI activities.
+- Platform Admin must not become the source of truth for customers, reservations, sessions, reports, visits, professional memory, post drafts, message drafts, conversations, messages, reply drafts, safety checks, payments, sales, or AI activities.
 
 ## Event Naming Rules
 
@@ -421,7 +608,7 @@ Allowed:
 - `workspaceId`
 - `userId`
 - `ownerUserId`
-- domain reference IDs such as `customerId`, `reservationId`, `visitScheduleId`, `sessionId`, `reportId`, `visitId`, `noteId`, `summaryRef`, `nextActionRef`, `draftId`, `messageDraftId`, `activityId`
+- domain reference IDs such as `customerId`, `reservationId`, `visitScheduleId`, `sessionId`, `reportId`, `visitId`, `noteId`, `summaryRef`, `nextActionRef`, `draftId`, `messageDraftId`, `personId`, `conversationId`, `messageId`, `contextId`, `promiseId`, `replyDraftId`, `safetyCheckId`, `activityId`
 - non-sensitive workflow context needed by the receiver
 
 Not allowed unless a future contract explicitly approves it:
@@ -435,5 +622,7 @@ Not allowed unless a future contract explicitly approves it:
 - full appraisal notes sent to AI Platform Core
 - full professional memory bodies outside Velvet
 - full professional note bodies outside Velvet
-- full conversation histories outside Velvet
+- full Communication Planner message bodies outside Communication Planner
+- full Communication Planner ConversationContext bodies outside Communication Planner
+- unrelated full conversation histories
 - personal identity fields when a reference ID is sufficient
