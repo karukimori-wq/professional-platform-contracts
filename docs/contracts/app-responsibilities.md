@@ -23,8 +23,15 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | Report and PDF generation | Numeria Studio |
 | Domain appraisal logic | Numeria Studio |
 | SNS post draft | SNS Planner |
-| SNS message draft | SNS Planner |
 | SNS post calendar | SNS Planner |
+| Simple SNS message draft | SNS Planner |
+| 1-to-1 Unified Inbox | Communication Planner |
+| Communication Person projection | Communication Planner |
+| Channel identity linking | Communication Planner |
+| Conversation / Message | Communication Planner |
+| Conversation Context / Topic / Promise | Communication Planner |
+| Communication NextAction | Communication Planner |
+| ReplyDraft / SafetyCheck / send workflow | Communication Planner |
 | AI activity execution | AI Platform Core |
 | AI usage tracking | AI Platform Core |
 | Capability registry | AI Platform Core |
@@ -58,6 +65,8 @@ Growth Engine owns the Business foundation for each workspace and is the canonic
 
 ### Must Not Own
 
+- Communication Planner full message bodies as canonical data
+- Communication Planner full ConversationContext bodies as canonical data
 - Velvet confidential service-note bodies as canonical data
 - Velvet conversation-note bodies as canonical data
 - Velvet professional customer timeline
@@ -65,12 +74,13 @@ Growth Engine owns the Business foundation for each workspace and is the canonic
 - Report/PDF rendering
 - SNS post editor internals
 - SNS message editor internals
+- Communication reply/send internals
 - AI runtime internals
 - Independent AI usage ledger
 
 ### Integration Role
 
-Growth Engine passes reference IDs and minimum workflow context to Professional Apps.
+Growth Engine passes reference IDs and minimum workflow context to Professional Apps and Communication Planner.
 
 For Velvet, default input is reference-first:
 - `workspaceId`
@@ -79,7 +89,16 @@ For Velvet, default input is reference-first:
 - `reservationId` or `visitScheduleId`
 - `intent`
 
-Growth Engine must not unnecessarily send `paymentStatus`, `salesAmount`, Stripe secrets, payment credentials or unrelated commercial payloads to Velvet.
+For Communication Planner, default input is reference-first:
+- `workspaceId`
+- `userId`
+- `customerId` where linked
+- `personId` where already known
+- `conversationId` where already known
+- `purpose`
+- `inputRef`
+
+Growth Engine must not unnecessarily send `paymentStatus`, `salesAmount`, Stripe secrets, payment credentials, Customer master records, full message bodies, full ConversationContext bodies, or unrelated commercial payloads to Communication Planner or Professional Apps.
 
 ## Numeria Studio
 
@@ -100,28 +119,29 @@ Numeria Studio owns professional work output for fortune-telling professionals.
 - Public site publishing
 - Lead lifecycle
 - SNS campaign strategy
+- 1-to-1 conversation inbox or send workflow
 
 ### Integration Role
 Numeria Studio references Growth Engine records by ID. External deliverables must use `Report`, not `Document`.
 
 ## SNS Planner
 
-SNS Planner owns content and communication draft creation support.
+SNS Planner owns 1-to-many SNS content creation and simple business-initiated message draft support.
 
 ### Owns
 - PostDraft
-- MessageDraft
 - Post text variants
-- Message text variants
 - Post status
-- Message draft status
 - Post schedule
 - SNS-specific formatting
-- Contact-message formatting
 - Hashtag and image prompt suggestions
+- Simple MessageDraft where the task does not require live ConversationContext, channel send, or SafetyCheck
+- Message draft status for those simple drafts
 
 ### Must Not Own
 - Customer master
+- Communication Planner Conversation / Message / ConversationContext
+- Communication Planner ReplyDraft / SafetyCheck / send workflow
 - Velvet confidential professional memory
 - Payment state
 - Sales state
@@ -133,9 +153,60 @@ SNS Planner owns content and communication draft creation support.
 - Repeat / referral / contact-measure Business source of truth
 
 ### Integration Role
-SNS Planner receives posting or message-draft intent from Growth Engine or an explicit user-selected handoff from a Professional App. Business strategy, audience selection, sales/repeat decisions, and customer lifecycle state remain in Growth Engine.
+SNS Planner receives posting or simple message-draft intent from Growth Engine or an explicit user-selected handoff from a Professional App. Business strategy, audience selection, sales/repeat decisions, and customer lifecycle state remain in Growth Engine.
 
-MessageDraft integrations are reference-first. SNS Planner may receive `workspaceId`, `userId`, `sourceApp`, `targetStudio`, `channel`, `purpose`, `audienceSegment`, `tone`, `cta`, and `inputRef`. It must not receive Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts.
+MessageDraft integrations are reference-first. SNS Planner may receive `workspaceId`, `userId`, `sourceApp`, `targetStudio`, `channel`, `purpose`, `audienceSegment`, `tone`, `cta`, and `inputRef`. It must not receive Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, full conversation histories, API keys, access tokens, or secret prompts.
+
+Conversation-contextual replies, channel sending, and cross-person safety checks belong to Communication Planner.
+
+## Communication Planner
+
+Communication Planner owns 1-to-1 communication management and safety.
+
+### Owns
+- Unified Inbox
+- Communication Person projection
+- ChannelIdentity
+- Conversation
+- Message
+- ConversationContext
+- Topic
+- Promise
+- Communication NextAction
+- ReplyDraft
+- SafetyCheck
+- ChannelAdapter integration state
+- Person-centered reply workflow
+- Send confirmation workflow
+
+### Must Not Own
+- Customer master
+- Lead lifecycle source of truth
+- Reservation / Visit Schedule source of truth
+- Payment source of truth
+- Sales / Revenue source of truth
+- SNS PostDraft source of truth
+- Campaign strategy source of truth
+- Numeria Session / Report source of truth
+- Velvet professional memory source of truth
+- AI Activity / Usage / Capability source of truth
+- Platform Admin operational monitoring source of truth
+
+### Integration Role
+Communication Planner groups channel conversations by person, maintains conversation context, generates or manages reply drafts, performs SafetyCheck, and sends through approved ChannelAdapters.
+
+It may reference Growth Engine Customer through `customerRef.customerId`, but it must not create a competing Customer master.
+
+Communication Planner must scope reply generation and safety checks by:
+- `workspaceId`
+- `personId`
+- `conversationId`
+
+It must not use another person's context when generating or sending a reply.
+
+Communication Planner may call AI Platform Core for scoped AI execution. AI Platform Core returns candidates or safety assessments only; Communication Planner owns confirmation, mutation, and send decisions.
+
+Communication Planner must not send or expose Customer master records, `paymentStatus`, `salesAmount`, Stripe data, full Report bodies, full Velvet professional memory bodies, unrelated full conversation histories, API keys, access tokens, or secret prompts to other apps.
 
 ## AI Platform Core
 
@@ -152,6 +223,8 @@ AI Platform Core owns common AI runtime and usage tracking.
 
 ### Must Not Own
 - Customer master
+- Communication Planner conversation records as canonical data
+- Communication Planner send workflow
 - Velvet professional memory as canonical business data
 - Reservation workflow
 - Payment workflow
@@ -161,11 +234,11 @@ AI Platform Core owns common AI runtime and usage tracking.
 - Public site publishing
 
 ### Integration Role
-AI Platform Core is called by apps when they need AI execution. For Velvet, AI execution is user-triggered and receives only the minimum scoped input required.
+AI Platform Core is called by apps when they need AI execution. For Communication Planner, AI execution is user-triggered or workflow-triggered and receives only the minimum scoped input required.
 
 ## Velvet
 
-Velvet is an adult night-work Professional App connected to Growth Engine. Its paid value is split into professional recall/service quality (Pro) and Growth Engine-powered business growth (Business).
+Velvet is a Professional App connected to Growth Engine. Its paid value is split into professional recall/service quality (Pro) and Growth Engine-powered business growth (Business).
 
 ### Pro — JPY 10,000/month
 Core value: **顧客を忘れない・接客品質を上げる**.
@@ -182,11 +255,11 @@ Pro owns/provides the professional experience for:
 - previous handling
 - next-contact / next-topic memo
 - AI memo organization
-- AI reply/contact-message drafts
+- AI reply/contact-message drafts where explicitly scoped to Velvet professional memory
 - professional-memory search
 - important-customer pinning
 
-Target outcome: important customer context can be recalled in roughly 10 seconds before service.
+Target outcome: important customer context can be recalled quickly before service.
 
 ### Business — JPY 30,000/month
 Core value: **来店・売上・リピートを増やす**.
@@ -204,6 +277,7 @@ Business is Growth Engine-powered business mode. It may expose:
 - sales dashboard
 - contact-measure management
 - SNS Planner integration
+- Communication Planner integration
 - AI sales suggestions
 
 Customer, Reservation, Payment, Sales and repeat/business state used by these features remain canonical in Growth Engine.
@@ -228,6 +302,7 @@ Customer, Reservation, Payment, Sales and repeat/business state used by these fe
 - Stripe secrets or credentials
 - canonical cross-business sales analytics
 - SNS Planner PostDraft internals
+- Communication Planner Conversation / Message / SafetyCheck source of truth
 - AI Platform Core AI Usage ledger
 - Platform Admin operational monitoring source of truth
 
@@ -271,6 +346,8 @@ Platform Admin owns cross-app operational visibility for the platform operator.
 
 ### Must Not Own
 - Customer master
+- Communication Planner message bodies
+- Communication Planner ConversationContext bodies
 - Velvet professional memory
 - Appraisal work
 - SNS post creation
@@ -296,4 +373,4 @@ MVP supports Stripe only for client-to-professional payment flows owned by Growt
 
 - Growth Engine owns Stripe payment state.
 - Other apps must not store Stripe payment data as a source of truth.
-- Stripe secrets and credentials never cross into Professional Apps.
+- Stripe secrets and credentials never cross into Professional Apps, Communication Planner, SNS Planner, AI Platform Core or Platform Admin.
