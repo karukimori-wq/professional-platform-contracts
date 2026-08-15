@@ -6,7 +6,7 @@ This document defines canonical ownership for shared data.
 
 | Data | Canonical Owner | Referenced By |
 | --- | --- | --- |
-| Customer profile / Customer master | Growth Engine | Professional Apps by reference/projection |
+| Customer profile / Customer master | Growth Engine | Professional Apps and Communication Planner by reference/projection |
 | Lead status | Growth Engine | Professional Apps where contracted |
 | Acquisition source | Growth Engine | Professional Apps where contracted |
 | Nurturing status | Growth Engine | Professional Apps where contracted |
@@ -14,7 +14,17 @@ This document defines canonical ownership for shared data.
 | Payment / Stripe payment state | Growth Engine | Other apps by reference/snapshot only when necessary |
 | Sales / Revenue ledger | Growth Engine | Other apps by reference/query only |
 | Customer-level sales aggregation | Growth Engine | Velvet Business and other contracted consumers |
-| Repeat / referral / contact-measure Business state | Growth Engine | Velvet Business / SNS Planner where contracted |
+| Repeat / referral / contact-measure Business state | Growth Engine | Velvet Business / SNS Planner / Communication Planner where contracted by reference |
+| Communication Person projection | Communication Planner | Growth Engine by reference where customer linkage exists |
+| ChannelIdentity | Communication Planner | Communication Planner; Platform Admin by operational status only |
+| Conversation | Communication Planner | Communication Planner; Growth Engine by reference only where contracted |
+| Message | Communication Planner | Communication Planner only; other apps by reference only |
+| ConversationContext | Communication Planner | Communication Planner; AI Platform Core by scoped execution only |
+| Communication Topic | Communication Planner | Communication Planner; Growth Engine by reference where contracted |
+| Communication Promise | Communication Planner | Communication Planner; Growth Engine by reference where contracted |
+| Communication NextAction | Communication Planner | Communication Planner; Growth Engine by reference where contracted |
+| ReplyDraft | Communication Planner | Communication Planner; Platform Admin by operational status only |
+| SafetyCheck | Communication Planner | Communication Planner; Platform Admin by operational status only |
 | Session | Numeria Studio | Growth Engine |
 | Report | Numeria Studio | Growth Engine |
 | Domain appraisal data | Numeria Studio | AI Platform Core by scoped execution only |
@@ -33,6 +43,76 @@ This document defines canonical ownership for shared data.
 | Capability | AI Platform Core | All apps |
 | AI activity | AI Platform Core | All apps |
 | AI usage | AI Platform Core | All apps |
+
+## Growth Engine Customer and Communication Planner Person
+
+There is one canonical shared Customer domain: Growth Engine `Customer`.
+
+Communication Planner may maintain a `Person` projection for communication identity, channel linking, and conversation routing. This Person is not a competing Customer master.
+
+- Communication Planner Person may reference Growth Engine `customerId` through `customerRef`.
+- Channel display labels, avatar URLs, and external user IDs are ChannelIdentity metadata, not canonical Customer profile fields.
+- Communication Planner must not silently overwrite Growth Engine Customer master fields.
+- Growth Engine Customer changes must not silently overwrite Communication Planner conversation context, messages, promises, or safety records.
+
+## Communication Planner Conversation Data
+
+Communication Planner owns the 1-to-1 communication records needed to prevent context mixing:
+
+- ChannelIdentity
+- Conversation
+- Message
+- ConversationContext
+- Topic
+- Promise
+- Communication NextAction
+- ReplyDraft
+- SafetyCheck
+
+These records are scoped by `workspaceId` and `personId`.
+
+Cross-app sharing is reference-first. Other apps may receive references such as `personId`, `conversationId`, `messageId`, `contextId`, `promiseId`, `nextActionId`, `replyDraftId`, and `safetyCheckId` only when a contracted workflow requires them.
+
+Full message bodies, full conversation histories, and full ConversationContext bodies must not be sent to Growth Engine, SNS Planner, Velvet, Numeria Studio, Platform Admin, or AI Platform Core by default.
+
+## Communication Planner vs Growth Engine Business State
+
+Growth Engine owns the business reason for communication:
+
+- lead lifecycle
+- reservation / visit schedule
+- repeat / referral / contact-measure state
+- payment and sales status
+- customer-level business analysis
+
+Communication Planner owns the communication execution state:
+
+- whether a conversation requires reply
+- what was said in a scoped conversation
+- what promise or next communication action exists
+- whether a generated reply passed SafetyCheck
+- whether an approved reply was sent
+
+A Communication NextAction is not a Growth Engine Follow-up source of truth unless Growth Engine explicitly imports or references it through a contracted workflow.
+
+## Communication Planner vs SNS Planner Drafts
+
+SNS Planner owns PostDraft and existing simple MessageDraft creation state.
+
+Communication Planner owns conversation-contextual ReplyDraft and SafetyCheck state.
+
+Use SNS Planner when the task is a simple business-initiated contact or follow-up draft that does not require live conversation context or channel send.
+
+Use Communication Planner when the task requires:
+
+- person-centered inbox context
+- live conversation history
+- reply generation inside a conversation
+- SafetyCheck
+- channel send
+- prevention of cross-person context mixing
+
+A future migration may move SNS `MessageDraft` ownership into Communication Planner. Until then, both contracts are valid with the boundary above.
 
 ## Growth Engine Customer and Velvet Professional Memory
 
@@ -70,7 +150,7 @@ The reference does not transfer Reservation, Visit Schedule, Customer, Payment, 
 
 ## SNS Planner Drafts vs Growth Engine Business State
 
-SNS Planner owns PostDraft and MessageDraft creation state.
+SNS Planner owns PostDraft and simple MessageDraft creation state.
 
 Growth Engine owns the business reason for the draft:
 
@@ -89,13 +169,13 @@ A MessageDraft may reference:
 - `targetStudio`
 - `inputRef`
 
-SNS Planner must not persist or receive Customer master records, canonical `paymentStatus`, canonical `salesAmount`, Payment records, Sales records, Stripe data, full professional notes, full report bodies, API keys, access tokens, or secret prompts as MessageDraft source data.
+SNS Planner must not persist or receive Customer master records, canonical `paymentStatus`, canonical `salesAmount`, Payment records, Sales records, Stripe data, full professional notes, full report bodies, full conversation histories, API keys, access tokens, or secret prompts as MessageDraft source data.
 
 ## Sales and Payment Rule
 
 Growth Engine is the canonical owner of Payment, Sales and Revenue.
 
-Velvet must not persist:
+Communication Planner, Velvet, Numeria Studio, SNS Planner, AI Platform Core and Platform Admin must not persist:
 
 - canonical `salesAmount`
 - canonical `paymentStatus`
@@ -103,9 +183,7 @@ Velvet must not persist:
 - Sales/Revenue ledger entries
 - Stripe secrets or credentials
 
-Velvet Business may display customer-level sales, sales trends and related Business analysis by querying/referencing Growth Engine. Those views do not become Velvet canonical data.
-
-Growth Engine should not send `paymentStatus`, `salesAmount` or Stripe data to Velvet unless a future explicit contract establishes a minimum necessary field for a specific operation. Default integration omits them.
+Growth Engine should not send `paymentStatus`, `salesAmount` or Stripe data to Communication Planner, Velvet, Numeria Studio, SNS Planner, AI Platform Core or Platform Admin unless a future explicit contract establishes a minimum necessary field for a specific operation. Default integrations omit them.
 
 ## Velvet Plan Value Boundary
 
@@ -133,23 +211,38 @@ Growth Engine -> Velvet default references:
 - `traceId`
 - `correlationId`
 
-Velvet -> Growth Engine default references/summaries where needed:
+Growth Engine or Professional App -> Communication Planner default references:
 
-- `visitId`
-- `noteId`
-- `lastVisitAt`
-- `nextActionRef`
-- `summaryRef`
+- `workspaceId`
+- `userId`
+- `customerId` where linked
+- `personId` where already known
+- `conversationId` where already known
+- `purpose`
+- `inputRef`
 - `traceId`
 - `correlationId`
 
-Raw confidential note bodies and full conversation text are not default cross-app payloads.
+Communication Planner -> Growth Engine default references/summaries where contracted:
+
+- `personId`
+- `conversationId`
+- `promiseId`
+- `nextActionId`
+- `replyDraftId`
+- `safetyCheckId`
+- `messageRef`
+- `traceId`
+- `correlationId`
+
+Raw message bodies, full conversation histories, full ConversationContext bodies, raw confidential note bodies and full professional memory bodies are not default cross-app payloads.
 
 ## Duplication Rules
 
 Allowed duplication:
 
 - minimal cached display name where contractually justified
+- channel display labels and avatars needed for communication routing
 - historical report snapshots
 - external-service metadata needed for traceability
 - explicit reference IDs across contracted integrations
@@ -157,19 +250,31 @@ Allowed duplication:
 
 Not allowed duplication:
 
-- independent Customer master in Velvet, Numeria Studio or SNS Planner
-- independent Payment or Sales ledger in Velvet
+- independent Customer master in Communication Planner, Velvet, Numeria Studio or SNS Planner
+- independent Payment or Sales ledger outside Growth Engine
+- Communication Planner-persisted canonical `salesAmount` or `paymentStatus`
 - Velvet-persisted canonical `salesAmount` or `paymentStatus`
 - SNS Planner-persisted canonical `paymentStatus` or `salesAmount`
+- Growth Engine-stored full Communication Planner message bodies as canonical data
 - Growth Engine-stored full Velvet professional note bodies as canonical data
 - Growth Engine-stored full Velvet professional memory bodies as canonical data
 - independent AI usage ledger in application repositories
-- independent business lifecycle state in SNS Planner or Velvet
-- AI Platform Core storing Velvet professional memory as its canonical business record
+- independent business lifecycle state in SNS Planner, Communication Planner or Velvet
+- AI Platform Core storing Communication Planner conversation history or Velvet professional memory as its canonical business record
 
 ## Snapshot Rule
 
 Snapshots are historical/derived records, not canonical data. A snapshot must never be presented as the current source of truth when the canonical owner is another app.
+
+## Privacy Rule for Communication Planner
+
+Communication Planner conversation data is not general platform context.
+
+Other apps must not receive Communication Planner full message bodies, full conversation histories, full ConversationContext bodies, channel access tokens, private channel metadata, or SafetyCheck details beyond operational references unless the user explicitly invokes a contracted feature that requires a minimum scoped subset.
+
+AI Platform Core may receive only the minimum scoped content selected for a user-triggered AI operation. It must not store Communication Planner conversation records as canonical data.
+
+Platform Admin receives operational snapshot fields only, not message bodies or context bodies.
 
 ## Privacy Rule for Velvet
 
