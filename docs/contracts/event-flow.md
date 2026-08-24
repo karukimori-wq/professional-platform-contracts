@@ -19,6 +19,7 @@ Each flow must preserve canonical ownership:
 - Numeria Studio owns sessions, reports, and domain appraisal output.
 - Velvet owns professional visits, professional memory, service notes, and customer-specific professional timelines.
 - SNS Planner owns SNS post drafts and simple message drafts.
+- AI SNS Growth Office owns AI-company SNS marketing orchestration, campaign route design, content planning, draft production, image concepts, media assets, approval workflow, X media upload jobs, X publish jobs, and marketing performance snapshots.
 - Communication Planner owns 1-to-1 conversations, conversation context, reply drafts, and safety checks.
 - AI Platform Core owns AI activities and usage tracking.
 - Platform Admin observes status and logs. It does not become a business source of truth.
@@ -29,6 +30,14 @@ Each flow must preserve canonical ownership:
 | --- | --- | --- | --- |
 | Growth Engine to SNS Planner PostDraft | `PostDraft.Generate` | `sns.post_draft.created.v1` | Stable |
 | Growth Engine to SNS Planner MessageDraft | `MessageDraft.Generate` | `sns.message_draft.created.v1` | Stable, simple draft only |
+| AI SNS Growth Office CEO Instruction | `AISNSCEOInstruction.Create` | `ai_company.ceo_instruction.created.v1` | Stable |
+| AI SNS Growth Office Secretary Brief | `AISNSSecretaryBrief.Create` | `ai_company.secretary_brief.created.v1` | Stable |
+| AI SNS Growth Office Company / Agent Tasks | `AISNSCompanyTask.Create` / `AISNSAgentTask.Create` | `ai_company.company_task.created.v1` / `ai_company.agent_task.created.v1` | Stable |
+| AI SNS Growth Office Approval | `AISNSApproval.Request` / `AISNSApproval.Complete` | `ai_company.approval.requested.v1` / `ai_company.approval.completed.v1` | Stable, three-stage approval |
+| AI SNS Growth Office Content and Image Planning | `AISNSContentPlan.Create` / `AISNSContentDraft.Create` / `AISNSImageConcept.Create` | `ai_company.content_plan.created.v1` / `ai_company.content_draft.created.v1` / `ai_company.image_concept.created.v1` | Stable |
+| AI SNS Growth Office X Media Upload | `AISNSXMediaUploadJob.Create` | `ai_company.x_media_upload_job.created.v1` | Stable, CEO approval required |
+| AI SNS Growth Office X Publish | `AISNSXPublishJob.Create` | `ai_company.x_publish_job.created.v1` | Stable, CEO approval required |
+| AI SNS Growth Office Performance Snapshot | `AISNSPerformanceSnapshot.Record` | `ai_company.performance_snapshot.recorded.v1` | Stable |
 | Channel to Communication Planner Message Receive | `CommunicationChannelEvent.ReceiveMessage` | `communication.message.received.v1` | Stable |
 | Communication Planner ReplyDraft | `CommunicationReplyDraft.Create` | `communication.reply_draft.created.v1` | Stable |
 | Communication Planner SafetyCheck | `CommunicationReplySafety.Check` | `communication.reply_safety.checked.v1` | Stable |
@@ -133,7 +142,280 @@ Ownership rules:
 - SNS Planner must not receive customer master records, payment state, sales amount, Stripe data, full professional notes, full report bodies, full conversation histories, API keys, access tokens, or secret prompts.
 - Live conversation context, channel sending, and SafetyCheck belong to Communication Planner.
 
-## 3. Channel to Communication Planner Message Receive
+## 3. AI SNS Growth Office Company Operation Flow
+
+Purpose: The CEO issues a marketing instruction, Secretary AI organizes it, and AI employees execute scoped marketing tasks.
+
+Required APIs:
+
+- `AISNSCEOInstruction.Create`
+- `AISNSSecretaryBrief.Create`
+- `AISNSCompanyTask.Create`
+- `AISNSCompanyTask.Complete`
+- `AISNSAgentTask.Create`
+- `AISNSAgentTask.Complete`
+- `AISNSAgentOutput.Create`
+
+Required references:
+
+- `workspaceId`
+- `userId`
+- `appProjectId`
+- `ceoInstructionId`
+- `secretaryBriefId`
+- `companyTaskId`
+- `agentTaskId`
+- `agentOutputId`
+
+Event outcomes:
+
+- `ai_company.ceo_instruction.created.v1`
+- `ai_company.secretary_brief.created.v1`
+- `ai_company.company_task.created.v1`
+- `ai_company.company_task.completed.v1`
+- `ai_company.agent_task.created.v1`
+- `ai_company.agent_task.completed.v1`
+- `ai_company.agent_output.created.v1`
+
+Ownership rules:
+
+- AI SNS Growth Office owns company operation records and task execution records.
+- CEOInstruction and ApprovalRequest belong to AI SNS Growth Office, not Growth Engine.
+- AI Platform Core may record AI Activity and Usage for AI execution, but it does not own company tasks or outputs.
+- Platform Admin observes status only.
+
+## 4. AI SNS Growth Office Marketing Route and Content Flow
+
+Purpose: AI SNS Growth Office designs a route from recognition to purchase and produces content and image planning artifacts for an app campaign.
+
+Initial campaign scope:
+
+- First app: Numeria Studio
+- Next app: Velvet
+- First SNS: X
+- Language: Japanese
+- Image-attached posts are in MVP scope
+
+Required APIs:
+
+- `AISNSAppProject.Create`
+- `AISNSAudience.Create`
+- `AISNSOffer.Create`
+- `AISNSMarketingRoute.Create`
+- `AISNSDiagnosisReport.Create`
+- `AISNSContentPlan.Create`
+- `AISNSContentDraft.Create`
+- `AISNSImageConcept.Create`
+- `AISNSMediaAsset.Create`
+- `AISNSPublishPlan.Create`
+
+Required references:
+
+- `workspaceId`
+- `userId`
+- `appProjectId`
+- `targetAppKey`
+- `audienceId`
+- `offerId`
+- `marketingRouteId`
+- `routeStageId`
+- `contentPlanId`
+- `contentDraftId`
+- `imageConceptId`
+- `mediaAssetId`
+- `publishPlanId`
+
+Event outcomes:
+
+- `ai_company.app_project.created.v1`
+- `ai_company.audience.created.v1`
+- `ai_company.offer.created.v1`
+- `ai_company.marketing_route.created.v1`
+- `ai_company.diagnosis_report.created.v1`
+- `ai_company.content_plan.created.v1`
+- `ai_company.content_draft.created.v1`
+- `ai_company.image_concept.created.v1`
+- `ai_company.media_asset.created.v1`
+- `ai_company.publish_plan.created.v1`
+
+Ownership rules:
+
+- AI SNS Growth Office owns route design, content plans, draft content, image concepts, media assets, and publish plans.
+- Growth Engine owns the business sales route, customer lifecycle state, reservation state, payment state, and revenue state.
+- SNS Planner owns existing SNS PostDraft and MessageDraft records until an explicit future migration contract changes ownership.
+- AI SNS Growth Office may produce marketing artifacts for SNS Planner by reference; it must not silently take over SNS Planner canonical draft records.
+
+## 5. AI SNS Growth Office Approval and Publishing Flow
+
+Purpose: AI-generated strategy, drafts, image concepts, media assets, X media upload jobs, and X publish jobs move through CEO approval before public action.
+
+Required approval stages:
+
+1. Strategy Approval: target, appeal, route, campaign policy, image policy.
+2. Draft Approval: X posts, threads, image proposals, profile copy, pinned post, DM route.
+3. Publish/Schedule Approval: X media upload, X post creation, scheduled publish, manual export.
+
+Required APIs:
+
+- `AISNSApproval.Request`
+- `AISNSApproval.Complete`
+- `AISNSXMediaUploadJob.Create`
+- `AISNSXMediaUploadJob.Complete`
+- `AISNSXMediaUploadJob.Fail`
+- `AISNSXPublishJob.Create`
+- `AISNSXPublishJob.Complete`
+- `AISNSXPublishJob.Fail`
+
+Event outcomes:
+
+- `ai_company.approval.requested.v1`
+- `ai_company.approval.completed.v1`
+- `ai_company.x_media_upload_job.created.v1`
+- `ai_company.x_media_upload_job.completed.v1`
+- `ai_company.x_media_upload_job.failed.v1`
+- `ai_company.x_publish_job.created.v1`
+- `ai_company.x_publish_job.completed.v1`
+- `ai_company.x_publish_job.failed.v1`
+
+Rules:
+
+- AI may create drafts, image concepts, and media assets.
+- AI must not perform final X media upload, public posting, scheduling, or manual export without CEO approval.
+- X image upload and X post creation are separate jobs.
+- `MediaAsset`, `XMediaUploadJob`, and `XPublishJob` must remain separate records.
+- Failed jobs must move to `failed` or `manual_required`; approved drafts, media assets, and publish intent must not be deleted because an X upload or publish job failed.
+
+## 6. AI SNS Growth Office to SNS Planner
+
+Purpose: AI SNS Growth Office may hand off approved content requirements or references to SNS Planner while SNS Planner remains canonical for current PostDraft and MessageDraft records.
+
+Allowed handoff references:
+
+- `workspaceId`
+- `userId`
+- `appProjectId`
+- `contentPlanId`
+- `contentDraftId`
+- `imageConceptId`
+- `mediaAssetId`
+- `publishPlanId`
+- `marketingRouteId`
+
+Ownership rules:
+
+- SNS Planner owns `PostDraft` and `MessageDraft` until an explicit future consolidation contract exists.
+- AI SNS Growth Office may eventually absorb SNS Planner functions only after a documented migration of source-of-truth records, event names, APIs, monitoring, rollback, and historical data.
+- AI SNS Growth Office must not pass Growth Engine payment state, sales amount, Stripe data, customer master records, full Communication Planner conversation bodies, full Velvet memory, full Report bodies, API keys, access tokens, or secret prompts to SNS Planner.
+
+## 7. AI SNS Growth Office to Communication Planner
+
+Purpose: AI SNS Growth Office may design DM routes or propose message copy, but Communication Planner owns live 1-to-1 conversation execution.
+
+Allowed references:
+
+- `workspaceId`
+- `userId`
+- `appProjectId`
+- `marketingRouteId`
+- `routeStageId`
+- `contentDraftId`
+- `campaignRef`
+
+Ownership rules:
+
+- Communication Planner owns Person, Conversation, Message, ConversationContext, ReplyDraft, SafetyCheck, ReplySendDecision, and ChannelAdapter integration state.
+- AI SNS Growth Office must not send live DM replies or bypass Communication Planner SafetyCheck.
+- AI SNS Growth Office must not receive full message histories, full ConversationContext bodies, channel tokens, or private provider metadata by default.
+
+## 8. AI SNS Growth Office to AI Platform Core
+
+Purpose: AI SNS Growth Office records AI execution activity and usage while keeping company operation records in AI SNS Growth Office.
+
+Required API:
+
+- Operation: `Activity.Create`
+- Caller: AI SNS Growth Office
+- Receiver: AI Platform Core
+
+Allowed references:
+
+- `workspaceId`
+- `userId`
+- `sourceApp: ai-sns-growth-office`
+- `capability`
+- `inputRef`
+- `outputRef`
+- `companyTaskId`
+- `agentTaskId`
+- `agentOutputId`
+
+Event outcome:
+
+- AI Platform Core publishes or records `ai.activity.created.v1`.
+
+Ownership rules:
+
+- AI Platform Core owns AI Activity, AI Usage, and AI Capability.
+- AI SNS Growth Office owns CEOInstruction, SecretaryBrief, CompanyTask, AgentTask, AgentOutput, ApprovalRequest, and marketing artifacts.
+- AI Platform Core must not receive API keys, access tokens, secret prompts, full customer records, full conversation histories, full professional memory, full report bodies, payment state, or sales amounts.
+
+## 9. AI SNS Growth Office to External Intelligence
+
+Purpose: AI SNS Growth Office references development knowledge, decisions, rules, or evidence recorded in External Intelligence.
+
+Required API:
+
+- `AISNSExternalIntelligence.Reference`
+
+Required references:
+
+- `workspaceId`
+- `userId`
+- `appProjectId`
+- `externalKnowledgeReferenceId`
+- `externalRecordRef`
+- `sourceDocumentRef`
+
+Event outcome:
+
+- `ai_company.external_intelligence.referenced.v1`
+
+Ownership rules:
+
+- External Intelligence may store development Knowledge, judgments, rules, and evidence.
+- External Intelligence must not become operational source of truth for AI SNS Growth Office tasks, approvals, drafts, media assets, publish jobs, performance snapshots, customers, payments, sales, or revenue.
+
+## 10. AI SNS Growth Office Performance Snapshot Flow
+
+Purpose: AI SNS Growth Office records daily SNS marketing performance for diagnosis and route improvement.
+
+Required API:
+
+- `AISNSPerformanceSnapshot.Record`
+
+Metrics:
+
+- `impressions`
+- `profile_visits`
+- `follows`
+- `engagement_count`
+- `cta_clicks`
+- `landing_page_visits`
+- `trial_or_signup_count`
+- `purchase_count`
+- `revenue`
+
+Event outcome:
+
+- `ai_company.performance_snapshot.recorded.v1`
+
+Rules:
+
+- Missing values are `unknown`, not `0`.
+- Growth Engine remains canonical for purchase, payment, sales, and revenue records.
+- AI SNS Growth Office may record marketing performance snapshots for route analysis, but it must not become the canonical sales ledger.
+
+## 11. Channel to Communication Planner Message Receive
 
 Purpose: A ChannelAdapter receives an inbound message and Communication Planner links it to a person and conversation.
 
@@ -182,7 +464,7 @@ Ownership rules:
 - `contentRef` may point to Communication Planner-owned message content; cross-app events must not include full message bodies.
 - Growth Engine Customer may be linked by `customerId`, but Customer master remains Growth Engine.
 
-## 4. Communication Planner Reply and Safety Flow
+## 12. Communication Planner Reply and Safety Flow
 
 Purpose: Communication Planner generates or records a reply draft, checks it against person-scoped context, and sends only after safety confirmation.
 
@@ -229,7 +511,7 @@ Ownership rules:
 - AI Platform Core may generate candidates or safety assessments, but must not send messages.
 - Platform Admin may receive operational status only, not message bodies or full context bodies.
 
-## 5. Communication Planner Context, Promise and NextAction Flow
+## 13. Communication Planner Context, Promise and NextAction Flow
 
 Purpose: Communication Planner keeps person-centered conversation state current without mixing context between people.
 
@@ -264,7 +546,7 @@ Ownership rules:
 - Growth Engine owns business Follow-up, repeat/referral state and lifecycle decisions.
 - A Communication NextAction does not become Growth Engine Follow-up source of truth unless imported or referenced through an explicit contract.
 
-## 6. Communication Planner to AI Platform Core
+## 14. Communication Planner to AI Platform Core
 
 Purpose: Communication Planner records and uses AI-assisted communication tasks through AI Platform Core.
 
@@ -312,7 +594,7 @@ Ownership rules:
 - AI Platform Core must not own Conversation, Message, ConversationContext, ReplyDraft, SafetyCheck or send workflow.
 - Communication Planner selects minimum scoped input and applies user confirmation before mutation or send.
 
-## 7. SNS Planner to AI Platform Core
+## 15. SNS Planner to AI Platform Core
 
 Purpose: SNS Planner records AI-assisted draft generation as an AI Activity.
 
@@ -349,7 +631,7 @@ Ownership rules:
 - AI Platform Core records AI activity and usage only.
 - AI Platform Core must not own SNS post drafts, message drafts, or campaign/contact decisions.
 
-## 8. Numeria Studio to AI Platform Core
+## 16. Numeria Studio to AI Platform Core
 
 Purpose: Numeria Studio records AI-assisted report generation as an AI Activity.
 
@@ -392,7 +674,7 @@ MVP environment caveat:
 - ChatGPT Sites to ChatGPT Sites server-side fetch may return 522.
 - If direct AI Platform Core POST succeeds and payload validation passes, this flow may be marked `conditional_pass` for MVP.
 
-## 9. Growth Engine to AI Platform Core
+## 17. Growth Engine to AI Platform Core
 
 Purpose: Growth Engine records AI-assisted business recommendations, follow-up suggestions, or analysis as an AI Activity.
 
@@ -429,7 +711,7 @@ Ownership rules:
 - AI Platform Core records AI usage only.
 - Do not send customer personal information, payment details, sales amount, or `paymentStatus`.
 
-## 10. Growth Engine to Numeria Studio
+## 18. Growth Engine to Numeria Studio
 
 Purpose: Growth Engine starts a Numeria Studio appraisal session from a reservation or customer workflow.
 
@@ -474,7 +756,7 @@ Ownership rules:
 - `customerId` is a reference only.
 - Numeria Studio must not store a competing customer master, payment state, sales amount, or `paymentStatus`.
 
-## 11. Growth Engine to Velvet
+## 19. Growth Engine to Velvet
 
 Purpose: Growth Engine starts a Velvet professional visit or handoff from a customer, reservation, or visit schedule workflow.
 
@@ -521,7 +803,7 @@ Ownership rules:
 - Velvet must not create a competing Customer master, Payment source of truth, or Sales source of truth.
 - Growth Engine must not copy full Velvet professional notes or full professional memory bodies by default.
 
-## 12. Velvet Visit Completion and Memory Flow
+## 20. Velvet Visit Completion and Memory Flow
 
 Purpose: Velvet records professional visit outcomes and memory updates while keeping Growth Engine as the source of truth for customer and business data.
 
@@ -560,7 +842,7 @@ Ownership rules:
 - Velvet must not return full professional note bodies, full conversation histories, or full professional memory bodies to Growth Engine by default.
 - Velvet must not emit payment state, sales amount, Stripe data, or customer master records in events.
 
-## 13. Platform Admin to Apps
+## 21. Platform Admin to Apps
 
 Purpose: Platform Admin checks app health, version, contract status, and MVP connection test results.
 
