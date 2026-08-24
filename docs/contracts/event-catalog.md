@@ -130,6 +130,12 @@ Communication Planner events must not include Customer master records, payment s
 
 AI SNS Growth Office events are stable contracts for AI-company SNS marketing orchestration.
 
+Current implementation status:
+
+- API handler tests for the current AI SNS Growth Office implementation report 21 passed / 0 failed.
+- Event contracts are stable, but production event persistence must remain pending until DB-backed repository persistence is implemented and verified.
+- Current seed/in-process state is suitable for MVP skeleton verification only.
+
 Allowed cross-app payload is reference-first:
 - `workspaceId`
 - `userId`
