@@ -31,6 +31,23 @@ This document defines canonical ownership for shared data.
 | SNS post draft | SNS Planner | Growth Engine, Velvet by reference only where needed |
 | SNS message draft | SNS Planner | Growth Engine, Velvet by reference only where needed |
 | Campaign intent | Growth Engine | SNS Planner |
+| CEOInstruction | AI SNS Growth Office | Platform Admin by operational status only |
+| SecretaryBrief | AI SNS Growth Office | Platform Admin by operational status only |
+| CompanyTask | AI SNS Growth Office | Platform Admin by operational status only |
+| AgentTask | AI SNS Growth Office | Platform Admin by operational status only |
+| AgentOutput | AI SNS Growth Office | Platform Admin by operational status only |
+| ApprovalRequest | AI SNS Growth Office | Platform Admin by operational status only |
+| AppProject | AI SNS Growth Office | Growth Engine by reference where contracted |
+| MarketingRoute / RouteStage | AI SNS Growth Office | Growth Engine by reference where contracted |
+| Audience / Offer | AI SNS Growth Office | Growth Engine by reference where contracted |
+| DiagnosisReport | AI SNS Growth Office | Growth Engine by reference where contracted |
+| ContentPlan / ContentDraft | AI SNS Growth Office | SNS Planner by explicit handoff where contracted |
+| ImageConcept / MediaAsset | AI SNS Growth Office | SNS Planner by reference where contracted |
+| PublishPlan | AI SNS Growth Office | SNS Planner / Platform Admin by reference where contracted |
+| XMediaUploadJob | AI SNS Growth Office | Platform Admin by operational status only |
+| XPublishJob | AI SNS Growth Office | Platform Admin by operational status only |
+| SNS marketing PerformanceSnapshot | AI SNS Growth Office | Growth Engine by summary/reference where contracted |
+| ExternalKnowledgeReference | AI SNS Growth Office | External Intelligence by referenced record only |
 | Velvet professional Visit | Velvet | Growth Engine by reference/summary where needed |
 | Velvet ServiceNote / conversation note | Velvet | Other apps only by minimum necessary reference/summary |
 | Velvet preferences / cautions / previous handling | Velvet | Velvet; AI Platform Core only as scoped execution input |
@@ -113,6 +130,116 @@ Use Communication Planner when the task requires:
 - prevention of cross-person context mixing
 
 A future migration may move SNS `MessageDraft` ownership into Communication Planner. Until then, both contracts are valid with the boundary above.
+
+## AI SNS Growth Office Marketing Company Data
+
+AI SNS Growth Office owns the AI-company marketing operation records used to plan and execute SNS marketing routes:
+
+- CEOInstruction
+- SecretaryBrief
+- CompanyTask
+- AgentTask
+- AgentOutput
+- ApprovalRequest
+- AppProject
+- MarketingRoute
+- RouteStage
+- Audience
+- Offer
+- DiagnosisReport
+- ContentPlan
+- ContentDraft
+- ImageConcept
+- MediaAsset
+- PublishPlan
+- XMediaUploadJob
+- XPublishJob
+- PerformanceSnapshot
+- ExternalKnowledgeReference
+
+These records are canonical for marketing-company operations only. They do not transfer ownership of Customer, Lead, Reservation, Payment, Sales, live DM conversation, SNS Planner draft state, AI usage ledger, or Platform Admin operational snapshots.
+
+## AI SNS Growth Office vs Growth Engine Business State
+
+Growth Engine owns the commercial source of truth:
+
+- Customer
+- Lead lifecycle
+- Reservation / Visit Schedule
+- Payment
+- Sales / Revenue
+- customer development
+- campaign business state where derived from Customer, Lead, Reservation, Payment or Sales
+
+AI SNS Growth Office may design a marketing route or campaign plan for an app such as Numeria Studio or Velvet. That route is not the canonical Growth Engine sales ledger, reservation workflow, payment state, or customer lifecycle state.
+
+Cross-app payloads should use references such as:
+
+- `workspaceId`
+- `userId`
+- `appProjectId`
+- `marketingRouteId`
+- `contentPlanId`
+- `contentDraftId`
+- `publishPlanId`
+- `traceId`
+- `correlationId`
+
+AI SNS Growth Office must not receive or persist Growth Engine Customer master records, canonical `paymentStatus`, canonical `salesAmount`, Payment records, Sales records, Stripe data, API keys, access tokens, or secret prompts unless a future explicit contract approves a minimum scoped subset.
+
+## AI SNS Growth Office vs SNS Planner
+
+SNS Planner remains canonical for SNS PostDraft and simple MessageDraft until an explicit future migration contract changes ownership.
+
+AI SNS Growth Office may:
+
+- create company tasks and content requirements
+- create ContentPlan / ContentDraft / ImageConcept / MediaAsset records for its own marketing-company workflow
+- hand off approved references to SNS Planner where a contracted PostDraft or MessageDraft workflow is still used
+
+AI SNS Growth Office must not silently take over SNS Planner PostDraft or MessageDraft source-of-truth records without an explicit migration contract.
+
+## AI SNS Growth Office vs Communication Planner
+
+Communication Planner remains canonical for:
+
+- live DM / 1-to-1 conversations
+- Conversation and Message
+- ConversationContext
+- ReplyDraft
+- SafetyCheck
+- send workflow
+- mis-send prevention
+
+AI SNS Growth Office may design a DM route or propose DM copy as part of marketing strategy, but live conversation context, safety checking, and channel sending belong to Communication Planner.
+
+AI SNS Growth Office must not receive full Communication Planner message bodies, full conversation histories, full ConversationContext bodies, channel access tokens, or private channel metadata by default.
+
+## AI SNS Growth Office PerformanceSnapshot Rule
+
+AI SNS Growth Office owns SNS marketing performance snapshots for its own route diagnosis and analytics.
+
+Recommended daily metrics:
+
+- `impressions`
+- `profile_visits`
+- `follows`
+- `engagement_count`
+- `cta_clicks`
+- `landing_page_visits`
+- `trial_or_signup_count`
+- `purchase_count`
+- `revenue`
+
+Missing metrics must be stored as `unknown`, not `0`.
+
+PerformanceSnapshot does not become the Growth Engine Sales / Revenue source of truth. Growth Engine remains canonical for sales and payment records.
+
+## AI SNS Growth Office External Intelligence Rule
+
+AI SNS Growth Office may store `ExternalKnowledgeReference` records that point to External Intelligence knowledge, decisions, rules, or evidence.
+
+External Intelligence remains a development knowledge layer. It must not become the operational source of truth for AI SNS Growth Office tasks, approvals, drafts, assets, publish jobs, performance snapshots, customer records, or sales records.
 
 ## Growth Engine Customer and Velvet Professional Memory
 
