@@ -159,6 +159,22 @@ AI SNS Growth Office owns the AI-company marketing operation records used to pla
 
 These records are canonical for marketing-company operations only. They do not transfer ownership of Customer, Lead, Reservation, Payment, Sales, live DM conversation, SNS Planner draft state, AI usage ledger, or Platform Admin operational snapshots.
 
+Current persistence status:
+
+- Current implementation uses seed repository plus in-process persistence helpers.
+- DB-backed repository persistence is not yet established.
+- These records are contractually AI SNS Growth Office-owned, but production source-of-truth readiness must remain pending until durable storage is implemented and verified.
+
+Current implemented owned surfaces:
+
+- Company task state
+- Approval request state
+- App project state
+- Media asset state
+- X media upload job preparation state
+- X publish queue preparation state
+- Performance snapshot state
+
 ## AI SNS Growth Office vs Growth Engine Business State
 
 Growth Engine owns the commercial source of truth:
