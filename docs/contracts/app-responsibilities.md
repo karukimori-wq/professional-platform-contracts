@@ -184,6 +184,7 @@ Initial scope:
 - Japanese-only posts
 - image-based X posts included in MVP
 - daily metric entry where possible
+- later expansion from internal use to customer support and individual-business SaaS
 
 ### Owns
 - CEOInstruction
@@ -252,6 +253,40 @@ AI SNS Growth Office may coordinate marketing work across Growth Engine, SNS Pla
 - External Intelligence remains a development knowledge layer and must not become an operational source of truth.
 
 Daily metrics may be stored in `PerformanceSnapshot`. Missing metrics must be represented as `unknown`, not `0`.
+
+### Current Implementation Status
+
+Current implementation is an MVP skeleton, not yet DB-backed:
+
+- Next.js App Router skeleton exists.
+- CEO dashboard is the first screen.
+- Approval Center, Image Assets, X Publish Queue, and Daily Metrics UI exist.
+- Client-side approval actions exist.
+- Testable API handler layer exists.
+- Seed repository persistence helpers exist.
+- API handler tests: 21 passed / 0 failed.
+
+Current public monitoring surface:
+
+- `GET /api/health`
+- `GET /api/version`
+- `GET /api/contracts/status`
+
+Current product API surface:
+
+- `GET /api/company-tasks`
+- `GET /api/approvals`
+- `POST /api/approvals/{approvalId}/approve`
+- `POST /api/approvals/{approvalId}/revision`
+- `GET /api/app-projects`
+- `GET /api/media-assets`
+- `GET /api/media-upload-jobs`
+- `POST /api/media-upload-jobs`
+- `GET /api/publish-jobs`
+- `POST /api/publish-jobs`
+- `GET /api/performance-snapshots`
+
+Production readiness must not be marked complete until DB-backed persistence is implemented and verified.
 
 ## Communication Planner
 
