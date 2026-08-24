@@ -146,6 +146,16 @@ Ownership rules:
 
 Purpose: The CEO issues a marketing instruction, Secretary AI organizes it, and AI employees execute scoped marketing tasks.
 
+Current implementation status:
+
+- CEO dashboard first screen exists.
+- Company task listing endpoint exists at `GET /api/company-tasks`.
+- Approval Center UI exists.
+- Approval listing endpoint exists at `GET /api/approvals`.
+- Approval action endpoints exist at `POST /api/approvals/{approvalId}/approve` and `POST /api/approvals/{approvalId}/revision`.
+- API handler tests report 21 passed / 0 failed.
+- Current persistence is seed repository plus in-process persistence, not DB-backed durable storage.
+
 Required APIs:
 
 - `AISNSCEOInstruction.Create`
@@ -195,6 +205,13 @@ Initial campaign scope:
 - First SNS: X
 - Language: Japanese
 - Image-attached posts are in MVP scope
+
+Current implementation status:
+
+- App project listing endpoint exists at `GET /api/app-projects`.
+- Image Assets UI exists.
+- Media asset listing endpoint exists at `GET /api/media-assets`.
+- Current content planning and route entities may be represented by seeded MVP state until DB-backed repository persistence is added.
 
 Required APIs:
 
@@ -254,6 +271,13 @@ Required approval stages:
 1. Strategy Approval: target, appeal, route, campaign policy, image policy.
 2. Draft Approval: X posts, threads, image proposals, profile copy, pinned post, DM route.
 3. Publish/Schedule Approval: X media upload, X post creation, scheduled publish, manual export.
+
+Current implementation status:
+
+- X Publish Queue UI exists.
+- X media upload job endpoints exist at `GET /api/media-upload-jobs` and `POST /api/media-upload-jobs`.
+- X publish job endpoints exist at `GET /api/publish-jobs` and `POST /api/publish-jobs`.
+- Client-side approval actions exist.
 
 Required APIs:
 
@@ -389,6 +413,12 @@ Ownership rules:
 
 Purpose: AI SNS Growth Office records daily SNS marketing performance for diagnosis and route improvement.
 
+Current implementation status:
+
+- Daily Metrics UI exists.
+- Performance snapshot listing endpoint exists at `GET /api/performance-snapshots`.
+- Metrics are current MVP operational data only until durable persistence is implemented.
+
 Required API:
 
 - `AISNSPerformanceSnapshot.Record`
@@ -415,7 +445,29 @@ Rules:
 - Growth Engine remains canonical for purchase, payment, sales, and revenue records.
 - AI SNS Growth Office may record marketing performance snapshots for route analysis, but it must not become the canonical sales ledger.
 
-## 11. Channel to Communication Planner Message Receive
+## 11. AI SNS Growth Office Monitoring Flow
+
+Purpose: Platform Admin monitors AI SNS Growth Office health, version, and contract status without storing AI SNS Growth Office operational data as canonical records.
+
+Required monitoring endpoints:
+
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/health`
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/version`
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/contracts/status`
+
+Current implementation status:
+
+- `GET /api/health` exists.
+- `GET /api/version` exists.
+- `GET /api/contracts/status` exists.
+
+Ownership rules:
+
+- Platform Admin stores operational snapshot only.
+- Platform Admin must not store CEOInstruction, SecretaryBrief, CompanyTask, AgentTask, AgentOutput, ApprovalRequest, AppProject, MarketingRoute, ContentDraft, MediaAsset, X job records, or PerformanceSnapshot as canonical data.
+- AI SNS Growth Office remains responsible for its own operational records, subject to the current persistence limitation.
+
+## 12. Channel to Communication Planner Message Receive
 
 Purpose: A ChannelAdapter receives an inbound message and Communication Planner links it to a person and conversation.
 
@@ -464,7 +516,7 @@ Ownership rules:
 - `contentRef` may point to Communication Planner-owned message content; cross-app events must not include full message bodies.
 - Growth Engine Customer may be linked by `customerId`, but Customer master remains Growth Engine.
 
-## 12. Communication Planner Reply and Safety Flow
+## 13. Communication Planner Reply and Safety Flow
 
 Purpose: Communication Planner generates or records a reply draft, checks it against person-scoped context, and sends only after safety confirmation.
 
@@ -511,7 +563,7 @@ Ownership rules:
 - AI Platform Core may generate candidates or safety assessments, but must not send messages.
 - Platform Admin may receive operational status only, not message bodies or full context bodies.
 
-## 13. Communication Planner Context, Promise and NextAction Flow
+## 14. Communication Planner Context, Promise and NextAction Flow
 
 Purpose: Communication Planner keeps person-centered conversation state current without mixing context between people.
 
@@ -546,7 +598,7 @@ Ownership rules:
 - Growth Engine owns business Follow-up, repeat/referral state and lifecycle decisions.
 - A Communication NextAction does not become Growth Engine Follow-up source of truth unless imported or referenced through an explicit contract.
 
-## 14. Communication Planner to AI Platform Core
+## 15. Communication Planner to AI Platform Core
 
 Purpose: Communication Planner records and uses AI-assisted communication tasks through AI Platform Core.
 
@@ -594,7 +646,7 @@ Ownership rules:
 - AI Platform Core must not own Conversation, Message, ConversationContext, ReplyDraft, SafetyCheck or send workflow.
 - Communication Planner selects minimum scoped input and applies user confirmation before mutation or send.
 
-## 15. SNS Planner to AI Platform Core
+## 16. SNS Planner to AI Platform Core
 
 Purpose: SNS Planner records AI-assisted draft generation as an AI Activity.
 
@@ -631,7 +683,7 @@ Ownership rules:
 - AI Platform Core records AI activity and usage only.
 - AI Platform Core must not own SNS post drafts, message drafts, or campaign/contact decisions.
 
-## 16. Numeria Studio to AI Platform Core
+## 17. Numeria Studio to AI Platform Core
 
 Purpose: Numeria Studio records AI-assisted report generation as an AI Activity.
 
@@ -674,7 +726,7 @@ MVP environment caveat:
 - ChatGPT Sites to ChatGPT Sites server-side fetch may return 522.
 - If direct AI Platform Core POST succeeds and payload validation passes, this flow may be marked `conditional_pass` for MVP.
 
-## 17. Growth Engine to AI Platform Core
+## 18. Growth Engine to AI Platform Core
 
 Purpose: Growth Engine records AI-assisted business recommendations, follow-up suggestions, or analysis as an AI Activity.
 
@@ -711,7 +763,7 @@ Ownership rules:
 - AI Platform Core records AI usage only.
 - Do not send customer personal information, payment details, sales amount, or `paymentStatus`.
 
-## 18. Growth Engine to Numeria Studio
+## 19. Growth Engine to Numeria Studio
 
 Purpose: Growth Engine starts a Numeria Studio appraisal session from a reservation or customer workflow.
 
@@ -756,7 +808,7 @@ Ownership rules:
 - `customerId` is a reference only.
 - Numeria Studio must not store a competing customer master, payment state, sales amount, or `paymentStatus`.
 
-## 19. Growth Engine to Velvet
+## 20. Growth Engine to Velvet
 
 Purpose: Growth Engine starts a Velvet professional visit or handoff from a customer, reservation, or visit schedule workflow.
 
@@ -803,7 +855,7 @@ Ownership rules:
 - Velvet must not create a competing Customer master, Payment source of truth, or Sales source of truth.
 - Growth Engine must not copy full Velvet professional notes or full professional memory bodies by default.
 
-## 20. Velvet Visit Completion and Memory Flow
+## 21. Velvet Visit Completion and Memory Flow
 
 Purpose: Velvet records professional visit outcomes and memory updates while keeping Growth Engine as the source of truth for customer and business data.
 
@@ -842,7 +894,7 @@ Ownership rules:
 - Velvet must not return full professional note bodies, full conversation histories, or full professional memory bodies to Growth Engine by default.
 - Velvet must not emit payment state, sales amount, Stripe data, or customer master records in events.
 
-## 21. Platform Admin to Apps
+## 22. Platform Admin to Apps
 
 Purpose: Platform Admin checks app health, version, contract status, and MVP connection test results.
 
