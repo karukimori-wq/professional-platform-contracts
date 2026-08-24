@@ -192,6 +192,31 @@ MVP HTTP mapping candidates:
 - `POST /api/app-projects/{appProjectId}/performance-snapshots` maps to `AISNSPerformanceSnapshot.Record`.
 - `POST /api/external-knowledge-references` maps to `AISNSExternalIntelligence.Reference`.
 
+Current implemented HTTP surface:
+
+- `GET /api/health` is the current health endpoint for monitoring.
+- `GET /api/version` is the current version endpoint for monitoring.
+- `GET /api/contracts/status` is the current contract-status endpoint for monitoring.
+- `GET /api/company-tasks` lists current company task state.
+- `GET /api/approvals` lists current approval requests.
+- `POST /api/approvals/{approvalId}/approve` completes an approval with an approved outcome.
+- `POST /api/approvals/{approvalId}/revision` completes an approval with a revision-required outcome.
+- `GET /api/app-projects` lists marketed app projects.
+- `GET /api/media-assets` lists media assets and approval state.
+- `GET /api/media-upload-jobs` lists X media upload job preparation state.
+- `POST /api/media-upload-jobs` creates an X media upload job after the required approval gate.
+- `GET /api/publish-jobs` lists X publish queue state.
+- `POST /api/publish-jobs` creates an X publish job after the required approval gate.
+- `GET /api/performance-snapshots` lists daily marketing performance snapshots.
+
+Current monitoring endpoints:
+
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/health`
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/version`
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/contracts/status`
+
+The current implementation uses seed repository plus in-process persistence. These endpoints are valid for MVP skeleton verification, but DB-backed persistence readiness is not yet established.
+
 ### AI SNS Growth Office Approval Constraints
 
 AI SNS Growth Office must enforce three approval stages:
