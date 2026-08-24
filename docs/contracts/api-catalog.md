@@ -130,6 +130,84 @@ Reply generation must require `personId` and `conversationId`. Context lookup mu
 
 Communication Planner APIs must not receive or return Customer master records, payment state, sales amounts, Stripe data, full Report bodies, full Velvet professional memory bodies, unrelated full conversation histories, API keys, access tokens, or secret prompts.
 
+## AI SNS Growth Office APIs
+
+| Operation | Caller | Response | Event |
+| --- | --- | --- | --- |
+| `AISNSCEOInstruction.Create` | CEO UI | `ceoInstructionId` | `ai_company.ceo_instruction.created.v1` |
+| `AISNSSecretaryBrief.Create` | Secretary AI, CEO UI | `secretaryBriefId` | `ai_company.secretary_brief.created.v1` |
+| `AISNSCompanyTask.Create` | Secretary AI | `companyTaskId` | `ai_company.company_task.created.v1` |
+| `AISNSCompanyTask.Complete` | Secretary AI, system workflow | `companyTaskId`, completion status | `ai_company.company_task.completed.v1` |
+| `AISNSAgentTask.Create` | Secretary AI | `agentTaskId` | `ai_company.agent_task.created.v1` |
+| `AISNSAgentTask.Complete` | AI employee workflow | `agentTaskId`, completion status | `ai_company.agent_task.completed.v1` |
+| `AISNSAgentOutput.Create` | AI employee workflow | `agentOutputId` | `ai_company.agent_output.created.v1` |
+| `AISNSApproval.Request` | Secretary AI, system workflow | `approvalRequestId` | `ai_company.approval.requested.v1` |
+| `AISNSApproval.Complete` | CEO UI | `approvalRequestId`, approval status | `ai_company.approval.completed.v1` |
+| `AISNSAppProject.Create` | CEO UI, Secretary AI | `appProjectId` | `ai_company.app_project.created.v1` |
+| `AISNSAudience.Create` | Customer Insight AI, CEO UI | `audienceId` | `ai_company.audience.created.v1` |
+| `AISNSOffer.Create` | Offer Design AI, CEO UI | `offerId` | `ai_company.offer.created.v1` |
+| `AISNSMarketingRoute.Create` | SNS Strategy AI, Funnel Design AI | `marketingRouteId` | `ai_company.marketing_route.created.v1` |
+| `AISNSDiagnosisReport.Create` | Analytics AI, Strategy AI | `diagnosisReportId` | `ai_company.diagnosis_report.created.v1` |
+| `AISNSContentPlan.Create` | Content Planning AI | `contentPlanId` | `ai_company.content_plan.created.v1` |
+| `AISNSContentDraft.Create` | Content Production AI | `contentDraftId` | `ai_company.content_draft.created.v1` |
+| `AISNSImageConcept.Create` | Image Direction AI | `imageConceptId` | `ai_company.image_concept.created.v1` |
+| `AISNSMediaAsset.Create` | Image Direction AI, CEO UI | `mediaAssetId` | `ai_company.media_asset.created.v1` |
+| `AISNSPublishPlan.Create` | Secretary AI, CEO UI | `publishPlanId` | `ai_company.publish_plan.created.v1` |
+| `AISNSXMediaUploadJob.Create` | system workflow after CEO approval | `xMediaUploadJobId` | `ai_company.x_media_upload_job.created.v1` |
+| `AISNSXMediaUploadJob.Complete` | X integration worker | `xMediaUploadJobId`, media id reference | `ai_company.x_media_upload_job.completed.v1` |
+| `AISNSXMediaUploadJob.Fail` | X integration worker | `xMediaUploadJobId`, failure status | `ai_company.x_media_upload_job.failed.v1` |
+| `AISNSXPublishJob.Create` | system workflow after CEO approval | `xPublishJobId` | `ai_company.x_publish_job.created.v1` |
+| `AISNSXPublishJob.Complete` | X integration worker | `xPublishJobId`, published reference | `ai_company.x_publish_job.completed.v1` |
+| `AISNSXPublishJob.Fail` | X integration worker | `xPublishJobId`, failure status | `ai_company.x_publish_job.failed.v1` |
+| `AISNSPerformanceSnapshot.Record` | CEO UI, analytics import workflow | `performanceSnapshotId` | `ai_company.performance_snapshot.recorded.v1` |
+| `AISNSExternalIntelligence.Reference` | Secretary AI, system workflow | `externalKnowledgeReferenceId` | `ai_company.external_intelligence.referenced.v1` |
+
+### AI SNS Growth Office HTTP Mapping
+
+MVP HTTP mapping candidates:
+
+- `POST /api/ceo/instructions` maps to `AISNSCEOInstruction.Create`.
+- `POST /api/secretary/briefs` maps to `AISNSSecretaryBrief.Create`.
+- `POST /api/company-tasks` maps to `AISNSCompanyTask.Create`.
+- `PATCH /api/company-tasks/{companyTaskId}` maps to `AISNSCompanyTask.Complete` where completion status is applied.
+- `POST /api/agent-tasks` maps to `AISNSAgentTask.Create`.
+- `PATCH /api/agent-tasks/{agentTaskId}` maps to `AISNSAgentTask.Complete` where completion status is applied.
+- `POST /api/agent-outputs` maps to `AISNSAgentOutput.Create`.
+- `POST /api/approvals` maps to `AISNSApproval.Request`.
+- `PATCH /api/approvals/{approvalRequestId}` maps to `AISNSApproval.Complete`.
+- `POST /api/app-projects` maps to `AISNSAppProject.Create`.
+- `POST /api/app-projects/{appProjectId}/audiences` maps to `AISNSAudience.Create`.
+- `POST /api/app-projects/{appProjectId}/offers` maps to `AISNSOffer.Create`.
+- `POST /api/app-projects/{appProjectId}/marketing-routes` maps to `AISNSMarketingRoute.Create`.
+- `POST /api/app-projects/{appProjectId}/diagnosis-reports` maps to `AISNSDiagnosisReport.Create`.
+- `POST /api/app-projects/{appProjectId}/content-plans` maps to `AISNSContentPlan.Create`.
+- `POST /api/app-projects/{appProjectId}/content-drafts` maps to `AISNSContentDraft.Create`.
+- `POST /api/app-projects/{appProjectId}/image-concepts` maps to `AISNSImageConcept.Create`.
+- `POST /api/app-projects/{appProjectId}/media-assets` maps to `AISNSMediaAsset.Create`.
+- `POST /api/app-projects/{appProjectId}/publish-plans` maps to `AISNSPublishPlan.Create`.
+- `POST /api/x/media-upload-jobs` maps to `AISNSXMediaUploadJob.Create`.
+- `PATCH /api/x/media-upload-jobs/{xMediaUploadJobId}` maps to upload completion/failure state.
+- `POST /api/x/publish-jobs` maps to `AISNSXPublishJob.Create`.
+- `PATCH /api/x/publish-jobs/{xPublishJobId}` maps to publish completion/failure state.
+- `POST /api/app-projects/{appProjectId}/performance-snapshots` maps to `AISNSPerformanceSnapshot.Record`.
+- `POST /api/external-knowledge-references` maps to `AISNSExternalIntelligence.Reference`.
+
+### AI SNS Growth Office Approval Constraints
+
+AI SNS Growth Office must enforce three approval stages:
+
+1. Strategy Approval: target, appeal, marketing route, campaign policy, image policy.
+2. Draft Approval: X posts, threads, image ideas, profile copy, pinned post, DM route.
+3. Publish/Schedule Approval: X media upload, X post, scheduled publish, manual export.
+
+Publishing, scheduling, final X media upload, and customer-facing finalization require CEO approval.
+
+X image publishing must keep `MediaAsset`, `XMediaUploadJob`, and `XPublishJob` separate. Failed upload or publish execution must not delete approved drafts, approved images, or schedule intent. Use `failed` or `manual_required`.
+
+Performance snapshot missing metrics must be represented as `unknown`, not `0`.
+
+AI SNS Growth Office APIs must not receive or return Customer master records, payment state, sales amounts, Stripe data, full Communication Planner message bodies, full ConversationContext bodies, full Velvet professional memory bodies, full Report bodies, API keys, access tokens, or secret prompts unless a future explicit contract approves a minimum scoped subset.
+
 ## AI Platform Core APIs
 
 | Operation | Caller | Response | Event |
