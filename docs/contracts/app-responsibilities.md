@@ -25,6 +25,16 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | SNS post draft | SNS Planner |
 | SNS post calendar | SNS Planner |
 | Simple SNS message draft | SNS Planner |
+| AI SNS marketing company orchestration | AI SNS Growth Office |
+| CEOInstruction / SecretaryBrief | AI SNS Growth Office |
+| CompanyTask / AgentTask / AgentOutput | AI SNS Growth Office |
+| Strategy / draft / publish approval workflow | AI SNS Growth Office |
+| AppProject / MarketingRoute / RouteStage | AI SNS Growth Office |
+| Audience / Offer / DiagnosisReport | AI SNS Growth Office |
+| ContentPlan / ContentDraft / ImageConcept / MediaAsset | AI SNS Growth Office |
+| PublishPlan / XMediaUploadJob / XPublishJob | AI SNS Growth Office |
+| SNS marketing PerformanceSnapshot | AI SNS Growth Office |
+| ExternalKnowledgeReference for marketing work | AI SNS Growth Office |
 | 1-to-1 Unified Inbox | Communication Planner |
 | Communication Person projection | Communication Planner |
 | Channel identity linking | Communication Planner |
@@ -158,6 +168,90 @@ SNS Planner receives posting or simple message-draft intent from Growth Engine o
 MessageDraft integrations are reference-first. SNS Planner may receive `workspaceId`, `userId`, `sourceApp`, `targetStudio`, `channel`, `purpose`, `audienceSegment`, `tone`, `cta`, and `inputRef`. It must not receive Customer master records, payment state, sales amounts, Stripe data, full professional notes, full report bodies, full conversation histories, API keys, access tokens, or secret prompts.
 
 Conversation-contextual replies, channel sending, and cross-person safety checks belong to Communication Planner.
+
+## AI SNS Growth Office
+
+AI SNS Growth Office owns AI-agent-operated SNS marketing company orchestration.
+
+The owner acts as CEO. Secretary AI structures CEO instructions, assigns work to AI employees/departments, and returns decision-ready outputs. The app designs the route from SNS attention to purchase, not isolated SNS posts.
+
+Initial scope:
+- owner-only use
+- marketing the owner's own apps
+- first campaign target: Numeria Studio
+- second campaign target: Velvet
+- first channel: X
+- Japanese-only posts
+- image-based X posts included in MVP
+- daily metric entry where possible
+
+### Owns
+- CEOInstruction
+- SecretaryBrief
+- CompanyTask
+- AgentTask
+- AgentOutput
+- ApprovalRequest
+- AppProject
+- MarketingRoute
+- RouteStage
+- Audience
+- Offer
+- DiagnosisReport
+- ContentPlan
+- ContentDraft
+- ImageConcept
+- MediaAsset
+- PublishPlan
+- XMediaUploadJob
+- XPublishJob
+- PerformanceSnapshot
+- ExternalKnowledgeReference
+
+### Must Not Own
+- Customer master
+- Lead lifecycle source of truth
+- Reservation / Visit Schedule source of truth
+- Payment source of truth
+- Sales / Revenue source of truth
+- SNS Planner PostDraft / MessageDraft source of truth until a future explicit migration contract is approved
+- Communication Planner Conversation / Message / ConversationContext source of truth
+- Communication Planner ReplyDraft / SafetyCheck / send workflow
+- AI Platform Core AI Activity / Usage / Capability source of truth
+- Platform Admin operational monitoring source of truth
+- External Intelligence development knowledge source of truth
+
+### Approval Rule
+
+AI SNS Growth Office uses three approval stages:
+
+1. Strategy Approval: target, appeal, marketing route, campaign policy, image policy.
+2. Draft Approval: X posts, threads, image ideas, profile copy, pinned post, DM route.
+3. Publish/Schedule Approval: X media upload, X post, scheduled publish, manual export.
+
+AI may create strategy proposals, drafts, image concepts, and image assets. AI must not publish, schedule, upload final media to X, or mark customer-facing output final without CEO approval.
+
+### X Publishing Rule
+
+X image publishing requires separate records:
+
+- `MediaAsset`: internal asset and provenance
+- `XMediaUploadJob`: X media upload execution state
+- `XPublishJob`: final X post or schedule execution state
+
+Failed upload or publish jobs must not delete approved drafts, images, or schedule intent. Failures must be represented as `failed` or `manual_required`.
+
+### Integration Role
+
+AI SNS Growth Office may coordinate marketing work across Growth Engine, SNS Planner, Communication Planner, AI Platform Core, Platform Admin, and External Intelligence.
+
+- Growth Engine remains canonical for campaign business state, reservations, payments, sales, customer development, and sales routes.
+- SNS Planner remains canonical for SNS PostDraft and simple MessageDraft until an explicit future migration contract moves those responsibilities.
+- Communication Planner remains canonical for live 1-to-1 conversations, DM context, reply safety, and channel sending.
+- AI Platform Core remains canonical for AI execution, AI Activity, AI Usage, and Capability.
+- External Intelligence remains a development knowledge layer and must not become an operational source of truth.
+
+Daily metrics may be stored in `PerformanceSnapshot`. Missing metrics must be represented as `unknown`, not `0`.
 
 ## Communication Planner
 
