@@ -29,6 +29,29 @@ Initial scope:
 - daily metric entry where possible
 - later expansion to fortune tellers, customer support, and SaaS
 
+## Current Implementation Status
+
+Current repository implementation status:
+
+- Next.js App Router skeleton exists.
+- CEO dashboard is the first screen.
+- Approval Center UI exists.
+- Image Assets UI exists.
+- X Publish Queue UI exists.
+- Daily Metrics UI exists.
+- Client-side approval actions exist.
+- Testable API handler layer exists.
+- Seed repository persistence helpers exist.
+- API handler tests: 21 passed / 0 failed.
+
+Current implementation limitations:
+
+- Production persistence is not DB-backed yet.
+- Current repository persistence is seed repository plus in-process persistence.
+- Build verification was not run in the reported scratch environment because `node_modules` was not installed there.
+
+The repository is therefore an implemented MVP skeleton with tested API handlers, but persistence readiness must remain non-production until DB-backed storage is added and verified.
+
 ## Required Contracts
 
 This repository must follow:
@@ -138,9 +161,32 @@ Missing metrics must be stored as `unknown`, not `0`.
 
 Minimum public/status endpoints:
 
-- `GET /health`
-- `GET /version`
-- `GET /contracts/status`
+- `GET /api/health`
+- `GET /api/version`
+- `GET /api/contracts/status`
+
+Minimum Platform Admin monitoring endpoints:
+
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/health`
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/version`
+- `GET {AI_SNS_GROWTH_OFFICE_BASE_URL}/api/contracts/status`
+
+Current implemented API surface:
+
+- `GET /api/health`
+- `GET /api/version`
+- `GET /api/contracts/status`
+- `GET /api/company-tasks`
+- `GET /api/approvals`
+- `POST /api/approvals/{approvalId}/approve`
+- `POST /api/approvals/{approvalId}/revision`
+- `GET /api/app-projects`
+- `GET /api/media-assets`
+- `GET /api/media-upload-jobs`
+- `POST /api/media-upload-jobs`
+- `GET /api/publish-jobs`
+- `POST /api/publish-jobs`
+- `GET /api/performance-snapshots`
 
 Minimum product API candidates:
 
