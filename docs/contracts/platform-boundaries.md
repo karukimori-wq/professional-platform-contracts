@@ -11,6 +11,7 @@ This document defines what each system owns and what it must not own.
 | Numeria Studio | Fortune-telling domain data, numerology and destiny-method workflows, appraisal reports, PDF previews | Growth strategy, customer master data, AI platform internals |
 | Velvet | Professional visits, professional memory, service notes, professional timeline, professional recall | Customer master, payment state, sales ledger, reservation source of truth, 1-to-1 channel inbox source of truth |
 | SNS Planner | Post drafts, hashtags, format variants, SNS-specific text adaptation, media idea generation, simple business-initiated message drafts | Sales judgement, target selection, campaign objectives, CTA strategy, live conversation context, channel sending, reply safety checks |
+| AI SNS Growth Office | AI-company SNS marketing orchestration, CEOInstruction, SecretaryBrief, CompanyTask, AgentTask, AgentOutput, ApprovalRequest, AppProject, MarketingRoute, RouteStage, Audience, Offer, DiagnosisReport, ContentPlan, ContentDraft, ImageConcept, MediaAsset, PublishPlan, XMediaUploadJob, XPublishJob, PerformanceSnapshot, ExternalKnowledgeReference | Customer master, payment state, sales ledger, live 1-to-1 conversations, reply safety checks, AI usage ledger, Platform Admin monitoring, External Intelligence knowledge source of truth |
 | Communication Planner | Unified Inbox, Communication Person projection, ChannelIdentity, Conversation, Message, ConversationContext, Topic, Promise, Communication NextAction, ReplyDraft, SafetyCheck, send workflow | Customer master, payment state, sales ledger, campaign strategy, SNS PostDraft, Professional App domain records, AI usage ledger |
 | AI Platform Core | Workspace, project, API keys, capabilities, activities, usage, prompts, tools, workflows, evaluators | Business workflow decisions, customer nurturing policy, report domain logic, conversation or memory source-of-truth ownership |
 | Platform Admin | Operational snapshots, health/status, contract monitoring, integration logs, error summaries | Customer master, message bodies, conversation context bodies, professional memory bodies, payment data, sales ledger |
@@ -91,6 +92,62 @@ SNS Planner is for 1-to-many public or semi-public content and simple business-i
 Communication Planner is for 1-to-1 conversations, live reply context, channel send and safety checks.
 
 If a workflow requires ConversationContext or send confirmation, it belongs to Communication Planner.
+
+## AI SNS Growth Office Rule
+
+AI SNS Growth Office is the AI-agent SNS marketing company orchestration layer.
+
+It owns:
+
+- CEO instructions and Secretary AI briefs
+- company-level and agent-level marketing tasks
+- AI employee outputs
+- three-stage CEO approval workflow
+- marketed app projects
+- audience, offer, diagnosis, marketing route and route stages
+- content plans, content drafts, image concepts and media assets
+- publish plans, X media upload jobs and X publish jobs
+- SNS marketing performance snapshots
+- references to External Intelligence knowledge used during marketing work
+
+It does not own:
+
+- Growth Engine Customer, Lead, Reservation, Payment, Sales or Revenue source of truth
+- SNS Planner PostDraft or MessageDraft source of truth until an explicit future migration contract is approved
+- Communication Planner live DM, Conversation, Message, ConversationContext, ReplyDraft, SafetyCheck or send workflow
+- AI Platform Core AI Activity, Usage or Capability source of truth
+- Platform Admin operational snapshot source of truth
+- External Intelligence development knowledge source of truth
+
+AI SNS Growth Office can create strategy, drafts, image concepts and media assets. It cannot publish, schedule, upload final media to X, or finalize customer-facing output without CEO approval.
+
+## AI SNS Growth Office and SNS Planner Future Consolidation Rule
+
+SNS Planner remains the current canonical owner of SNS PostDraft and simple MessageDraft.
+
+AI SNS Growth Office may eventually absorb SNS Planner functions, but that is not automatic. A future consolidation requires an explicit migration contract that defines:
+
+- which PostDraft and MessageDraft entities move
+- which APIs and events are deprecated or replaced
+- data migration and compatibility rules
+- Platform Admin monitoring changes
+- approval and publish/schedule gate preservation
+
+Until that contract exists, AI SNS Growth Office may hand off approved requirements or references to SNS Planner, but SNS Planner remains canonical for its existing draft records.
+
+## AI SNS Growth Office and Communication Planner Rule
+
+AI SNS Growth Office may design DM routes, DM copy, and customer movement strategy.
+
+Communication Planner remains canonical for actual 1-to-1 conversation state, person context, safety checks, and channel sending.
+
+If a workflow requires live ConversationContext, cross-person safety prevention, send confirmation, or channel dispatch, it belongs to Communication Planner.
+
+## AI SNS Growth Office and External Intelligence Rule
+
+AI SNS Growth Office may reference External Intelligence records as development knowledge, rules, decisions, or evidence.
+
+External Intelligence must not become the operational source of truth for AI SNS Growth Office tasks, approvals, drafts, media assets, publish jobs, performance snapshots, customers, payments, or sales.
 
 ## Business Plan Rule
 
