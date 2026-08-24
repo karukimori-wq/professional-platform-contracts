@@ -63,7 +63,7 @@ Velvet events must not include Customer master records, `paymentStatus`, `salesA
 | `communication.promise.created.v1` | Communication Planner | Growth Engine by reference where contracted | A communication promise was created from conversation context |
 | `communication.next_action.created.v1` | Communication Planner | Growth Engine by reference where contracted | A communication next action was created |
 | `communication.reply_draft.created.v1` | Communication Planner | Communication Planner, Platform Admin by operational reference | A conversation-contextual reply draft was created |
-| `communication.reply_safety.checked.v1` | Communication Planner, Platform Admin by operational reference | A reply safety check was completed |
+| `communication.reply_safety.checked.v1` | Communication Planner | Communication Planner, Platform Admin by operational reference | A reply safety check was completed |
 | `communication.person_channel.linked.v1` | Communication Planner | Growth Engine by reference where customer linkage exists | A channel identity was linked to a communication person |
 
 ### Communication Planner Event Constraints
