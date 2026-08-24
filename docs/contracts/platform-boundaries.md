@@ -121,6 +121,13 @@ It does not own:
 
 AI SNS Growth Office can create strategy, drafts, image concepts and media assets. It cannot publish, schedule, upload final media to X, or finalize customer-facing output without CEO approval.
 
+Current implementation boundary:
+
+- Current runtime is an MVP skeleton with Next.js App Router, CEO dashboard, Approval Center, Image Assets, X Publish Queue, and Daily Metrics UI.
+- Current persistence is seed repository plus in-process persistence. It must not be treated as durable production storage.
+- Platform Admin may monitor `GET /api/health`, `GET /api/version`, and `GET /api/contracts/status`.
+- Production readiness remains incomplete until durable DB-backed persistence and deployment verification are completed.
+
 ## AI SNS Growth Office and SNS Planner Future Consolidation Rule
 
 SNS Planner remains the current canonical owner of SNS PostDraft and simple MessageDraft.
