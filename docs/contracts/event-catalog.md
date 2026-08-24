@@ -63,7 +63,7 @@ Velvet events must not include Customer master records, `paymentStatus`, `salesA
 | `communication.promise.created.v1` | Communication Planner | Growth Engine by reference where contracted | A communication promise was created from conversation context |
 | `communication.next_action.created.v1` | Communication Planner | Growth Engine by reference where contracted | A communication next action was created |
 | `communication.reply_draft.created.v1` | Communication Planner | Communication Planner, Platform Admin by operational reference | A conversation-contextual reply draft was created |
-| `communication.reply_safety.checked.v1` | Communication Planner | Communication Planner, Platform Admin by operational reference | A reply safety check was completed |
+| `communication.reply_safety.checked.v1` | Communication Planner, Platform Admin by operational reference | A reply safety check was completed |
 | `communication.person_channel.linked.v1` | Communication Planner | Growth Engine by reference where customer linkage exists | A channel identity was linked to a communication person |
 
 ### Communication Planner Event Constraints
@@ -93,6 +93,79 @@ Allowed cross-app payload is reference-first:
 Communication Planner events must not include Customer master records, payment state, sales amounts, Stripe data, full message bodies, full conversation histories, full ConversationContext bodies, full Velvet professional memory bodies, full Report bodies, API keys, access tokens, or secret prompts.
 
 `communication.message.sent.v1` must be emitted only after SafetyCheck is completed or explicitly accepted by the user according to the send contract.
+
+## AI SNS Growth Office Events
+
+| Event | Publisher | Consumers | Purpose |
+| --- | --- | --- | --- |
+| `ai_company.ceo_instruction.created.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | A CEO instruction was created |
+| `ai_company.secretary_brief.created.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | A Secretary AI brief was created |
+| `ai_company.company_task.created.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | A company-level task was created |
+| `ai_company.company_task.completed.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | A company-level task was completed |
+| `ai_company.agent_task.created.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | An AI employee task was created |
+| `ai_company.agent_task.completed.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | An AI employee task was completed |
+| `ai_company.agent_output.created.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | An AI employee output was created |
+| `ai_company.approval.requested.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | CEO approval was requested |
+| `ai_company.approval.completed.v1` | AI SNS Growth Office | AI SNS Growth Office, Platform Admin | CEO approval was completed |
+| `ai_company.app_project.created.v1` | AI SNS Growth Office | Growth Engine by reference where contracted, Platform Admin | A marketed app project was created |
+| `ai_company.offer.created.v1` | AI SNS Growth Office | Growth Engine by reference where contracted, Platform Admin | A marketing offer was created |
+| `ai_company.audience.created.v1` | AI SNS Growth Office | Growth Engine by reference where contracted, Platform Admin | A target audience was created |
+| `ai_company.marketing_route.created.v1` | AI SNS Growth Office | Growth Engine by reference where contracted, Platform Admin | A marketing route was created |
+| `ai_company.content_plan.created.v1` | AI SNS Growth Office | SNS Planner by reference where contracted, Platform Admin | A content plan was created |
+| `ai_company.content_draft.created.v1` | AI SNS Growth Office | SNS Planner by reference where contracted, Platform Admin | A content draft was created |
+| `ai_company.image_concept.created.v1` | AI SNS Growth Office | SNS Planner by reference where contracted, Platform Admin | An image concept was created |
+| `ai_company.media_asset.created.v1` | AI SNS Growth Office | SNS Planner by reference where contracted, Platform Admin | A media asset was created |
+| `ai_company.publish_plan.created.v1` | AI SNS Growth Office | SNS Planner by reference where contracted, Platform Admin | A publish plan was created |
+| `ai_company.x_media_upload_job.created.v1` | AI SNS Growth Office | Platform Admin | An X media upload job was created after CEO approval |
+| `ai_company.x_media_upload_job.completed.v1` | AI SNS Growth Office | Platform Admin | An X media upload job completed |
+| `ai_company.x_media_upload_job.failed.v1` | AI SNS Growth Office | Platform Admin | An X media upload job failed |
+| `ai_company.x_publish_job.created.v1` | AI SNS Growth Office | Platform Admin | An X publish job was created after CEO approval |
+| `ai_company.x_publish_job.completed.v1` | AI SNS Growth Office | Platform Admin | An X publish job completed |
+| `ai_company.x_publish_job.failed.v1` | AI SNS Growth Office | Platform Admin | An X publish job failed |
+| `ai_company.performance_snapshot.recorded.v1` | AI SNS Growth Office | Growth Engine by summary/reference where contracted, Platform Admin | A daily SNS marketing performance snapshot was recorded |
+| `ai_company.diagnosis_report.created.v1` | AI SNS Growth Office | Growth Engine by reference where contracted, Platform Admin | A route or funnel diagnosis report was created |
+| `ai_company.external_intelligence.referenced.v1` | AI SNS Growth Office | External Intelligence by referenced record, Platform Admin | External Intelligence knowledge was referenced |
+
+### AI SNS Growth Office Event Constraints
+
+AI SNS Growth Office events are stable contracts for AI-company SNS marketing orchestration.
+
+Allowed cross-app payload is reference-first:
+- `workspaceId`
+- `userId`
+- `ceoInstructionId`
+- `secretaryBriefId`
+- `companyTaskId`
+- `agentTaskId`
+- `agentOutputId`
+- `approvalRequestId`
+- `appProjectId`
+- `marketingRouteId`
+- `routeStageId`
+- `audienceId`
+- `offerId`
+- `diagnosisReportId`
+- `contentPlanId`
+- `contentDraftId`
+- `imageConceptId`
+- `mediaAssetId`
+- `publishPlanId`
+- `xMediaUploadJobId`
+- `xPublishJobId`
+- `performanceSnapshotId`
+- `externalKnowledgeReferenceId`
+- `approvalStage`
+- `channel`
+- `status`
+- `traceId`
+- `correlationId`
+- `eventId`
+
+AI SNS Growth Office events must not include Customer master records, payment state, sales amounts, Stripe data, full Communication Planner message bodies, full ConversationContext bodies, full Velvet professional memory bodies, full Report bodies, API keys, access tokens, or secret prompts.
+
+X image publishing events must keep `MediaAsset`, `XMediaUploadJob`, and `XPublishJob` distinct. Failed upload or publish jobs must preserve approved drafts, approved image assets, and schedule intent by marking execution as `failed` or `manual_required`.
+
+Performance snapshot events must treat missing metrics as `unknown`, not `0`.
 
 ## AI Platform Core Events
 
