@@ -211,6 +211,7 @@ Platform Admin may store operational snapshots for:
 - cross-app API logs
 - event logs
 - error summaries
+- AI Platform Core production readiness checks
 
 Minimum Platform Admin log fields:
 
@@ -228,6 +229,21 @@ Minimum Platform Admin log fields:
   "checkedAt": "2026-08-07T00:00:00.000Z"
 }
 ```
+
+For AI Platform Core, Platform Admin should monitor at least:
+
+- `GET /health`
+- `GET /version`
+- `GET /contracts/status`
+- `GET /api/persistence/status`
+
+Optional owner/test-gated check:
+
+- `POST /api/persistence/roundtrip`
+
+AI Platform Core monitoring rows may include runtime, persistence driver, D1 reachability, database-backed persistence readiness, Activity/Usage E2E status, workspace/user isolation status, current phase, status, statusCode, errorCode, traceId, correlationId, requestId, checkedAt, and issues.
+
+Monitoring rows must not include provider API keys, access tokens, secret prompts, prompt bodies, customer records, conversation bodies, report bodies, professional memory bodies, payment state, or sales amounts.
 
 Platform Admin must not store canonical business records.
 
