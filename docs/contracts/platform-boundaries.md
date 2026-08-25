@@ -168,6 +168,14 @@ The user experience may appear as one application, but responsibility remains sp
 
 AI Platform Core provides the AI execution platform.
 
+Current production infrastructure:
+- Runtime: Cloudflare Workers
+- Persistence: Cloudflare D1
+- Cloudflare migration status: `completed`
+- Production hardening status: in progress
+
+The Cloudflare/D1 migration does not move business or professional source-of-truth data into AI Platform Core.
+
 It does not decide:
 
 - Which customer should be contacted
@@ -178,3 +186,7 @@ It does not decide:
 - Whether a reply should be sent
 
 Those decisions belong to Growth Engine, Communication Planner, or the Professional Studio depending on domain responsibility.
+
+AI Platform Core may persist AI Activity, AI Usage, Activity Outcome, Activity Feedback, Prompt Template, Runtime Storage, and Event infrastructure records.
+
+It must not persist Customer, Reservation, Payment, Sales, SNS PostDraft, SNS MessageDraft, Communication Conversation/Message, Numeria Report, or Velvet Professional Memory as canonical records.
