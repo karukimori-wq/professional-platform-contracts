@@ -46,7 +46,7 @@ evt_...
 
 ## Required API Log Fields
 
-Every cross-app API call should create one outbound log in the caller and one inbound log in the receiver.
+Every cross-app API call should to create one outbound log in the caller and one inbound log in the receiver.
 
 ### Outbound API Log
 
@@ -212,6 +212,9 @@ Platform Admin may store operational snapshots for:
 - event logs
 - error summaries
 - AI Platform Core production readiness checks
+- Platform Admin D1 persistence and roundtrip readiness checks
+- Communication Planner production readiness checks
+- Service Binding monitoring results for Cloudflare-hosted internal apps
 
 Minimum Platform Admin log fields:
 
@@ -242,6 +245,29 @@ Optional owner/test-gated check:
 - `POST /api/persistence/roundtrip`
 
 AI Platform Core monitoring rows may include runtime, persistence driver, D1 reachability, database-backed persistence readiness, Activity/Usage E2E status, workspace/user isolation status, current phase, status, statusCode, errorCode, traceId, correlationId, requestId, checkedAt, and issues.
+
+For Platform Admin itself, Platform Admin should monitor at least:
+
+- `GET /health`
+- `GET /version`
+- `GET /contracts/status`
+- `GET /api/persistence/status`
+- `POST /api/persistence/roundtrip`
+
+For Cloudflare Worker-to-Worker monitoring, Platform Admin may use Service Binding as the internal transport.
+
+Current Service Binding targets:
+
+- `AI_PLATFORM_CORE_SERVICE`
+- `COMMUNICATION_PLANNER_SERVICE`
+
+Monitoring rows should include the transport used, such as `service_binding` or `public_http`.
+
+Platform Admin may normalize flat contract responses and API envelope responses shaped as `{ "status": "...", "data": { ... } }` into the common monitoring model.
+
+This normalization is a Platform Admin adapter. A shared machine-readable readiness envelope should be standardized in contracts before requiring all apps to change response shape.
+
+Old preview snapshots must be marked historical or cleaned up when a Cloudflare Production endpoint becomes canonical.
 
 Monitoring rows must not include provider API keys, access tokens, secret prompts, prompt bodies, customer records, conversation bodies, report bodies, professional memory bodies, payment state, or sales amounts.
 
@@ -291,4 +317,4 @@ Before production:
 3. Log inbound API calls in the receiver.
 4. Record event publication logs for stable events.
 5. Surface logs and errors in Platform Admin.
-6. Add retry policy only after logs show the common failure modes.
+6. Add retry policy only after logs and errors show the common failure modes.

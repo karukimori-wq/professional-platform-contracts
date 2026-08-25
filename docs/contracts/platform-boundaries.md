@@ -14,7 +14,7 @@ This document defines what each system owns and what it must not own.
 | AI SNS Growth Office | AI-company SNS marketing orchestration, CEOInstruction, SecretaryBrief, CompanyTask, AgentTask, AgentOutput, ApprovalRequest, AppProject, MarketingRoute, RouteStage, Audience, Offer, DiagnosisReport, ContentPlan, ContentDraft, ImageConcept, MediaAsset, PublishPlan, XMediaUploadJob, XPublishJob, PerformanceSnapshot, ExternalKnowledgeReference | Customer master, payment state, sales ledger, live 1-to-1 conversations, reply safety checks, AI usage ledger, Platform Admin monitoring, External Intelligence knowledge source of truth |
 | Communication Planner | Unified Inbox, Communication Person projection, ChannelIdentity, Conversation, Message, ConversationContext, Topic, Promise, Communication NextAction, ReplyDraft, SafetyCheck, send workflow | Customer master, payment state, sales ledger, campaign strategy, SNS PostDraft, Professional App domain records, AI usage ledger |
 | AI Platform Core | Workspace, project, API keys, capabilities, activities, usage, prompts, tools, workflows, evaluators | Business workflow decisions, customer nurturing policy, report domain logic, conversation or memory source-of-truth ownership |
-| Platform Admin | Operational snapshots, health/status, contract monitoring, integration logs, error summaries | Customer master, message bodies, conversation context bodies, professional memory bodies, payment data, sales ledger |
+| Platform Admin | Operational snapshots, health/status, contract monitoring, integration logs, error summaries, monitoring/readiness projections | Customer master, message bodies, conversation context bodies, professional memory bodies, payment data, sales ledger, AI usage ledger, SNS draft source of truth |
 | Event Engine | Publishing and delivering state-change events | Synchronous UI operations, source-of-truth ownership |
 
 ## Integration Rule
@@ -190,3 +190,38 @@ Those decisions belong to Growth Engine, Communication Planner, or the Professio
 AI Platform Core may persist AI Activity, AI Usage, Activity Outcome, Activity Feedback, Prompt Template, Runtime Storage, and Event infrastructure records.
 
 It must not persist Customer, Reservation, Payment, Sales, SNS PostDraft, SNS MessageDraft, Communication Conversation/Message, Numeria Report, or Velvet Professional Memory as canonical records.
+
+## Platform Admin Cloudflare Rule
+
+Platform Admin provides cross-app operational monitoring.
+
+Current production infrastructure:
+
+- Runtime: Cloudflare Workers
+- Framework: Next.js 16 + OpenNext Cloudflare
+- Persistence: Cloudflare D1 `platform-admin`
+- Cloudflare migration status: `completed`
+- Current phase: `production_hardening`
+
+Platform Admin D1 may persist operational projections only:
+
+- app connection snapshots
+- integration logs
+- contract status snapshots
+- workspace operational summary
+- monitoring and readiness information
+
+It must not store canonical Customer, Lead, Reservation, Payment, Sales, Report, Conversation, Message, PostDraft, MessageDraft, AI Usage, AI Activity, Velvet Professional Memory, or AI SNS Growth Office operational records as source-of-truth data.
+
+When Platform Admin and a target app both run inside Cloudflare, Service Binding is the standard candidate monitoring transport.
+
+Current Service Binding targets:
+
+- `AI_PLATFORM_CORE_SERVICE`
+- `COMMUNICATION_PLANNER_SERVICE`
+
+Public HTTP monitoring remains valid for apps that are not Cloudflare-hosted or do not have a Service Binding configured. Monitoring records should include the transport used.
+
+Platform Admin may normalize flat `/contracts/status` responses and `{ status, data: { ... } }` API envelope responses. This does not define a Platform Admin-specific response shape for all apps.
+
+Human operator authentication / authorization remains a next hardening item. `PLATFORM_ADMIN_API_TOKEN` and `x-platform-admin-token` are API-to-API controls, not the final human operator auth contract.
