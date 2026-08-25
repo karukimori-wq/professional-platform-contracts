@@ -341,6 +341,15 @@ Communication Planner must not send or expose Customer master records, `paymentS
 
 AI Platform Core owns common AI runtime and usage tracking.
 
+Current infrastructure status:
+- Runtime: Cloudflare Workers
+- Persistence: Cloudflare D1
+- Production URL: `https://ai-platform-core.karukimori.workers.dev`
+- Cloudflare migration status: `completed`
+- Current phase: `production_hardening`
+
+Cloudflare/D1 migration completion does not change AI Platform Core's responsibility boundary.
+
 ### Owns
 - Activity
 - Usage
@@ -349,21 +358,31 @@ AI Platform Core owns common AI runtime and usage tracking.
 - Tool/Workflow registry
 - AI execution logs
 - API key and runtime configuration for AI calls
+- Provider abstraction
+- Activity Outcome
+- Activity Feedback
+- Runtime Storage
+- AI Event infrastructure
 
 ### Must Not Own
 - Customer master
+- Lead lifecycle source of truth
 - Communication Planner conversation records as canonical data
 - Communication Planner send workflow
 - Velvet professional memory as canonical business data
 - Reservation workflow
 - Payment workflow
 - Sales state
+- SNS PostDraft / MessageDraft source of truth
 - Appraisal business logic
+- Numeria Report source of truth
 - SNS business strategy
 - Public site publishing
 
 ### Integration Role
 AI Platform Core is called by apps when they need AI execution. For Communication Planner, AI execution is user-triggered or workflow-triggered and receives only the minimum scoped input required.
+
+Production verification has confirmed D1-backed Activity and Usage persistence, D1 roundtrip, and baseline workspace/user isolation. Formal authentication/authorization remains the next hardening priority and must not be treated as completed solely because `x-client-id` scoped reads pass E2E.
 
 ## Velvet
 
