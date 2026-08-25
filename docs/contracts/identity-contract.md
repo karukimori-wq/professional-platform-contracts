@@ -39,6 +39,20 @@ The MVP identity rule remains `workspaceId + userId / ownerUserId`.
 
 The current `x-client-id` scoped-read check is an implementation-level baseline, not the final formal authentication/authorization contract. AI Platform Core must still implement and verify formal auth boundaries before this area is marked complete.
 
+## Platform Admin Production Identity Status
+
+Platform Admin cross-app monitoring must continue to use the MVP identity rule:
+
+- `workspaceId`
+- `userId`
+- `ownerUserId` where workspace ownership is relevant
+
+`professionalId` is not required for Platform Admin monitoring.
+
+Platform Admin may use `PLATFORM_ADMIN_API_TOKEN` with the `x-platform-admin-token` header for management API-to-API access.
+
+This is not the final human operator authentication / authorization contract. A Cloudflare-compatible operator auth design remains a Platform Admin production hardening item.
+
 ## External IDs
 
 External service IDs must be namespaced.
