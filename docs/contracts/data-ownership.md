@@ -60,6 +60,10 @@ This document defines canonical ownership for shared data.
 | Capability | AI Platform Core | All apps |
 | AI activity | AI Platform Core | All apps |
 | AI usage | AI Platform Core | All apps |
+| AI Activity Outcome | AI Platform Core | Calling app by reference/status |
+| AI Activity Feedback | AI Platform Core | Calling app by reference/status |
+| AI Prompt Template | AI Platform Core | Product runtimes by rendered output only |
+| AI Runtime Storage | AI Platform Core | AI Platform Core only unless explicit contract exists |
 
 ## Growth Engine Customer and Communication Planner Person
 
@@ -404,6 +408,7 @@ Not allowed duplication:
 - independent AI usage ledger in application repositories
 - independent business lifecycle state in SNS Planner, Communication Planner or Velvet
 - AI Platform Core storing Communication Planner conversation history or Velvet professional memory as its canonical business record
+- AI Platform Core storing Customer, Reservation, Payment, Sales, SNS PostDraft, SNS MessageDraft, Numeria Report, Communication Conversation/Message, or Velvet Professional Memory as canonical records
 
 ## Snapshot Rule
 
