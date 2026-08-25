@@ -182,6 +182,12 @@ Performance snapshot events must treat missing metrics as `unknown`, not `0`.
 | `ai.activity.failed.v1` | AI Platform Core | Calling app | AI activity failed |
 | `ai.usage.recorded.v1` | AI Platform Core | Growth Engine | AI usage was recorded |
 
+### AI Platform Core Event Readiness
+
+AI Platform Core now runs on Cloudflare Workers + D1 in production.
+
+Production D1 persistence has been verified for Activity and Usage. Event Store / Event Dispatcher production persistence and observability hardening remain next work; do not mark all AI event infrastructure complete solely from Activity and Usage E2E.
+
 ## SNS Planner Events
 
 | Event | Publisher | Consumers | Purpose |
