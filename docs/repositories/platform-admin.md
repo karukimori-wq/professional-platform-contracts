@@ -4,6 +4,18 @@ Platform Admin is the operator-only control surface for the Professional Platfor
 
 It is not a customer-facing app, Professional App workflow app, SNS editor, payment processor, or AI runtime. It exists to monitor app health, contract alignment, workspace state, integration logs, and operational errors.
 
+## Production Runtime
+
+- Repository: `karukimori-wq/Platform-Admin`
+- Production URL: `https://platform-admin.karukimori.workers.dev`
+- Runtime: Cloudflare Workers
+- Framework: Next.js 16 + OpenNext Cloudflare
+- Persistence: Cloudflare D1 `platform-admin`
+- Cloudflare migration status: `completed`
+- Current phase: `production_hardening`
+
+The Cloudflare migration is complete. Platform Admin itself is not product-complete; canonical monitoring cleanup, human operator authentication/authorization, and cross-app observability hardening remain active work.
+
 ## Must Implement
 
 - App connection registry
@@ -20,6 +32,10 @@ It is not a customer-facing app, Professional App workflow app, SNS editor, paym
 - Velvet Professional App API/event monitoring
 - Growth Engine -> Velvet handoff monitoring
 - SNS Planner PostDraft / MessageDraft metadata monitoring
+- Cloudflare D1-backed operational snapshot persistence
+- Platform Admin persistence and roundtrip readiness checks
+- Service Binding monitoring for Cloudflare-hosted internal apps where available
+- Cross-app contract response normalization for flat and enveloped responses
 
 ## Must Not Implement
 
@@ -37,11 +53,43 @@ It is not a customer-facing app, Professional App workflow app, SNS editor, paym
 
 Platform Admin monitors these apps:
 
-1. Growth Engine
-2. Numeria Studio
-3. Velvet
-4. SNS Planner
-5. AI Platform Core
+1. Platform Admin
+2. Growth Engine
+3. Numeria Studio
+4. Velvet
+5. SNS Planner
+6. Communication Planner
+7. AI Platform Core
+
+Current Production monitoring state:
+
+- Platform Admin: health, version, contracts, persistence status, roundtrip
+- AI Platform Core: Cloudflare Production monitoring via Service Binding
+- Communication Planner: Cloudflare Production monitoring via Service Binding
+- Growth Engine: current Production endpoint monitoring
+- SNS Planner: current endpoint monitoring
+- Numeria Studio: current endpoint monitoring
+- Velvet: endpoint monitoring must be updated after its current Production or Cloudflare target is finalized
+
+## Cloudflare Service Binding Monitoring
+
+When Platform Admin monitors another Worker inside the same Cloudflare environment, Service Binding is the standard candidate transport.
+
+Current Service Bindings:
+
+- `AI_PLATFORM_CORE_SERVICE` -> AI Platform Core
+- `COMMUNICATION_PLANNER_SERVICE` -> Communication Planner
+
+Monitoring rows must record the transport used, such as `service_binding` or `public_http`, so stale public-preview snapshots are not confused with canonical Production topology.
+
+## Contract Response Normalization
+
+Platform Admin may normalize both of these shapes into its common monitoring model:
+
+- flat contract response fields
+- `{ "status": "...", "data": { ... } }` API envelope responses
+
+This is a monitoring adapter. Other apps do not need to adopt a Platform Admin-specific response shape unless a shared machine-readable readiness envelope is later approved in the contracts.
 
 ## Velvet Monitoring
 
@@ -98,6 +146,9 @@ Examples:
 - public site status snapshot
 - integration test result
 - API/event contract metadata
+- persistence/readiness status
+- contract status snapshot
+- cross-app monitoring snapshot
 
 These snapshots are not canonical business data.
 
@@ -108,6 +159,25 @@ Canonical ownership remains:
 - Velvet: professional Visit, professional Memory, service notes, professional Timeline, Gift/Relationship memory
 - SNS Planner: PostDraft and MessageDraft
 - AI Platform Core: Activity, Usage, Capability, AI execution logs
+
+## Current Production Readiness
+
+Completed:
+
+- Cloudflare infrastructure migration
+- D1 base persistence readiness
+- D1 roundtrip
+- Cross-app monitoring baseline
+- AI Platform Core Service Binding monitoring
+- Communication Planner Service Binding monitoring
+- Monitoring snapshot D1 E2E
+
+Next:
+
+- canonical monitoring data and old preview snapshot cleanup
+- human operator authentication / authorization
+- remaining app Cloudflare monitoring migration
+- trace/correlation/request/event observability hardening
 
 ## MVP Screens
 
