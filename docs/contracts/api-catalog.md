@@ -235,6 +235,20 @@ AI SNS Growth Office APIs must not receive or return Customer master records, pa
 
 ## AI Platform Core APIs
 
+Production base URL:
+
+`https://ai-platform-core.karukimori.workers.dev`
+
+Minimum production readiness endpoints:
+
+| Endpoint | Purpose | Status |
+| --- | --- | --- |
+| `GET /health` | Worker health | Production verified |
+| `GET /version` | App and contract version | Production verified |
+| `GET /contracts/status` | Contract status | Production verified |
+| `GET /api/persistence/status` | D1 persistence status | Production verified |
+| `POST /api/persistence/roundtrip` | D1 write/read roundtrip | Production verified |
+
 | Operation | Caller | Response | Event |
 | --- | --- | --- | --- |
 | `Capability.Register` | Product repository | `capabilityId` | None |
@@ -251,6 +265,10 @@ AI SNS Growth Office APIs must not receive or return Customer master records, pa
 | `CommunicationReply.Generate` | Communication Planner | Reply draft candidates only; no send | `ai.activity.created.v1` / completion events |
 | `CommunicationReply.SafetyCheck` | Communication Planner | Safety assessment only; no send | `ai.activity.created.v1` / completion events |
 | `CommunicationIntent.Classify` | Communication Planner | Intent classification only; no Communication mutation | `ai.activity.created.v1` / completion events |
+
+Production D1 persistence has been verified for Activity and Usage. Outcome, Feedback, Prompt Template, Event Store, and Event Dispatcher production E2E remain next hardening work.
+
+The current scoped-read E2E may use `x-client-id`, but this is not the final formal authentication contract.
 
 ### Velvet AI contract constraints
 
