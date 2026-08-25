@@ -1,6 +1,6 @@
 # Professional Platform Infrastructure and Migration Matrix
 
-Status date: 2026-08-23
+Status date: 2026-08-25
 
 ## Purpose
 
@@ -41,7 +41,7 @@ Unknown values must not be inferred from older notes. Check the target repositor
 | Numeria Studio | ChatGPT Sites | not_evaluated | ready | mvp_ready_with_environment_warning | not_evaluated | mvp_operations | Owns Session and Report. Must not own Customer, Payment, or Sales. |
 | SNS Planner | ChatGPT Sites | not_evaluated | ready | mvp_ready_with_ai_core_environment_warning | not_evaluated | postdraft_and_messagedraft_mvp | Owns PostDraft and MessageDraft. One-to-many content remains separate from Communication Planner. |
 | Communication Planner | Cloudflare Workers | Cloudflare D1 | ready | mvp_completed | completed | real_provider_integration | Cloudflare migration completed. Current provider mode is dry-run until real provider readiness gates pass. |
-| AI Platform Core | ChatGPT Sites preview | not_evaluated | ready | mvp_ready | not_evaluated | ai_activity_usage_capability | Owns AI Activity, AI Usage, AI Capability. |
+| AI Platform Core | Cloudflare Workers | Cloudflare D1 | ready | production_hardening | completed | ai_core_production_hardening | Cloudflare/D1 migration completed. Activity and Usage production D1 E2E complete; formal auth and additional E2E hardening remain next. |
 | Platform Admin | ChatGPT Sites preview | Operational snapshots only | ready | mvp_ready | not_evaluated | monitoring | Must not own business or professional canonical records. |
 | Velvet | Vercel | production_verification_pending | ready | needs_persistence_verification | in_progress | professional_memory_mvp | Owns Velvet Professional Memory, Visit, Note, Timeline, NextAction. Must not own Customer, Reservation, Payment, or Sales. |
 
@@ -70,9 +70,51 @@ Verified production persistence state:
 - `databaseBackedPersistenceReady`: `true`
 - `roundtripReady`: `true`
 
+## AI Platform Core Status
+
+AI Platform Core has completed its Cloudflare infrastructure migration.
+
+Detailed result:
+
+- `docs/release-readiness/ai-platform-core-cloudflare-migration-result.md`
+
+Current AI Platform Core state:
+
+- Repository: `karukimori-wq/ai-platform-core`
+- Production URL: `https://ai-platform-core.karukimori.workers.dev`
+- Runtime: Cloudflare Workers
+- Persistence: Cloudflare D1
+- D1 database: `ai-platform-core`
+- Cloudflare migration status: completed
+- Current phase: production_hardening
+
+Verified production persistence state:
+
+- `driver`: `d1`
+- `d1Configured`: `true`
+- `d1Reachable`: `true`
+- `databaseBackedPersistenceReady`: `true`
+- `roundtripReady`: `true`
+
+Verified production E2E:
+
+- Activity production execution and persistence
+- Activity production retrieval
+- Usage production persistence and retrieval
+- Echo Provider execution
+- different `workspaceId` / `userId` execution
+- cross-scope Activity retrieval rejection
+
+Remaining AI Platform Core hardening:
+
+- formal authentication / authorization
+- Outcome / Feedback / Prompt Template production D1 E2E
+- Event Store / Event Dispatcher / stable events / observability production hardening
+- cross-app production integration hardening
+
 ## Cloudflare Reference Architecture Rule
 
-Communication Planner proves that Cloudflare Workers + D1 can support a production Professional Platform app.
+Communication Planner and AI Platform Core prove that Cloudflare Workers + D1 can support production Professional Platform apps.
 
 This does not mean every app should automatically move to Cloudflare.
 
@@ -206,6 +248,12 @@ Owns:
 - AI Activity
 - AI Usage
 - AI Capability
+- AI Runtime
+- Provider abstraction
+- Prompt Template
+- Runtime Storage
+- Activity Outcome / Feedback
+- Event infrastructure
 
 Must not own:
 
