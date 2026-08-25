@@ -40,17 +40,23 @@ Current repository implementation status:
 - X Publish Queue UI exists.
 - Daily Metrics UI exists.
 - Client-side approval actions exist.
-- Testable API handler layer exists.
-- Seed repository persistence helpers exist.
-- API handler tests: 21 passed / 0 failed.
+- Testable sync and async API handler layer exists.
+- Repository contract guard exists.
+- Repository runtime factory exists behind `AI_SNS_REPOSITORY_DRIVER`.
+- `seed`, `json_table`, and `d1` repository drivers exist.
+- Cloudflare D1 JSON table store exists when a D1 binding is supplied.
+- `/api/contracts/status` reports repository driver, D1 configured status, D1 reachability, and final persistence readiness.
+- Initial JSON-table schema migration exists.
+- D1 seed SQL generator exists through `npm run d1:seed:sql`.
+- Node tests: 39 passed / 0 failed.
 
 Current implementation limitations:
 
-- Production persistence is not DB-backed yet.
-- Current repository persistence is seed repository plus in-process persistence.
+- Real Cloudflare D1 binding has not yet been verified for the deployed AI SNS Growth Office environment in this contract record.
+- Real D1 schema migration and generated seed SQL still need to be applied to the target D1 database.
 - Build verification was not run in the reported scratch environment because `node_modules` was not installed there.
 
-The repository is therefore an implemented MVP skeleton with tested API handlers, but persistence readiness must remain non-production until DB-backed storage is added and verified.
+The repository is now a D1-ready MVP implementation. Production source-of-truth readiness remains pending until the target deployment reports `d1Configured: true`, `d1Reachable: true`, and `databaseBackedPersistenceReady: true` from `/api/contracts/status`.
 
 ## Required Contracts
 
@@ -272,6 +278,23 @@ Not allowed by default:
 - Numeria Report bodies
 - API keys, access tokens, or secret prompts
 
+## Persistence Readiness
+
+AI SNS Growth Office persistence is ready for production only when:
+
+- Cloudflare D1 binding is configured for the deployed app.
+- `AI_SNS_REPOSITORY_DRIVER=d1` is active in the deployed runtime.
+- The initial schema migration has been applied to the target D1 database.
+- The generated seed SQL has been applied when starting from an empty D1 database.
+- `GET /api/contracts/status` reports:
+  - `requestedDriver: "d1"`
+  - `activeDriver: "d1"`
+  - `d1Configured: true`
+  - `d1Reachable: true`
+  - `databaseBackedPersistenceReady: true`
+  - `fallbackUsed: false`
+- Dashboard data persists across reloads after approval actions.
+
 ## MVP Readiness
 
 AI SNS Growth Office is MVP-ready when:
@@ -288,3 +311,4 @@ AI SNS Growth Office is MVP-ready when:
 - Failed jobs preserve approved drafts, images, and schedule intent.
 - Daily metrics can be recorded with missing values as `unknown`.
 - External Intelligence references and final decisions are recorded without making External Intelligence operational source of truth.
+- D1-backed persistence is verified in deployment.
