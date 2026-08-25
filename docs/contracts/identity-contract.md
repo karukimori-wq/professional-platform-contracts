@@ -29,6 +29,16 @@ Example:
 - Growth Engine stores the customer profile.
 - AI Platform Core stores `activityId` and links usage to `workspaceId`, `projectId`, and optional domain references.
 
+## AI Platform Core Production Identity Status
+
+AI Platform Core production E2E has confirmed baseline Activity isolation by `workspaceId` and `userId`.
+
+The MVP identity rule remains `workspaceId + userId / ownerUserId`.
+
+`professionalId` is not required.
+
+The current `x-client-id` scoped-read check is an implementation-level baseline, not the final formal authentication/authorization contract. AI Platform Core must still implement and verify formal auth boundaries before this area is marked complete.
+
 ## External IDs
 
 External service IDs must be namespaced.
