@@ -62,6 +62,8 @@ Numeria Studio events must not include Report body, Customer master records, Pay
 
 Velvet events are stable contracts for professional-memory and visit-record workflows.
 
+Current Velvet Cloudflare Production baseline keeps these event names unchanged. Legacy Velvet event names must not be introduced.
+
 Allowed cross-app payload is reference-first:
 - `workspaceId`
 - `userId`
