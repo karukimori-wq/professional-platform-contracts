@@ -26,6 +26,41 @@ APIs are used when the caller needs an immediate result. State changes that down
 | `Report.ExportPdf` | Studio UI | PDF artifact | `studio.report.generated.v1` when newly generated |
 | `ServiceReference.List` | Growth Engine | Service references | None |
 
+### Numeria Studio HTTP and Cloudflare Production Mapping
+
+Numeria Studio production runtime is Cloudflare Worker API plus Cloudflare Static Assets, not Next.js.
+
+Minimum production readiness endpoints:
+
+| Endpoint | Purpose | Status |
+| --- | --- | --- |
+| `GET /health` | Worker health | Production verified |
+| `GET /version` | App and contract version | Production verified |
+| `GET /contracts/status` | Contract status | Production verified |
+| `GET /api/persistence/status` | D1 persistence status | Production verified |
+| `POST /api/persistence/roundtrip` | D1 write/read roundtrip | Production verified |
+
+Growth Engine to Numeria Studio requests must be reference-first:
+
+- `workspaceId`
+- `userId`
+- `reservationId`
+- `customerId`
+- `traceId`
+- `correlationId`
+
+Numeria Studio to Growth Engine responses must be reference-first:
+
+- `sessionId`
+- `reportId`
+- `reportRef`
+- `traceId`
+- `correlationId`
+
+Numeria Studio APIs must not return Report body, Customer information, Payment, Sales, conversation bodies, full Communication Planner context, SNS draft bodies, AI prompts, API keys, access tokens, or provider secrets by default.
+
+D1 persistence is verified for Session, Report, Numeria persistence status, and roundtrip. Business feature expansion and AI integration enhancement are next product phases.
+
 ## Velvet APIs
 
 | Operation | Caller | Response | Event |
