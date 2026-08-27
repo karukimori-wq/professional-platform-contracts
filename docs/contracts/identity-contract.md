@@ -50,6 +50,31 @@ The MVP identity rule remains `workspaceId + userId / ownerUserId`.
 
 The current `x-client-id` scoped-read check is an implementation-level baseline, not the final formal authentication/authorization contract. AI Platform Core must still implement and verify formal auth boundaries before this area is marked complete.
 
+## Velvet Production Identity and Authentication Status
+
+Velvet Cloudflare Production E2E has confirmed the MVP identity rule:
+
+- `workspaceId`
+- `userId`
+- `ownerUserId` where workspace ownership is relevant
+
+`professionalId` is not required. `/contracts/status` must continue to report `identityMode: workspaceId+userId` and `professionalIdRequired: false`.
+
+Customer Memory D1 Production E2E has confirmed workspace/user isolation.
+
+Velvet Cloudflare Production auth baseline is `VELVET_AUTH_MODE=session`.
+
+Session bridge headers:
+
+- `x-velvet-auth-bridge`
+- `x-velvet-workspace-id`
+- `x-velvet-user-id`
+- `x-velvet-owner-user-id`
+
+`VELVET_SESSION_BRIDGE_SECRET` is stored as a Cloudflare Secret. Contracts may record the secret name and trust boundary only, never the secret value.
+
+`demo` and `fixed_owner` are not canonical public Production auth modes.
+
 ## Platform Admin Production Identity Status
 
 Platform Admin cross-app monitoring must continue to use the MVP identity rule:
