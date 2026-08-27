@@ -211,10 +211,9 @@ Cloudflare migration completed:
 
 Remaining Cloudflare migration candidates:
 
-- Velvet
 - SNS Planner
 - Growth Engine
 
 Recommended next migration target:
 
-- Velvet, because its endpoint/readiness and Platform Admin monitoring target still need consolidation before the remaining marketing/content apps are moved.
+- SNS Planner, after confirming GitHub main migration status. Growth Engine should remain the final-stage candidate because it owns Customer, Reservation, Payment, Sales, and central cross-app integrations.
