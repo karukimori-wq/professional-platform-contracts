@@ -74,6 +74,54 @@ D1 persistence is verified for Session, Report, Numeria persistence status, and 
 | `VelvetNextAction.Create` | Velvet UI | `nextActionRef` | `velvet.next_action.created.v1` |
 | `VelvetHandoff.Start` | Growth Engine | `visitId` or handoff status | `velvet.visit.started.v1` when visit starts |
 
+### Velvet Cloudflare Production Mapping
+
+Velvet production runtime is Next.js 16 + OpenNext Cloudflare on Cloudflare Workers with Cloudflare D1.
+
+Production base URL:
+
+- `https://velvet.karukimori.workers.dev`
+
+Production storage mode:
+
+- `VELVET_STORAGE_MODE=d1`
+
+Production auth mode:
+
+- `VELVET_AUTH_MODE=session`
+
+Minimum production readiness endpoints:
+
+| Endpoint | Purpose | Status |
+| --- | --- | --- |
+| `GET /health` | Worker health | Production verified |
+| `GET /version` | App and contract version | Production verified |
+| `GET /contracts/status` | Contract status | Production verified |
+| `GET /api/persistence/status` | D1 persistence status | Production verified |
+| `POST /api/persistence/roundtrip` | D1 write/read roundtrip | Production verified |
+
+Customer Memory D1 write/read and workspace/user isolation are Production verified. Full D1 Production E2E coverage for Visit, Note, Timeline, Next Action, Capture, and other Professional Memory repositories remains in progress.
+
+Velvet session bridge auth uses:
+
+- `x-velvet-auth-bridge`
+- `x-velvet-workspace-id`
+- `x-velvet-user-id`
+- `x-velvet-owner-user-id`
+
+`VELVET_SESSION_BRIDGE_SECRET` is a Cloudflare Secret and must not be stored in this repository.
+
+Velvet may call AI Platform Core through Cloudflare Service Binding:
+
+- `AI_PLATFORM_CORE_SERVICE`
+
+Representative capabilities:
+
+- `velvet.capture.structure`
+- `velvet.search.parse_intent`
+
+AI Platform Core remains canonical for AI Activity, AI Usage, Capability, Prompt, Knowledge, and Workflow.
+
 ### Velvet HTTP Mapping
 
 MVP HTTP mapping:
