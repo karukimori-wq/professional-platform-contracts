@@ -9,7 +9,7 @@ This document defines what each system owns and what it must not own.
 | Growth Engine | Customer canonical data, leads, reservations, payments, sales flow, nurturing, campaign intent, business workflow state, Business plan feature rules | Appraisal logic, report rendering, AI runtime internals, SNS text generation details, 1-to-1 conversation internals |
 | Professional Studio | Domain-specific workflow, professional records, report generation, appraisal history, domain calculations | Customer canonical data, acquisition strategy, cross-channel nurturing decisions |
 | Numeria Studio | Fortune-telling domain data, numerology and destiny-method workflows, Sessions, Reports, Calculation Results, Numeria Snapshots, PDF previews, D1-backed Numeria persistence | Growth strategy, customer master data, reservation/payment/sales source of truth, conversation/message source of truth, SNS draft source of truth, AI platform internals |
-| Velvet | Professional visits, professional memory, service notes, professional timeline, professional recall | Customer master, payment state, sales ledger, reservation source of truth, 1-to-1 channel inbox source of truth |
+| Velvet | Professional visits, customer-scoped Professional Memory, service notes, professional timeline, professional recall, Capture-related Velvet-owned structured information, D1-backed Customer Memory baseline | Customer master, reservation/payment/sales source of truth, SNS MessageDraft source of truth, Communication Planner conversation/send source of truth, AI Activity/Usage/Capability source of truth |
 | SNS Planner | Post drafts, hashtags, format variants, SNS-specific text adaptation, media idea generation, simple business-initiated message drafts | Sales judgement, target selection, campaign objectives, CTA strategy, live conversation context, channel sending, reply safety checks |
 | AI SNS Growth Office | AI-company SNS marketing orchestration, CEOInstruction, SecretaryBrief, CompanyTask, AgentTask, AgentOutput, ApprovalRequest, AppProject, MarketingRoute, RouteStage, Audience, Offer, DiagnosisReport, ContentPlan, ContentDraft, ImageConcept, MediaAsset, PublishPlan, XMediaUploadJob, XPublishJob, PerformanceSnapshot, ExternalKnowledgeReference | Customer master, payment state, sales ledger, live 1-to-1 conversations, reply safety checks, AI usage ledger, Platform Admin monitoring, External Intelligence knowledge source of truth |
 | Communication Planner | Unified Inbox, Communication Person projection, ChannelIdentity, Conversation, Message, ConversationContext, Topic, Promise, Communication NextAction, ReplyDraft, SafetyCheck, send workflow | Customer master, payment state, sales ledger, campaign strategy, SNS PostDraft, Professional App domain records, AI usage ledger |
@@ -223,6 +223,50 @@ Those decisions belong to Growth Engine, Communication Planner, or the Professio
 AI Platform Core may persist AI Activity, AI Usage, Activity Outcome, Activity Feedback, Prompt Template, Runtime Storage, and Event infrastructure records.
 
 It must not persist Customer, Reservation, Payment, Sales, SNS PostDraft, SNS MessageDraft, Communication Conversation/Message, Numeria Report, or Velvet Professional Memory as canonical records.
+
+## Velvet Cloudflare Rule
+
+Velvet provides Professional Memory and service-quality workflows.
+
+Current production infrastructure:
+
+- Production URL: `https://velvet.karukimori.workers.dev`
+- Runtime: Cloudflare Workers
+- Framework: Next.js 16 + OpenNext Cloudflare
+- Persistence: Cloudflare D1 `velvet`
+- Production storage mode: `VELVET_STORAGE_MODE=d1`
+- Production auth mode: `VELVET_AUTH_MODE=session`
+- Cloudflare migration status: `completed`
+- Current phase: `repository_d1_coverage_in_progress`
+
+Cloudflare migration does not move Customer, Reservation, Payment, Sales, SNS Planner, Communication Planner, or AI Platform Core source-of-truth data into Velvet.
+
+Velvet may persist:
+
+- Customer-scoped Professional Memory
+- Professional Memory
+- Velvet Visit
+- Velvet Note / Service Note
+- Professional Timeline
+- Professional Next Action
+- Professional Recall
+- Capture-related Velvet-owned structured information
+- Persistence roundtrip records
+
+Velvet must not persist canonical Customer, Reservation, Payment, Sales, SNS MessageDraft, Communication Person, ChannelIdentity, Conversation, Message, ConversationContext, ReplyDraft, SafetyCheck, send workflow, AI Activity, AI Usage, or AI Capability records.
+
+Velvet Production session bridge uses the following header contract:
+
+- `x-velvet-auth-bridge`
+- `x-velvet-workspace-id`
+- `x-velvet-user-id`
+- `x-velvet-owner-user-id`
+
+`VELVET_SESSION_BRIDGE_SECRET` is a Cloudflare Secret and must not be stored in contract documentation.
+
+Velvet may use `AI_PLATFORM_CORE_SERVICE` as a Cloudflare Service Binding for internal AI Platform Core calls. AI Platform Core remains canonical for AI Runtime, Capability, Prompt, Knowledge, AI Activity, and AI Usage.
+
+Platform Admin must update Velvet monitoring to the canonical Production endpoint `https://velvet.karukimori.workers.dev`. Platform Admin -> Velvet Service Binding is a future candidate.
 
 ## Platform Admin Cloudflare Rule
 
