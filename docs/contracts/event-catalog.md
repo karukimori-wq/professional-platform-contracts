@@ -23,6 +23,31 @@ Events are state-change notifications. They must be versioned and past tense.
 | `studio.report.generated.v1` | Professional Studio | Growth Engine, AI Platform Core | A report was generated |
 | `studio.service_reference.updated.v1` | Professional Studio | Growth Engine | A sellable service reference changed |
 
+### Professional Studio Event Constraints
+
+Numeria Studio stable events are:
+
+- `studio.session.started.v1`
+- `studio.session.completed.v1`
+- `studio.report.generated.v1`
+
+Legacy Numeria or report event names must not be used.
+
+Allowed cross-app payload is reference-first:
+
+- `workspaceId`
+- `userId`
+- `sessionId`
+- `reportId`
+- `reportRef`
+- `customerId` only as a Growth Engine reference where contracted
+- `reservationId` only as a Growth Engine reference where contracted
+- `traceId`
+- `correlationId`
+- `eventId`
+
+Numeria Studio events must not include Report body, Customer master records, Payment, Sales, conversation bodies, Communication Planner context, SNS draft bodies, AI prompts, API keys, access tokens, or provider secrets by default.
+
 ## Velvet Events
 
 | Event | Publisher | Consumers | Purpose |
