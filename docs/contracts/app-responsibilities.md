@@ -51,6 +51,7 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | Velvet preferences / cautions / previous handling | Velvet |
 | Velvet customer-specific professional timeline | Velvet |
 | Velvet Capture and professional-memory suggestion state | Velvet |
+| Customer-scoped Professional Memory | Velvet |
 | Velvet gifts / relationship memory / self-investment | Velvet |
 | Contract definitions | professional-platform-contracts |
 | Cross-app monitoring | Platform Admin |
@@ -411,6 +412,19 @@ Production verification has confirmed D1-backed Activity and Usage persistence, 
 
 Velvet is a Professional App connected to Growth Engine. Its paid value is split into professional recall/service quality (Pro) and Growth Engine-powered business growth (Business).
 
+Current infrastructure status:
+- Runtime: Cloudflare Workers
+- Framework: Next.js 16 + OpenNext Cloudflare
+- Persistence: Cloudflare D1
+- D1 database: `velvet`
+- Production URL: `https://velvet.karukimori.workers.dev`
+- Production storage mode: `VELVET_STORAGE_MODE=d1`
+- Production auth mode: `VELVET_AUTH_MODE=session`
+- Cloudflare migration status: `completed`
+- Current phase: `repository_d1_coverage_in_progress`
+
+Cloudflare/D1 migration completion does not change Velvet's responsibility boundary. Customer Memory D1 Production E2E is complete; full D1 coverage for all Velvet repositories remains in progress.
+
 ### Pro — JPY 10,000/month
 Core value: **顧客を忘れない・接客品質を上げる**.
 
@@ -454,6 +468,8 @@ Business is Growth Engine-powered business mode. It may expose:
 Customer, Reservation, Payment, Sales and repeat/business state used by these features remain canonical in Growth Engine.
 
 ### Velvet Owns
+- Customer-scoped Professional Memory
+- Professional Memory
 - professional Visit history
 - ServiceNote / conversation notes
 - preferences / cautions / remembered service facts
@@ -473,14 +489,19 @@ Customer, Reservation, Payment, Sales and repeat/business state used by these fe
 - Stripe secrets or credentials
 - canonical cross-business sales analytics
 - SNS Planner PostDraft internals
-- Communication Planner Conversation / Message / SafetyCheck source of truth
-- AI Platform Core AI Usage ledger
+- Communication Planner Person / ChannelIdentity source of truth
+- Communication Planner Conversation / Message / ConversationContext source of truth
+- Communication Planner ReplyDraft / SafetyCheck / send workflow source of truth
+- SNS Planner MessageDraft source of truth
+- AI Platform Core AI Activity / Usage / Capability source of truth
 - Platform Admin operational monitoring source of truth
 
 ### Customer Rule
 Growth Engine `Customer` is canonical. Velvet must not maintain an independent competing Guest/Person master.
 
 Velvet may retain a `customerId` reference plus minimum display/cache fields explicitly allowed by contract. Professional memory is attached to the reference; it does not redefine Customer ownership.
+
+Customer master != Velvet. Customer-scoped Professional Memory = Velvet.
 
 ### Sales and Payment Rule
 Velvet does not persist canonical `salesAmount`, `paymentStatus`, Payment or Sales records. Business sales views query/reference Growth Engine. Stripe secrets and payment credentials must never be stored in Velvet.
@@ -501,6 +522,8 @@ Velvet -> Growth Engine where needed:
 - `summaryRef`
 
 Raw confidential service notes and full conversation-note bodies must not be returned merely because Growth Engine has a customer reference. Cross-app payloads are minimum-necessary and reference-ID centered.
+
+Velvet may use `AI_PLATFORM_CORE_SERVICE` as a Cloudflare Service Binding for scoped AI execution. AI Platform Core remains canonical for AI Runtime, Capability, Prompt, Knowledge, AI Activity, and AI Usage.
 
 ## Platform Admin
 
