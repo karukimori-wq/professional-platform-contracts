@@ -6,10 +6,10 @@ It is not a general development-management app. Incoming questions, bugs, and im
 
 ## Status
 
-- Repository: TBD
+- Repository: https://github.com/karukimori-wq/feedback-hub.git
 - Production: TBD
 - Platform role: user voice intake, AI analysis, issue clustering, and priority intelligence
-- MVP state: requirements definition
+- MVP state: Sprint 1 implementation started
 - Durable persistence target: Cloudflare D1 for MVP
 
 ## Purpose
@@ -283,10 +283,30 @@ Recommended MVP infrastructure:
 
 Keep the first implementation small. Add Vectorize or other similarity infrastructure only after simple lexical/embedding storage is insufficient.
 
+## Sprint 1 Implementation Snapshot
+
+The Feedback Hub repository now contains:
+
+- Cloudflare Workers + TypeScript + Hono scaffold
+- D1 initial schema
+- Conversation / Message / AI Analysis / Issue / Issue Link tables
+- Contract endpoints
+- Feedback conversation, message, analysis, issue, ranking, and urgent notification APIs
+- Deterministic MVP classifier for category, severity, impact, normalized problem, and priority score
+- Similar feedback grouping logic
+- Vitest tests and GitHub Actions CI
+
+Local verification completed:
+
+- `npm install`: success
+- `npm run typecheck`: success
+- `npm test`: success, 2 files / 6 tests passed
+
 ## Open Decisions
 
-- Dedicated repository name
-- Whether the first implementation is standalone or embedded in Platform Admin first
+- First Cloudflare D1 database ID
+- First production URL
+- Whether the first admin UI lives in this app or Platform Admin
 - First notification destination
 - Exact app-specific Knowledge source for AI first answers
 - Whether GitHub Issues are created automatically or only after owner approval
