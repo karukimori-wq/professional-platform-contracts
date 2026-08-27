@@ -246,6 +246,18 @@ Optional owner/test-gated check:
 
 AI Platform Core monitoring rows may include runtime, persistence driver, D1 reachability, database-backed persistence readiness, Activity/Usage E2E status, workspace/user isolation status, current phase, status, statusCode, errorCode, traceId, correlationId, requestId, checkedAt, and issues.
 
+For Numeria Studio, Platform Admin should monitor at least:
+
+- `GET /health`
+- `GET /version`
+- `GET /contracts/status`
+- `GET /api/persistence/status`
+- authorized/test-gated `POST /api/persistence/roundtrip` where appropriate
+
+Numeria Studio monitoring rows may include runtime, Static Assets/Worker API topology, persistence driver, D1 reachability, database-backed persistence readiness, roundtrip readiness, Session Production E2E status, Report Production E2E status, workspace/user isolation status, Growth Engine reference integration status, current phase, status, statusCode, errorCode, traceId, correlationId, requestId, checkedAt, and issues.
+
+Numeria Studio monitoring rows must not include Report bodies, Customer information, Payment, Sales, conversation bodies, full appraisal notes, AI prompts, API keys, access tokens, or provider secrets.
+
 For Platform Admin itself, Platform Admin should monitor at least:
 
 - `GET /health`
