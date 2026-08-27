@@ -215,6 +215,7 @@ Platform Admin may store operational snapshots for:
 - Platform Admin D1 persistence and roundtrip readiness checks
 - Communication Planner production readiness checks
 - Service Binding monitoring results for Cloudflare-hosted internal apps
+- Velvet production readiness checks
 
 Minimum Platform Admin log fields:
 
@@ -258,6 +259,20 @@ Numeria Studio monitoring rows may include runtime, Static Assets/Worker API top
 
 Numeria Studio monitoring rows must not include Report bodies, Customer information, Payment, Sales, conversation bodies, full appraisal notes, AI prompts, API keys, access tokens, or provider secrets.
 
+For Velvet, Platform Admin should monitor at least:
+
+- `GET https://velvet.karukimori.workers.dev/health`
+- `GET https://velvet.karukimori.workers.dev/version`
+- `GET https://velvet.karukimori.workers.dev/contracts/status`
+- `GET https://velvet.karukimori.workers.dev/api/persistence/status`
+- authorized/test-gated `POST https://velvet.karukimori.workers.dev/api/persistence/roundtrip` where appropriate
+
+Velvet monitoring rows may include runtime, OpenNext Cloudflare topology, production storage mode, auth mode, persistence driver, D1 reachability, database-backed persistence readiness, roundtrip readiness, Customer Memory D1 E2E status, workspace/user isolation status, session auth baseline, AI Platform Core Service Binding baseline, remaining repository D1 coverage status, current phase, status, statusCode, errorCode, traceId, correlationId, requestId, checkedAt, and issues.
+
+Velvet monitoring rows must not include Professional Memory bodies, service note bodies, customer master records, payment state, sales amounts, conversation bodies, MessageDraft bodies, AI prompts, API keys, access tokens, or secret values.
+
+Platform Admin must update the stale Velvet endpoint that previously returned 404 to `https://velvet.karukimori.workers.dev`. Platform Admin -> Velvet Service Binding is a future candidate when same-account internal Worker monitoring is appropriate.
+
 For Platform Admin itself, Platform Admin should monitor at least:
 
 - `GET /health`
@@ -272,6 +287,10 @@ Current Service Binding targets:
 
 - `AI_PLATFORM_CORE_SERVICE`
 - `COMMUNICATION_PLANNER_SERVICE`
+
+Velvet also uses Service Binding as a caller to AI Platform Core:
+
+- `AI_PLATFORM_CORE_SERVICE`
 
 Monitoring rows should include the transport used, such as `service_binding` or `public_http`.
 
