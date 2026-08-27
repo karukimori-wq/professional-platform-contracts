@@ -1,6 +1,6 @@
 # Professional Platform Infrastructure and Migration Matrix
 
-Status date: 2026-08-26
+Status date: 2026-08-27
 
 ## Purpose
 
@@ -37,9 +37,9 @@ Unknown values must not be inferred from older notes. Check the target repositor
 | App | Runtime | Persistence | Contract status | Production readiness | Cloudflare migration status | Current phase | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | professional-platform-contracts | GitHub documentation repository | Not applicable | ready | Not applicable | not_required | contract_governance | Contract, responsibility, roadmap, readiness, and migration tracking only. |
-| Growth Engine | Vercel | Postgres | ready | external_pilot_ready | not_evaluated | external_pilot | Owns Customer, Lead, Reservation, Payment, Sales, Revenue, Funnel, Follow-up, Referral. |
-| Numeria Studio | ChatGPT Sites | not_evaluated | ready | mvp_ready_with_environment_warning | not_evaluated | mvp_operations | Owns Session and Report. Must not own Customer, Payment, or Sales. |
-| SNS Planner | ChatGPT Sites | not_evaluated | ready | mvp_ready_with_ai_core_environment_warning | not_evaluated | postdraft_and_messagedraft_mvp | Owns PostDraft and MessageDraft. One-to-many content remains separate from Communication Planner. |
+| Growth Engine | Vercel | Postgres | ready | external_pilot_ready | not_evaluated | external_pilot | Owns Customer, Lead, Reservation, Payment, Sales, Revenue, Funnel, Follow-up, Referral. Cloudflare migration remains a future candidate after Velvet/SNS Planner assessment. |
+| Numeria Studio | Cloudflare Workers + Static Assets | Cloudflare D1 | ready | production_ready | completed | business_feature_expansion | Cloudflare migration completed. Owns Session, Report, Calculation Result, and Numeria Snapshot. Growth Engine integration remains reference-IDs-only. |
+| SNS Planner | ChatGPT Sites | not_evaluated | ready | mvp_ready_with_ai_core_environment_warning | not_evaluated | postdraft_and_messagedraft_mvp | Owns PostDraft and MessageDraft. Cloudflare migration remains pending; keep one-to-many content separate from Communication Planner. |
 | Communication Planner | Cloudflare Workers | Cloudflare D1 | ready | mvp_completed | completed | real_provider_integration | Cloudflare migration completed. Current provider mode is dry-run until real provider readiness gates pass. |
 | AI Platform Core | Cloudflare Workers | Cloudflare D1 | ready | production_hardening | completed | ai_core_production_hardening | Cloudflare/D1 migration completed. Activity and Usage production D1 E2E complete; formal auth and additional E2E hardening remain next. |
 | Platform Admin | Cloudflare Workers | Cloudflare D1 operational snapshots | ready | production_hardening | completed | monitoring_production_hardening | Cloudflare migration completed. Owns operational snapshots only; Service Binding monitoring is active for AI Platform Core and Communication Planner. |
@@ -112,6 +112,52 @@ Remaining AI Platform Core hardening:
 - Event Store / Event Dispatcher / stable events / observability production hardening
 - cross-app production integration hardening
 
+## Numeria Studio Status
+
+Numeria Studio has completed its Cloudflare infrastructure migration and Production E2E verification.
+
+Detailed result:
+
+- `docs/release-readiness/numeria-studio-cloudflare-migration-result.md`
+
+Current Numeria Studio state:
+
+- Repository: `karukimori-wq/numeria-studio`
+- Runtime: Cloudflare Workers
+- Frontend delivery: Cloudflare Static Assets
+- Persistence: Cloudflare D1
+- D1 database: `numeria-studio`
+- Cloudflare migration status: completed
+- Current phase: business_feature_expansion
+
+Verified production persistence state:
+
+- `driver`: `d1`
+- `d1Reachable`: `true`
+- `databaseBackedPersistenceReady`: `true`
+- `roundtripReady`: `true`
+
+Verified production E2E:
+
+- Session Production persistence
+- Report Production persistence
+- workspace/user isolation
+- Growth Engine reference integration
+- `/health`, `/version`, and `/contracts/status`
+- `/api/persistence/status` and `/api/persistence/roundtrip`
+- GitHub Actions Cloudflare Production Workflow Green
+
+Remaining Numeria Studio product work:
+
+- Session feature expansion
+- Report management
+- appraisal history
+- report generation templates
+- UI improvements
+- Growth Engine Business Flow
+- AI Platform Core capability integration
+- Platform Admin observability hardening
+
 ## Platform Admin Status
 
 Platform Admin has completed its Cloudflare infrastructure migration.
@@ -148,7 +194,8 @@ Verified production monitoring:
 - monitoring snapshot retrieval from D1
 - AI Platform Core monitoring through `AI_PLATFORM_CORE_SERVICE`
 - Communication Planner monitoring through `COMMUNICATION_PLANNER_SERVICE`
-- Growth Engine, SNS Planner, and Numeria Studio current endpoint monitoring
+- Growth Engine and SNS Planner current endpoint monitoring
+- Numeria Studio Cloudflare Production monitoring
 
 Velvet monitoring must be updated after its current Production or Cloudflare endpoint is finalized. A stale Velvet endpoint returning 404 is a target-configuration issue, not a Platform Admin Cloudflare migration failure.
 
@@ -163,7 +210,7 @@ Remaining Platform Admin hardening:
 
 ## Cloudflare Reference Architecture Rule
 
-Communication Planner, AI Platform Core, and Platform Admin prove that Cloudflare Workers + D1 can support production Professional Platform apps.
+Communication Planner, AI Platform Core, Platform Admin, and Numeria Studio prove that Cloudflare Workers + D1 can support production Professional Platform apps.
 
 This does not mean every app should automatically move to Cloudflare.
 
@@ -431,6 +478,7 @@ When a major app milestone completes, update this matrix and the relevant app re
 Examples:
 
 - Communication Planner LINE live provider verified
+- Numeria Studio Business feature expansion readiness changes
 - Velvet persistence verified
 - Growth Engine production readiness changes
 - SNS Planner MessageDraft contract changes
