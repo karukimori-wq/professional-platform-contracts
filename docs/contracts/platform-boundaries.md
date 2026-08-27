@@ -8,7 +8,7 @@ This document defines what each system owns and what it must not own.
 | --- | --- | --- |
 | Growth Engine | Customer canonical data, leads, reservations, payments, sales flow, nurturing, campaign intent, business workflow state, Business plan feature rules | Appraisal logic, report rendering, AI runtime internals, SNS text generation details, 1-to-1 conversation internals |
 | Professional Studio | Domain-specific workflow, professional records, report generation, appraisal history, domain calculations | Customer canonical data, acquisition strategy, cross-channel nurturing decisions |
-| Numeria Studio | Fortune-telling domain data, numerology and destiny-method workflows, appraisal reports, PDF previews | Growth strategy, customer master data, AI platform internals |
+| Numeria Studio | Fortune-telling domain data, numerology and destiny-method workflows, Sessions, Reports, Calculation Results, Numeria Snapshots, PDF previews, D1-backed Numeria persistence | Growth strategy, customer master data, reservation/payment/sales source of truth, conversation/message source of truth, SNS draft source of truth, AI platform internals |
 | Velvet | Professional visits, professional memory, service notes, professional timeline, professional recall | Customer master, payment state, sales ledger, reservation source of truth, 1-to-1 channel inbox source of truth |
 | SNS Planner | Post drafts, hashtags, format variants, SNS-specific text adaptation, media idea generation, simple business-initiated message drafts | Sales judgement, target selection, campaign objectives, CTA strategy, live conversation context, channel sending, reply safety checks |
 | AI SNS Growth Office | AI-company SNS marketing orchestration, CEOInstruction, SecretaryBrief, CompanyTask, AgentTask, AgentOutput, ApprovalRequest, AppProject, MarketingRoute, RouteStage, Audience, Offer, DiagnosisReport, ContentPlan, ContentDraft, ImageConcept, MediaAsset, PublishPlan, XMediaUploadJob, XPublishJob, PerformanceSnapshot, ExternalKnowledgeReference | Customer master, payment state, sales ledger, live 1-to-1 conversations, reply safety checks, AI usage ledger, Platform Admin monitoring, External Intelligence knowledge source of truth |
@@ -163,6 +163,39 @@ Growth Engine is not sold as a separate standalone app in the initial strategy.
 It is exposed inside Numeria Studio and future Professional Studio products as Business plan features.
 
 The user experience may appear as one application, but responsibility remains split internally.
+
+## Numeria Studio Cloudflare Rule
+
+Numeria Studio provides appraisal Session and Report workflows.
+
+Current production infrastructure:
+
+- Runtime: Cloudflare Workers
+- Frontend delivery: Cloudflare Static Assets
+- Persistence: Cloudflare D1 `numeria-studio`
+- Cloudflare migration status: `completed`
+- Current phase: `business_feature_expansion`
+
+Cloudflare migration does not move Customer, Reservation, Payment, Sales, Communication Planner, SNS Planner, or AI Platform Core source-of-truth data into Numeria Studio.
+
+Numeria Studio may persist:
+
+- Session
+- Report
+- Calculation Result
+- Numeria Snapshot
+- Numeria persistence metadata
+
+Numeria Studio must not persist canonical Customer, Reservation, Payment, Sales, Conversation, Message, ConversationContext, ReplyDraft, SafetyCheck, MessageDraft, AI Activity, AI Usage, AI Capability, Prompt, Knowledge, or Workflow records.
+
+Growth Engine integration is reference-IDs-only:
+
+- accepted references: `workspaceId`, `userId`, `reservationId`, `customerId`, `traceId`, `correlationId`
+- returned references: `sessionId`, `reportId`, `reportRef`, `traceId`, `correlationId`
+
+Numeria Studio must not return Report body, Customer information, Payment, Sales, or conversation bodies by default.
+
+Platform Admin may monitor Numeria Studio Cloudflare Production health, version, contracts, persistence status, and authorized roundtrip status as operational snapshots only.
 
 ## AI Platform Core Rule
 
