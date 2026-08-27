@@ -21,6 +21,7 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | Service and menu publishing | Growth Engine |
 | Appraisal session | Numeria Studio |
 | Report and PDF generation | Numeria Studio |
+| Calculation Result / Numeria Snapshot | Numeria Studio |
 | Domain appraisal logic | Numeria Studio |
 | SNS post draft | SNS Planner |
 | SNS post calendar | SNS Planner |
@@ -114,25 +115,47 @@ Growth Engine must not unnecessarily send `paymentStatus`, `salesAmount`, Stripe
 
 Numeria Studio owns professional work output for fortune-telling professionals.
 
+Current infrastructure status:
+- Runtime: Cloudflare Workers
+- Frontend delivery: Cloudflare Static Assets
+- Persistence: Cloudflare D1
+- D1 database: `numeria-studio`
+- Cloudflare migration status: `completed`
+- Current phase: `business_feature_expansion`
+
+Cloudflare/D1 migration completion does not change Numeria Studio's responsibility boundary.
+
 ### Owns
 - Session
 - Report
 - Appraisal input
 - Appraisal result
+- Calculation Result
+- Numeria Snapshot
 - Report generation state
 - Domain-specific appraisal logic
+- Numeria persistence metadata required for readiness and roundtrip checks
 
 ### Must Not Own
 - Customer master
+- Reservation source of truth
 - Payment source of truth
-- Sales source of truth
+- Sales / Revenue source of truth
 - Public site publishing
 - Lead lifecycle
 - SNS campaign strategy
 - 1-to-1 conversation inbox or send workflow
+- Conversation / Message / ConversationContext
+- ReplyDraft / SafetyCheck
+- SNS PostDraft / MessageDraft source of truth
+- AI Activity / Usage / Capability source of truth
+- AI Prompt / Knowledge / Workflow source of truth
+- Platform Admin operational monitoring source of truth
 
 ### Integration Role
 Numeria Studio references Growth Engine records by ID. External deliverables must use `Report`, not `Document`.
+
+Growth Engine integration is reference-IDs-only. Numeria Studio may receive `workspaceId`, `userId`, `reservationId`, `customerId`, `traceId`, and `correlationId`. Numeria Studio may return `sessionId`, `reportId`, and `reportRef`. It must not return Report body, Customer information, Payment, Sales, or conversation bodies by default.
 
 ## SNS Planner
 
