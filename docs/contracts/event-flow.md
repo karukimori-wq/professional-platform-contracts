@@ -45,7 +45,7 @@ Each flow must preserve canonical ownership:
 | Communication Planner Context Update | `CommunicationContext.Update` | `communication.context.updated.v1` | Stable |
 | Communication Planner to AI Platform Core | `Activity.Create` / communication capabilities | `ai.activity.created.v1` | Stable |
 | SNS Planner to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable |
-| Numeria Studio to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable, environment caveat |
+| Numeria Studio to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable, Cloudflare Production verified for Numeria persistence baseline |
 | Growth Engine to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable |
 | Growth Engine to Numeria Studio | `Session.Start` | `studio.session.started.v1` | Stable |
 | Growth Engine to Velvet | `VelvetHandoff.Start` / `VelvetVisit.Start` | `velvet.visit.started.v1` | Stable |
@@ -721,10 +721,12 @@ Ownership rules:
 - Do not send customer master records, names, emails, birthdays, full appraisal notes, or full meeting transcripts.
 - Do not send `paymentStatus`, `salesAmount`, or `campaignCode`.
 
-MVP environment caveat:
+Production status:
 
-- ChatGPT Sites to ChatGPT Sites server-side fetch may return 522.
-- If direct AI Platform Core POST succeeds and payload validation passes, this flow may be marked `conditional_pass` for MVP.
+- Numeria Studio now runs on Cloudflare Workers with Static Assets and D1.
+- The previous ChatGPT Sites server-side 522 caveat is no longer the current Production baseline for Numeria Studio.
+- AI Platform Core remains canonical for AI Activity, Usage, Capability, Prompt, Knowledge, and Workflow records.
+- Numeria Studio must send references only and must not create an independent AI ledger.
 
 ## 18. Growth Engine to AI Platform Core
 
@@ -792,6 +794,8 @@ Required payload shape:
 Numeria Studio returns:
 
 - `sessionId`
+- `reportId` when a report is generated in the same flow
+- `reportRef` when a report reference is available
 - `workspaceId`
 - `status`
 - `sourceApp`
@@ -804,9 +808,10 @@ Event outcome:
 Ownership rules:
 
 - Growth Engine owns the customer and reservation.
-- Numeria Studio owns the session.
-- `customerId` is a reference only.
-- Numeria Studio must not store a competing customer master, payment state, sales amount, or `paymentStatus`.
+- Numeria Studio owns Session, Report, Calculation Result, and Numeria Snapshot.
+- `customerId` and `reservationId` are references only.
+- Numeria Studio must not store a competing customer master, reservation source of truth, payment state, sales amount, or `paymentStatus`.
+- Numeria Studio must not return Report body, Customer information, Payment, Sales, or conversation bodies by default.
 
 ## 20. Growth Engine to Velvet
 
