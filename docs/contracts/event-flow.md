@@ -48,9 +48,9 @@ Each flow must preserve canonical ownership:
 | Numeria Studio to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable, Cloudflare Production verified for Numeria persistence baseline |
 | Growth Engine to AI Platform Core | `Activity.Create` | `ai.activity.created.v1` | Stable |
 | Growth Engine to Numeria Studio | `Session.Start` | `studio.session.started.v1` | Stable |
-| Growth Engine to Velvet | `VelvetHandoff.Start` / `VelvetVisit.Start` | `velvet.visit.started.v1` | Stable |
-| Velvet Visit Completion | `VelvetVisit.Complete` | `velvet.visit.completed.v1` | Stable |
-| Velvet Memory Update | `VelvetMemory.Update` | `velvet.memory.updated.v1` | Stable |
+| Growth Engine to Velvet | `VelvetHandoff.Start` / `VelvetVisit.Start` | `velvet.visit.started.v1` | Stable, Velvet Cloudflare Production verified |
+| Velvet Visit Completion | `VelvetVisit.Complete` | `velvet.visit.completed.v1` | Stable, repository D1 coverage continues |
+| Velvet Memory Update | `VelvetMemory.Update` | `velvet.memory.updated.v1` | Stable, Customer Memory D1 E2E verified |
 | Platform Admin to Apps | Health/status read | None | Stable |
 
 ## 1. Growth Engine to SNS Planner PostDraft
@@ -765,6 +765,41 @@ Ownership rules:
 - AI Platform Core records AI usage only.
 - Do not send customer personal information, payment details, sales amount, or `paymentStatus`.
 
+## 18A. Velvet to AI Platform Core
+
+Purpose: Velvet uses AI Platform Core for scoped AI assistance while keeping Professional Memory mutations in Velvet.
+
+Current Cloudflare Production transport:
+
+- `AI_PLATFORM_CORE_SERVICE` Service Binding
+
+Capability candidates:
+
+- `velvet.capture.structure`
+- `velvet.search.parse_intent`
+
+Required API:
+
+- Operation: `Activity.Create` and Velvet capabilities
+- Caller: Velvet
+- Receiver: AI Platform Core
+
+Allowed references:
+
+- `workspaceId`
+- `userId`
+- `customerId` as a Growth Engine reference
+- `memoryId` / `captureId` / `visitId` / `noteId` where Velvet-owned
+- `traceId`
+- `correlationId`
+
+Ownership rules:
+
+- Velvet owns Professional Memory and confirmed mutations.
+- AI Platform Core owns AI Activity, AI Usage, Capability, Prompt, Knowledge, and Runtime.
+- Velvet must send minimum scoped context only.
+- AI Platform Core must not store Velvet Professional Memory as canonical business data.
+
 ## 19. Growth Engine to Numeria Studio
 
 Purpose: Growth Engine starts a Numeria Studio appraisal session from a reservation or customer workflow.
@@ -855,8 +890,8 @@ Event outcome:
 Ownership rules:
 
 - Growth Engine owns the customer, reservation, visit schedule, payment, sales, and business workflow state.
-- Velvet owns the professional visit, professional memory, service notes, and professional timeline.
-- `customerId`, `reservationId`, and `visitScheduleId` are references only.
+- Velvet owns the professional visit, customer-scoped Professional Memory, service notes, Professional Timeline, Professional Recall, and Capture-related Velvet-owned structured information.
+- `customerId`, `reservationId`, and `visitScheduleId` are references only. Customer master remains Growth Engine; Customer-scoped Professional Memory remains Velvet.
 - Velvet must not create a competing Customer master, Payment source of truth, or Sales source of truth.
 - Growth Engine must not copy full Velvet professional notes or full professional memory bodies by default.
 
@@ -894,10 +929,10 @@ Allowed cross-app references:
 
 Ownership rules:
 
-- Velvet may update its own professional memory and timeline.
+- Velvet may update its own professional memory and timeline. Customer Memory D1 write/read and workspace/user isolation are Production verified in Cloudflare.
 - Velvet may return references and small summaries to Growth Engine when a contracted business workflow needs them.
 - Velvet must not return full professional note bodies, full conversation histories, or full professional memory bodies to Growth Engine by default.
-- Velvet must not emit payment state, sales amount, Stripe data, or customer master records in events.
+- Velvet must not emit payment state, sales amount, Stripe data, customer master records, Communication Planner conversation bodies, SNS MessageDraft bodies, or AI Platform Core activity/usage records in events.
 
 ## 22. Platform Admin to Apps
 
