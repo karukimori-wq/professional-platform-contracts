@@ -51,6 +51,7 @@ This document defines canonical ownership for shared data.
 | XPublishJob | AI SNS Growth Office | Platform Admin by operational status only |
 | SNS marketing PerformanceSnapshot | AI SNS Growth Office | Growth Engine by summary/reference where contracted |
 | ExternalKnowledgeReference | AI SNS Growth Office | External Intelligence by referenced record only |
+| Customer-scoped Professional Memory | Velvet | Growth Engine by reference/summary only where contracted; AI Platform Core by scoped execution only |
 | Velvet professional Visit | Velvet | Growth Engine by reference/summary where needed |
 | Velvet ServiceNote / conversation note | Velvet | Other apps only by minimum necessary reference/summary |
 | Velvet preferences / cautions / previous handling | Velvet | Velvet; AI Platform Core only as scoped execution input |
@@ -59,6 +60,7 @@ This document defines canonical ownership for shared data.
 | Velvet Gift / relationship memory | Velvet | Velvet |
 | Velvet SelfInvestmentEntry | Velvet | Velvet |
 | Velvet Capture | Velvet | AI Platform Core may process scoped content; Velvet remains canonical owner |
+| Velvet Persistence / D1 roundtrip | Velvet | Platform Admin by readiness status only |
 | Velvet dictionary/suggestion state | Velvet | Velvet |
 | Capability | AI Platform Core | All apps |
 | AI activity | AI Platform Core | All apps |
@@ -281,6 +283,37 @@ PerformanceSnapshot does not become the Growth Engine Sales / Revenue source of 
 AI SNS Growth Office may store `ExternalKnowledgeReference` records that point to External Intelligence knowledge, decisions, rules, or evidence.
 
 External Intelligence remains a development knowledge layer. It must not become the operational source of truth for AI SNS Growth Office tasks, approvals, drafts, assets, publish jobs, performance snapshots, customer records, or sales records.
+
+## Velvet Cloudflare D1 Ownership
+
+Velvet now runs on Cloudflare Workers with Next.js 16 + OpenNext Cloudflare and Cloudflare D1.
+
+Cloudflare Production canonical storage mode is `VELVET_STORAGE_MODE=d1`.
+
+Velvet storage abstraction may support `memory`, `postgres`, and `d1`, but new Production features must not be implemented as Postgres-only features.
+
+Velvet D1 may store Velvet-owned professional data only:
+
+- Customer-scoped Professional Memory
+- Velvet Visit
+- Velvet Note / Service Note
+- Professional Timeline
+- Professional Next Action
+- Professional Recall
+- Capture-related Velvet-owned structured information
+- Persistence roundtrip records
+
+Customer Memory D1 write/read and workspace/user isolation are Production verified.
+
+Cloudflare migration complete does not mean all Velvet repositories have complete D1 Production E2E coverage. Visit, Note, Timeline, Next Action, Capture, and other Professional Memory repository D1 coverage remains `IN PROGRESS / NEXT` until separately verified.
+
+Growth Engine Customer remains canonical. Velvet uses `customerId` as a reference and owns the Professional Memory attached to that reference.
+
+Customer master != Velvet.
+
+Customer-scoped Professional Memory = Velvet.
+
+Velvet D1 must not become a source of truth for Customer, Reservation, Payment, Sales, Communication Planner records, SNS Planner MessageDraft records, or AI Platform Core AI Activity/Usage/Capability records.
 
 ## Growth Engine Customer and Velvet Professional Memory
 
