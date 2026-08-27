@@ -37,13 +37,13 @@ Unknown values must not be inferred from older notes. Check the target repositor
 | App | Runtime | Persistence | Contract status | Production readiness | Cloudflare migration status | Current phase | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | professional-platform-contracts | GitHub documentation repository | Not applicable | ready | Not applicable | not_required | contract_governance | Contract, responsibility, roadmap, readiness, and migration tracking only. |
-| Growth Engine | Vercel | Postgres | ready | external_pilot_ready | not_evaluated | external_pilot | Owns Customer, Lead, Reservation, Payment, Sales, Revenue, Funnel, Follow-up, Referral. Cloudflare migration remains a future candidate after Velvet/SNS Planner assessment. |
+| Growth Engine | Vercel | Postgres | ready | external_pilot_ready | planned | external_pilot | Owns Customer, Lead, Reservation, Payment, Sales, Revenue, Funnel, Follow-up, Referral. Cloudflare migration should be last-stage after SNS Planner because it is the central business-data owner. |
 | Numeria Studio | Cloudflare Workers + Static Assets | Cloudflare D1 | ready | production_ready | completed | business_feature_expansion | Cloudflare migration completed. Owns Session, Report, Calculation Result, and Numeria Snapshot. Growth Engine integration remains reference-IDs-only. |
 | SNS Planner | ChatGPT Sites | not_evaluated | ready | mvp_ready_with_ai_core_environment_warning | not_evaluated | postdraft_and_messagedraft_mvp | Owns PostDraft and MessageDraft. Cloudflare migration remains pending; keep one-to-many content separate from Communication Planner. |
 | Communication Planner | Cloudflare Workers | Cloudflare D1 | ready | mvp_completed | completed | real_provider_integration | Cloudflare migration completed. Current provider mode is dry-run until real provider readiness gates pass. |
 | AI Platform Core | Cloudflare Workers | Cloudflare D1 | ready | production_hardening | completed | ai_core_production_hardening | Cloudflare/D1 migration completed. Activity and Usage production D1 E2E complete; formal auth and additional E2E hardening remain next. |
 | Platform Admin | Cloudflare Workers | Cloudflare D1 operational snapshots | ready | production_hardening | completed | monitoring_production_hardening | Cloudflare migration completed. Owns operational snapshots only; Service Binding monitoring is active for AI Platform Core and Communication Planner. |
-| Velvet | Vercel | production_verification_pending | ready | needs_persistence_verification | in_progress | professional_memory_mvp | Owns Velvet Professional Memory, Visit, Note, Timeline, NextAction. Must not own Customer, Reservation, Payment, or Sales. |
+| Velvet | Cloudflare Workers | Cloudflare D1 | ready | production_ready_with_repository_d1_followup | completed | repository_d1_coverage_in_progress | Cloudflare migration completed at https://velvet.karukimori.workers.dev. Customer Memory D1 E2E, session auth, and AI Platform Core Service Binding are verified; remaining repository D1 coverage continues. |
 
 ## Communication Planner Status
 
@@ -196,8 +196,9 @@ Verified production monitoring:
 - Communication Planner monitoring through `COMMUNICATION_PLANNER_SERVICE`
 - Growth Engine and SNS Planner current endpoint monitoring
 - Numeria Studio Cloudflare Production monitoring
+- Velvet Cloudflare Production monitoring target pending Platform Admin update
 
-Velvet monitoring must be updated after its current Production or Cloudflare endpoint is finalized. A stale Velvet endpoint returning 404 is a target-configuration issue, not a Platform Admin Cloudflare migration failure.
+Velvet canonical Production endpoint is `https://velvet.karukimori.workers.dev`. Platform Admin must update the old Velvet monitoring target that previously returned 404. Platform Admin -> Velvet Service Binding is a future candidate when internal Worker-to-Worker monitoring is appropriate.
 
 Remaining Platform Admin hardening:
 
@@ -208,9 +209,49 @@ Remaining Platform Admin hardening:
 - trace, correlation, request, event, error, duration, and operation observability hardening
 - operator UI improvements for Production readiness decisions
 
+## Velvet Status
+
+Velvet has completed its Cloudflare infrastructure migration and Production E2E baseline verification.
+
+Detailed result:
+
+- `docs/release-readiness/velvet-cloudflare-migration-result.md`
+
+Current Velvet state:
+
+- Repository: `karukimori-wq/Velvet`
+- Production URL: `https://velvet.karukimori.workers.dev`
+- Runtime: Cloudflare Workers
+- Framework: Next.js 16 + OpenNext Cloudflare
+- Persistence: Cloudflare D1
+- D1 database: `velvet`
+- Production storage mode: `VELVET_STORAGE_MODE=d1`
+- Production auth mode: `VELVET_AUTH_MODE=session`
+- Cloudflare migration status: completed
+- Current phase: repository_d1_coverage_in_progress
+
+Verified production baseline:
+
+- OpenNext Cloudflare Production deploy
+- D1 binding/schema
+- persistence status and D1 roundtrip
+- Customer Memory D1 write/read
+- workspace/user isolation
+- session bridge authentication
+- AI Platform Core Service Binding through `AI_PLATFORM_CORE_SERVICE`
+- GitHub Actions Cloudflare Production Workflow Green
+
+Remaining Velvet hardening:
+
+- complete D1 coverage for all Velvet repositories
+- Platform Admin canonical monitoring target update to `https://velvet.karukimori.workers.dev`
+- optional Platform Admin -> Velvet Service Binding evaluation
+- Professional Memory / Visit / Timeline / Recall / Capture / Next Action product development
+- Observability and mobile-first UI/UX improvements
+
 ## Cloudflare Reference Architecture Rule
 
-Communication Planner, AI Platform Core, Platform Admin, and Numeria Studio prove that Cloudflare Workers + D1 can support production Professional Platform apps.
+Communication Planner, AI Platform Core, Platform Admin, Numeria Studio, and Velvet prove that Cloudflare Workers + D1 can support production Professional Platform apps.
 
 This does not mean every app should automatically move to Cloudflare.
 
@@ -225,6 +266,23 @@ Each app must be evaluated separately for:
 - Supabase-specific dependencies
 - Migration risk
 - Production verification requirements
+
+## Standard Cloudflare Migration Pattern
+
+Use the following platform-wide candidate sequence for remaining migrations:
+
+1. Application migration decision.
+2. Cloudflare Worker / Static Assets / OpenNext implementation where applicable.
+3. D1 schema, binding, and storage abstraction implementation.
+4. `workspaceId + userId / ownerUserId` isolation verification.
+5. Production `/health`, `/version`, and `/contracts/status` verification.
+6. Production persistence status and roundtrip verification.
+7. Production business E2E verification.
+8. Platform Admin monitoring target update.
+9. Service Binding addition when same-account internal Worker communication is appropriate.
+10. professional-platform-contracts Production Readiness update.
+
+Do not mark all repository persistence complete just because Cloudflare infrastructure migration is complete. Track repository-level D1 coverage separately when needed.
 
 ## Standard Cloudflare Migration Follow-up
 
@@ -479,7 +537,8 @@ Examples:
 
 - Communication Planner LINE live provider verified
 - Numeria Studio Business feature expansion readiness changes
-- Velvet persistence verified
+- Velvet repository D1 coverage completion
+- SNS Planner Cloudflare migration readiness
 - Growth Engine production readiness changes
 - SNS Planner MessageDraft contract changes
 - Platform Admin monitoring scope changes
