@@ -29,6 +29,17 @@ Example:
 - Growth Engine stores the customer profile.
 - AI Platform Core stores `activityId` and links usage to `workspaceId`, `projectId`, and optional domain references.
 
+## Numeria Studio Production Identity Status
+
+Numeria Studio Cloudflare Production E2E has confirmed the MVP identity rule:
+
+- `workspaceId`
+- `userId`
+
+`professionalId` is not required for Numeria Studio MVP, D1 persistence, Session Production E2E, Report Production E2E, or Growth Engine reference integration.
+
+Numeria Studio must continue to scope D1-backed Session, Report, Calculation Result, and Numeria Snapshot records by `workspaceId + userId` where user isolation is required.
+
 ## AI Platform Core Production Identity Status
 
 AI Platform Core production E2E has confirmed baseline Activity isolation by `workspaceId` and `userId`.
