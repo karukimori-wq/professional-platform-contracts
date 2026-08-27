@@ -25,8 +25,11 @@ This document defines canonical ownership for shared data.
 | Communication NextAction | Communication Planner | Communication Planner; Growth Engine by reference where contracted |
 | ReplyDraft | Communication Planner | Communication Planner; Platform Admin by operational status only |
 | SafetyCheck | Communication Planner | Communication Planner; Platform Admin by operational status only |
-| Session | Numeria Studio | Growth Engine |
-| Report | Numeria Studio | Growth Engine |
+| Session | Numeria Studio | Growth Engine by reference only; Platform Admin by operational status only |
+| Report | Numeria Studio | Growth Engine by `reportRef`/reference only; Platform Admin by operational status only |
+| Calculation Result | Numeria Studio | AI Platform Core by scoped execution only |
+| Numeria Snapshot | Numeria Studio | Growth Engine by reference only where contracted |
+| Numeria Persistence | Numeria Studio | Platform Admin by readiness status only |
 | Domain appraisal data | Numeria Studio | AI Platform Core by scoped execution only |
 | SNS post draft | SNS Planner | Growth Engine, Velvet by reference only where needed |
 | SNS message draft | SNS Planner | Growth Engine, Velvet by reference only where needed |
@@ -64,6 +67,24 @@ This document defines canonical ownership for shared data.
 | AI Activity Feedback | AI Platform Core | Calling app by reference/status |
 | AI Prompt Template | AI Platform Core | Product runtimes by rendered output only |
 | AI Runtime Storage | AI Platform Core | AI Platform Core only unless explicit contract exists |
+
+## Numeria Studio Cloudflare D1 Ownership
+
+Numeria Studio now runs on Cloudflare Workers with Static Assets and Cloudflare D1.
+
+Numeria Studio D1 may store canonical Numeria-owned records only:
+
+- Session
+- Report
+- Calculation Result
+- Numeria Snapshot
+- Numeria persistence metadata required for `/api/persistence/status` and `/api/persistence/roundtrip`
+
+Numeria Studio D1 must not become a source of truth for Growth Engine Customer, Reservation, Payment, Sales, Communication Planner Conversation/Message/ConversationContext/ReplyDraft/SafetyCheck, SNS Planner PostDraft/MessageDraft, AI Platform Core AI Activity/Usage/Capability, or Platform Admin operational snapshots.
+
+Growth Engine integration remains reference-first. Numeria Studio may receive `workspaceId`, `userId`, `reservationId`, `customerId`, `traceId`, and `correlationId`; it may return `sessionId`, `reportId`, and `reportRef`.
+
+Report body, Customer information, Payment, Sales, and conversation bodies are not default cross-app payloads.
 
 ## Growth Engine Customer and Communication Planner Person
 
