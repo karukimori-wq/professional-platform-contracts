@@ -349,3 +349,21 @@ Before production:
 4. Record event publication logs for stable events.
 5. Surface logs and errors in Platform Admin.
 6. Add retry policy only after logs and errors show the common failure modes.
+
+## External Intelligence KPI Observability
+
+External Intelligence dashboard observability focuses on development efficiency, not product runtime usage.
+
+Tracked KPI families:
+
+- Token per task.
+- Estimated token reduction rate.
+- Cache hit rate.
+- Retrieval duration.
+- Knowledge count.
+- Task count.
+- Repository-level KPI aggregation.
+
+Token values are currently character-count-based estimates and must be distinguished from LLM provider-reported token usage.
+
+Repository-level KPI aggregation depends on using the correct `projectId` and `repository` identity for each application.
