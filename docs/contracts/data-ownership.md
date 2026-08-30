@@ -485,3 +485,21 @@ Velvet professional memory is not general platform context.
 Other apps must not receive Velvet contact details, confidential service notes, conversation histories, gift histories, relationship graphs or raw Capture content unless the user explicitly invokes a contracted feature that requires a minimum scoped subset.
 
 Growth Engine receives reference IDs and summaries where needed, not raw confidential note bodies by default.
+
+## External Intelligence Data Ownership
+
+External Intelligence owns development-support records, not product domain data.
+
+Canonical External Intelligence records:
+
+- Project Snapshot.
+- Development Result.
+- Experience.
+- Evidence.
+- Knowledge Observation.
+- Pattern candidate.
+- Token ledger and development KPI projections.
+
+External Intelligence must not become the canonical owner for Customer, Reservation, Payment, Sales, Revenue, Report, Professional Memory, Communication records, SNS MessageDraft, AI Activity, AI Usage, AI Capability, or other application-owned production records.
+
+Knowledge generated from development results is reusable engineering knowledge. It is not a copy of an application's business data source of truth.
