@@ -568,3 +568,24 @@ MVP supports Stripe only for client-to-professional payment flows owned by Growt
 - Growth Engine owns Stripe payment state.
 - Other apps must not store Stripe payment data as a source of truth.
 - Stripe secrets and credentials never cross into Professional Apps, Communication Planner, SNS Planner, AI Platform Core or Platform Admin.
+
+## External Intelligence Development Support Responsibility
+
+External Intelligence System owns development-support intelligence only.
+
+It is responsible for:
+
+- Token-First context retrieval for application development.
+- Project Snapshots for repository development state.
+- Development Experiences and Evidence.
+- Knowledge Observations and Pattern candidates derived from successful development results.
+- Development KPI reporting, including token reduction estimates and repository-level dashboard metrics.
+
+It is not responsible for:
+
+- Runtime product AI behavior.
+- AI Platform Core runtime Capability, Prompt, Knowledge, AI Activity, or AI Usage ownership.
+- Customer, Reservation, Payment, Sales, Communication, Report, Professional Memory, or other domain Source of Truth data.
+- Replacing an application's own production persistence or readiness contract.
+
+External Intelligence usage must be backed by successful HTTP or MCP communication. If communication is not successful, status must be reported as `External Intelligence: NOT CONNECTED`.
