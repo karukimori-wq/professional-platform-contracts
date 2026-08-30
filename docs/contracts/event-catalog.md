@@ -251,3 +251,19 @@ These events are expected but not yet approved as stable contracts.
 | `growth.campaign.created.v1` | Campaign model is not finalized |
 | `growth.nurture_action.created.v1` | Nurturing workflow model is not finalized |
 | `studio.recommendation.created.v1` | Recommendation payload requires privacy review |
+
+## External Intelligence Development Records
+
+External Intelligence development records are not product domain events.
+
+The current development-support baseline records:
+
+- Development Result.
+- Experience.
+- Evidence.
+- Knowledge Observation.
+- Pattern candidate.
+- Project Snapshot update.
+- Token ledger entry.
+
+Do not introduce application runtime event ownership into External Intelligence. Product events remain in their owning app and event contracts.
