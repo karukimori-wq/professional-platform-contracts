@@ -1000,3 +1000,18 @@ Not allowed unless a future contract explicitly approves it:
 - full Communication Planner ConversationContext bodies outside Communication Planner
 - unrelated full conversation histories
 - personal identity fields when a reference ID is sufficient
+
+## External Intelligence Development Loop
+
+External Intelligence supports a development-only loop:
+
+1. Development agent retrieves Token-First context for `projectId` and `repository`.
+2. Application development occurs in the target repository.
+3. Tests and production verification run in the target repository.
+4. GitHub main is updated.
+5. Development result is posted to External Intelligence.
+6. External Intelligence stores Experience and Evidence.
+7. Successful results may create Knowledge Observations and Pattern candidates.
+8. Project Snapshot is updated for later reuse.
+
+This flow is not an application runtime event flow. It must not replace product event ownership in Growth Engine, Numeria Studio, Velvet, Communication Planner, SNS Planner, AI Platform Core, Platform Admin, or Feedback Hub.
