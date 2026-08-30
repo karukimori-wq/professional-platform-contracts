@@ -101,3 +101,28 @@ Examples:
 - `google:calendar:...`
 
 External IDs are never used as primary IDs.
+
+## External Intelligence Project Identity
+
+External Intelligence uses repository-based project identity for real application development.
+
+Rules:
+
+- `projectId` must be the GitHub repository name.
+- `repository` must use `owner/repository`.
+- `shared-app` is reserved for tests and must not be used as a Production development identity.
+
+Examples:
+
+| Application | projectId | repository |
+| --- | --- | --- |
+| Growth Engine | `Growth-Engine` | `karukimori-wq/Growth-Engine` |
+| Numeria Studio | `numeria-studio` | `karukimori-wq/numeria-studio` |
+| Velvet | `Velvet` | `karukimori-wq/Velvet` |
+| Communication Planner | `Communication-Planner` | `karukimori-wq/Communication-Planner` |
+| SNS Planner | `SNS-planner` | `karukimori-wq/SNS-planner` |
+| AI Platform Core | `ai-platform-core` | `karukimori-wq/ai-platform-core` |
+| Platform Admin | `Platform-Admin` | `karukimori-wq/Platform-Admin` |
+| Feedback Hub | `feedback-hub` | `karukimori-wq/feedback-hub` |
+
+This identity is for development intelligence and repository KPI aggregation. It does not change product runtime identity contracts such as `workspaceId + userId`.
