@@ -440,3 +440,25 @@ SNS `MessageDraft` is limited to simple business-initiated contact or follow-up 
 - Operation names describe commands or queries, not HTTP routes.
 - Product repositories may map these operations to HTTP, RPC, server actions, or SDK methods.
 - Cross-system API names must remain stable even if transport changes.
+
+## External Intelligence Development Support API
+
+External Intelligence exposes development-support APIs and MCP-equivalent access for Token-First context and result recording.
+
+Canonical development result write path:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/api/development/results` | Record a completed development result and allow successful outcomes to become Experience, Evidence, Knowledge Observation, and Pattern candidates. |
+
+Contract rules:
+
+- Successful results may generate reusable Knowledge.
+- Failed results may be stored as Experience but must not be automatically promoted as successful Knowledge.
+- Context retrieval must prefer compact snapshots and compact knowledge.
+- Default Knowledge retrieval limit is 2.
+- Default context budget is 4000 characters.
+- Repository HEAD cache may skip Knowledge search when HEAD has not changed.
+- HTTP and MCP access must follow the same Token-First policy.
+
+External Intelligence APIs are for development workflow support. They are not runtime product APIs for customer-facing application behavior.
