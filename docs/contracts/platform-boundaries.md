@@ -302,3 +302,21 @@ Public HTTP monitoring remains valid for apps that are not Cloudflare-hosted or 
 Platform Admin may normalize flat `/contracts/status` responses and `{ status, data: { ... } }` API envelope responses. This does not define a Platform Admin-specific response shape for all apps.
 
 Human operator authentication / authorization remains a next hardening item. `PLATFORM_ADMIN_API_TOKEN` and `x-platform-admin-token` are API-to-API controls, not the final human operator auth contract.
+
+## External Intelligence Boundary
+
+External Intelligence is a development-support platform.
+
+Boundary rules:
+
+- It may retrieve compact development context for a repository.
+- It may store Project Snapshots, Experiences, Evidence, Knowledge Observations, and Pattern candidates.
+- It may provide Token-First context to development agents through HTTP or MCP.
+- It may receive development results through `POST /api/development/results`.
+- It must not be placed in runtime request paths for product AI features.
+- It must not replace AI Platform Core for runtime AI capability, prompt, activity, usage, or product runtime knowledge ownership.
+- It must not hold application domain Source of Truth data.
+
+The canonical development loop is External Intelligence context -> application development -> tests -> GitHub main -> Development Result write -> Project Snapshot update -> later Knowledge reuse.
+
+A written instruction alone is not usage evidence. Actual successful HTTP or MCP communication is required.
