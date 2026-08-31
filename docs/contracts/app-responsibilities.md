@@ -589,3 +589,32 @@ It is not responsible for:
 - Replacing an application's own production persistence or readiness contract.
 
 External Intelligence usage must be backed by successful HTTP or MCP communication. If communication is not successful, status must be reported as `External Intelligence: NOT CONNECTED`.
+
+## Feedback Hub Responsibility
+
+Feedback Hub is a formal platform application for user-voice intelligence.
+
+Feedback Hub owns:
+
+- Feedback Conversation.
+- Feedback Message.
+- Feedback AI Analysis.
+- Feedback Issue.
+- Similar feedback grouping.
+- Impact assessment.
+- Priority score.
+- Ranking views such as Bug TOP10, Request TOP20, and Question TOP20.
+- Emergency notification signals for critical bugs or fast-rising duplicate reports.
+- Feedback management screen data.
+
+Feedback Hub does not own:
+
+- Application-embedded feedback UI.
+- Application screen context collection.
+- Development task management.
+- Development progress management.
+- Pull request management.
+- Implementation management.
+- GitHub Issue source of truth.
+
+Each client application owns its own question/improvement button, embedded chat or feedback UI, screen context, and first user-facing display. Feedback Hub owns the common intake API, storage, AI analysis through AI Platform Core, clustering, priority calculation, ranking, and emergency signals.
