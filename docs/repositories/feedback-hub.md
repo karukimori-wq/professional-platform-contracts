@@ -2,311 +2,290 @@
 
 Feedback Hub is the user-voice intelligence system for the professional platform.
 
-It is not a general development-management app. Incoming questions, bugs, and improvement requests are only the entry point. The core responsibility is to understand what users are struggling with and transform raw user voice into product-improvement intelligence.
+It is not a generic inquiry-management app and it is not a development-management app. Incoming questions, bugs, and improvement requests are the entry point. The core responsibility is to help AI understand user voice and transform it into product-improvement intelligence that can support development decisions.
+
+Repository: `karukimori-wq/feedback-hub`
 
 ## Status
 
-- Repository: https://github.com/karukimori-wq/feedback-hub.git
-- Production: TBD
-- Platform role: user voice intake, AI analysis, issue clustering, and priority intelligence
-- MVP state: Sprint 1 implementation started
-- Durable persistence target: Cloudflare D1 for MVP
+- Platform role: user voice intake, AI analysis, issue clustering, priority intelligence, and emergency signal detection.
+- MVP state: formal platform application.
+- Production: TBD.
+- Durable persistence target: Cloudflare D1 for MVP.
+- AI dependency: AI Platform Core.
+- Runtime source-of-truth boundary: Feedback Hub owns feedback records only.
 
 ## Purpose
 
-Feedback Hub receives questions, bugs, UX feedback, improvement requests, and feature requests from shared UI entry points embedded in apps such as Numeria Studio, Velvet, SNS Planner, and Communication Planner.
+Feedback Hub receives user questions, bugs, UX feedback, improvement requests, and feature requests from entry points embedded in platform applications.
 
-The system should:
+Core transformation:
 
-- answer simple questions using app-specific knowledge when possible
-- create a support/intake record when AI cannot confidently answer
-- preserve original conversations and messages
-- classify the user voice
-- detect similar or duplicate feedback
-- merge similar feedback into canonical issues
-- calculate priority using severity, count, and impact
-- surface rankings and urgent signals to the owner
+User question / bug / improvement request -> AI understanding -> classification -> similar feedback grouping -> severity/count/impact priority proposal -> development-ready Issue.
+
+Feedback Hub helps decide what should be developed. It does not manage the development execution itself.
 
 ## Owns
 
 Feedback Hub is the source of truth for:
 
-- Feedback Conversation
-- Feedback Message
-- Feedback AI Analysis
-- Feedback Issue
-- Similarity / duplicate grouping result
-- Impact assessment
-- Feedback priority score
-- Feedback ranking views
-- Feedback emergency notification state
-- Intake metadata attached by client apps
+- Feedback Conversation.
+- Feedback Message.
+- Feedback AI Analysis.
+- Feedback Issue.
+- Similarity and duplicate grouping result.
+- Impact assessment.
+- Feedback priority score.
+- Feedback ranking views.
+- Feedback emergency notification state.
+- Intake metadata sent by client applications.
 
 ## Does Not Own
 
 Feedback Hub must not become the source of truth for:
 
-- Customer master
-- Lead lifecycle
-- Reservation
-- Payment
-- Sales / revenue
-- SNS PostDraft
-- Communication Planner one-to-one conversation truth
-- Numeria report truth
-- Velvet professional memory
-- AI usage accounting
-- Engineering task management
-- Sprint management
-- GitHub issue source of truth
+- Customer master.
+- Lead lifecycle.
+- Reservation.
+- Payment.
+- Sales / revenue.
+- SNS PostDraft or MessageDraft.
+- Communication Planner canonical Conversation, Message, ConversationContext, ReplyDraft, or SafetyCheck.
+- Numeria Studio Session, Report, Calculation Result, or Numeria Snapshot.
+- Velvet Professional Memory, Visit, Note, Timeline, Recall, or Next Action.
+- AI Platform Core Activity, Usage, Capability, Prompt, Knowledge, or runtime AI ownership.
+- Engineering task management.
+- Sprint management.
+- Pull request management.
+- GitHub issue source of truth.
 
-Feedback Hub may generate product-improvement intelligence that humans or other systems use to start development, but it does not manage development execution.
+## Application Responsibility Split
 
-## Core Flow
+Client applications own the embedded user-facing UI.
 
-1. User opens the shared `Question / Improvement` UI from a client app.
-2. Feedback Hub starts a Conversation with client-provided metadata.
-3. AI attempts a first answer using app-specific knowledge.
-4. If the AI cannot answer confidently, the conversation becomes an intake.
-5. AI asks follow-up questions only when needed.
-6. AI creates an analysis record.
-7. The analysis is linked to an existing Issue or creates a new canonical Issue.
-8. Rankings and urgent notification rules are recalculated.
+Client application responsibilities:
 
-## MVP Features
+- Show the `Question / Improvement` or equivalent entry button.
+- Render the chat UI or embedded feedback UI.
+- Capture current screen context.
+- Send `appId`, `workspaceId`, `userId`, `route`, `screenName`, `appVersion`, device/browser metadata, and the initial message.
+- Display the first response or submission state to the user.
 
-- Shared chat entry point from supported apps
-- Source app recognition
-- App-specific knowledge retrieval for first answer
-- AI first response
-- Intake mode when unresolved
-- AI follow-up questions for missing reproduction details
-- Automatic metadata attachment
-- AI classification
-- Similar feedback grouping
-- Canonical issue creation
-- Original conversation preservation
-- Impact assessment
-- Priority score calculation
-- Admin ranking views
-- Emergency notification triggers
+Feedback Hub responsibilities:
 
-## Categories
+- Provide common intake APIs.
+- Persist received feedback data.
+- Use AI Platform Core for AI understanding.
+- Classify, summarize, cluster, and prioritize feedback.
+- Calculate impact and priority score.
+- Display rankings and management screens.
+- Trigger emergency notification signals for critical bugs or fast-rising duplicate reports.
 
-Supported MVP categories:
+UI body belongs to each app. Understanding, aggregation, analysis, and ranking belong to Feedback Hub.
 
-- Question
-- Bug
-- Improvement
-- Feature Request
-- UX Feedback
-- Other
+## AI Usage
 
-## Severity
+Feedback Hub uses AI Platform Core for AI processing.
 
-Recommended severity values:
+AI Platform Core provides or mediates:
 
-- Critical
-- High
-- Medium
-- Low
+- App-specific Knowledge reference.
+- First response assistance.
+- Classification.
+- Summarization.
+- Similarity detection.
+- Impact assessment.
+- Priority assistance.
 
-## Impact
+Feedback Hub is a client of AI Platform Core. AI Platform Core remains the runtime AI foundation and must not be turned into a product command center.
 
-Impact is an MVP requirement. Feedback Hub should estimate the affected scope and business risk from the user message and metadata.
-
-Examples:
-
-- Login failure: Critical impact because it can block broad access.
-- Payment failure: Critical impact because it directly affects business conversion.
-- Minor button-position confusion: Low impact because the workflow remains usable.
-
-Impact must be stored separately from raw count. A low-count but high-impact issue can still rank high.
-
-## Priority Formula
-
-Initial formula:
-
-```text
-priorityScore = severityWeight * countWeight * impactWeight
-```
-
-The formula must be replaceable and auditable. Store the component values used to calculate each score.
-
-## Automatic Metadata
-
-Client apps should attach:
-
-- appId
-- appName
-- appVersion
-- route
-- screenName
-- workspaceId
-- userId
-- device
-- browser
-- occurredAt
-
-Future metadata:
-
-- screenshot attachment
-- console/runtime error digest
-- requestId / traceId / correlationId
-
-Secrets, access tokens, and private credentials must never be captured.
+Feedback Hub must not be designed around direct OpenAI API calls or separate AI service calls unless the platform contract is explicitly changed.
 
 ## Data Model
 
+Feedback Hub handles feedback in four stages:
+
+Conversation -> Message -> AI Analysis -> Issue.
+
 ### Conversation
 
-- conversationId
-- appId
-- appName
-- workspaceId
-- userId
-- route
-- screenName
-- appVersion
-- device
-- browser
-- occurredAt
-- status
-- createdAt
-- updatedAt
+Conversation is the inquiry-level feedback thread.
+
+Typical fields:
+
+- `conversationId`
+- `appId`
+- `appName`
+- `workspaceId`
+- `userId`
+- `route`
+- `screenName`
+- `appVersion`
+- `device`
+- `browser`
+- `occurredAt`
+- `status`
 
 ### Message
 
-- messageId
-- conversationId
-- role
-- body
-- createdAt
+Message is a user, AI, or system utterance inside a Conversation.
+
+Typical fields:
+
+- `messageId`
+- `conversationId`
+- `role`
+- `content`
+- `createdAt`
 
 ### AI Analysis
 
-- analysisId
-- conversationId
-- category
-- severity
-- impact
-- confidence
-- summary
-- normalizedProblem
-- suggestedQuestions
-- metadata
-- createdAt
+AI Analysis is the AI interpretation result for a Conversation.
+
+Typical fields:
+
+- `analysisId`
+- `conversationId`
+- `category`
+- `summary`
+- `impact`
+- `urgency`
+- `confidence`
+- `similarIssueCandidate`
+- `requiredFollowUpQuestions`
+
+Canonical categories:
+
+- Question.
+- Bug.
+- Improvement.
+- Feature Request.
+- UX Feedback.
+- Other.
 
 ### Issue
 
-- issueId
-- canonicalTitle
-- category
-- severity
-- impact
-- count
-- priorityScore
-- priorityComponents
-- status
-- firstSeenAt
-- lastSeenAt
-- createdAt
-- updatedAt
+Issue is the canonical grouped unit for similar feedback.
 
-### Issue Link
+Typical fields:
 
-- issueLinkId
-- issueId
-- analysisId
-- conversationId
-- similarityScore
-- matchReason
-- createdAt
+- `issueId`
+- `title`
+- `category`
+- `status`
+- `severity`
+- `impact`
+- `count`
+- `priorityScore`
+- `sourceConversationIds`
+- `aiSummary`
+- `latestReceivedAt`
 
-## API Candidates
+## Priority Calculation
 
-MVP endpoints:
+Priority must not be based on count alone.
 
-- `GET /health`
-- `GET /version`
-- `GET /contracts/status`
-- `POST /api/feedback/conversations`
-- `POST /api/feedback/conversations/{conversationId}/messages`
-- `POST /api/feedback/conversations/{conversationId}/analyze`
-- `GET /api/feedback/issues`
-- `GET /api/feedback/issues/{issueId}`
-- `GET /api/feedback/rankings/bugs`
-- `GET /api/feedback/rankings/requests`
-- `GET /api/feedback/rankings/questions`
-- `GET /api/feedback/notifications/urgent`
+Baseline formula:
 
-## Ranking Views
+`priorityScore = severity * count * impact`
 
-Admin MVP should expose:
+Impact is AI-assisted and reviewed through Feedback Hub management views.
 
-- Bug TOP 10
-- Improvement / Feature Request TOP 20
-- Question TOP 20
-- Critical active issues
-- New high-impact low-count issues
+Examples:
 
-## Emergency Notification Rules
+| User signal | Expected treatment |
+| --- | --- |
+| Cannot log in | Critical |
+| Cannot pay | Critical / high business impact |
+| Cannot save | High |
+| Button location is unclear | Low / UX Feedback |
 
-Initial triggers:
+Low-count critical bugs must still surface quickly.
 
-- any Critical Bug
-- same Bug reaches 30 linked conversations
-- payment-related Critical issue
-- login/access Critical issue
+## Similar Feedback Grouping
 
-Notification destination is owner-controlled and can be implemented after the MVP ranking and issue pipeline are stable.
+Feedback Hub's core value is merging similar user voice into a single Issue while preserving all source messages.
 
-## EIS Alignment
+Examples that may map to one Issue:
 
-Feedback Hub should borrow the External Intelligence System pattern:
+- Cannot save.
+- Data is not saved.
+- Data disappears after refresh.
+- Registration fails.
 
-- Raw user conversation is preserved as evidence.
-- AI Analysis is an interpreted observation.
-- Similar repeated observations become a canonical Issue.
-- Issue ranking uses evidence, count, impact, severity, confidence, and recency.
-- The system must not equate frequency with truth.
-- Original evidence must remain inspectable after AI summarization.
+Canonical Issue example: "Save operation failure".
 
-## Cloudflare MVP Direction
+Original Conversations and Messages must be retained. AI summaries must not replace or erase the original user text.
 
-Recommended MVP infrastructure:
+## Rankings
 
-- Cloudflare Workers for API/runtime
-- Cloudflare D1 for relational persistence
-- R2 later for screenshots or larger attachments
-- Queue later for async AI analysis and notification fan-out
+Feedback Hub management screens should provide at least:
 
-Keep the first implementation small. Add Vectorize or other similarity infrastructure only after simple lexical/embedding storage is insufficient.
+- Bug TOP10.
+- Request / Improvement TOP20.
+- Question TOP20.
 
-## Sprint 1 Implementation Snapshot
+Rankings should be based on severity, count, impact, and recency where appropriate.
 
-The Feedback Hub repository now contains:
+## Emergency Notification
 
-- Cloudflare Workers + TypeScript + Hono scaffold
-- D1 initial schema
-- Conversation / Message / AI Analysis / Issue / Issue Link tables
-- Contract endpoints
-- Feedback conversation, message, analysis, issue, ranking, and urgent notification APIs
-- Deterministic MVP classifier for category, severity, impact, normalized problem, and priority score
-- Similar feedback grouping logic
-- Vitest tests and GitHub Actions CI
+Feedback Hub may trigger emergency notification signals for:
 
-Local verification completed:
+- Critical Bug.
+- Login failure.
+- Payment failure.
+- Save failure.
+- Rapid increase of same or similar bug reports.
 
-- `npm install`: success
-- `npm run typecheck`: success
-- `npm test`: success, 2 files / 6 tests passed
+Emergency notification means surfacing an operational signal. It does not mean Feedback Hub owns development task execution.
 
-## Open Decisions
+## Planned APIs
 
-- First Cloudflare D1 database ID
-- First production URL
-- Whether the first admin UI lives in this app or Platform Admin
-- First notification destination
-- Exact app-specific Knowledge source for AI first answers
-- Whether GitHub Issues are created automatically or only after owner approval
+Client applications use common Feedback Hub intake APIs.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/api/embed/config?appId=...` | Get app-specific embed configuration. |
+| POST | `/api/embed/feedback` | Receive feedback from embedded UI. |
+| POST | `/api/feedback/intake` | Canonical feedback intake endpoint. |
+
+Baseline payload:
+
+```json
+{
+  "appId": "numeria-studio",
+  "appName": "Numeria Studio",
+  "workspaceId": "ws_xxx",
+  "userId": "user_xxx",
+  "initialMessage": "保存できません",
+  "route": "/sessions/123",
+  "screenName": "鑑定詳細",
+  "appVersion": "0.1.0",
+  "device": "mobile",
+  "browser": "Safari",
+  "occurredAt": "2026-08-31T00:00:00.000Z"
+}
+```
+
+## Integration Targets
+
+Initial client applications:
+
+- Numeria Studio.
+- Velvet.
+- SNS Planner.
+- Communication Planner.
+- Growth Engine.
+- Future platform products.
+
+## Development Boundary
+
+Feedback Hub can produce development-ready Issue intelligence, but it does not own:
+
+- Task assignment.
+- Development progress tracking.
+- Pull request management.
+- Implementation management.
+- Release management.
+
+Those remain human/operator workflow or future dedicated development-management tooling.
