@@ -367,3 +367,31 @@ Tracked KPI families:
 Token values are currently character-count-based estimates and must be distinguished from LLM provider-reported token usage.
 
 Repository-level KPI aggregation depends on using the correct `projectId` and `repository` identity for each application.
+
+## Feedback Hub Observability
+
+Feedback Hub observability should support intake traceability, AI analysis auditability, and emergency signal review.
+
+Recommended fields:
+
+- `traceId`
+- `correlationId`
+- `requestId`
+- `appId`
+- `workspaceId`
+- `userId`
+- `conversationId`
+- `messageId`
+- `analysisId`
+- `issueId`
+- `category`
+- `impact`
+- `priorityScore`
+- `eventName`
+- `errorCode`
+- `operation`
+- `statusCode`
+- `durationMs`
+- `occurredAt`
+
+Feedback Hub should allow operators to trace from a ranked Issue back to all original Conversations and Messages.
