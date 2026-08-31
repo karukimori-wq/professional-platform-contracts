@@ -320,3 +320,18 @@ Boundary rules:
 The canonical development loop is External Intelligence context -> application development -> tests -> GitHub main -> Development Result write -> Project Snapshot update -> later Knowledge reuse.
 
 A written instruction alone is not usage evidence. Actual successful HTTP or MCP communication is required.
+
+## Feedback Hub Boundary
+
+Feedback Hub converts user voice into development-decision intelligence.
+
+Boundary rules:
+
+- Client apps own the visible feedback entry UI and capture screen context.
+- Feedback Hub owns common intake, persistence, AI Analysis, Issue clustering, priority scoring, rankings, and emergency feedback signals.
+- Feedback Hub uses AI Platform Core for AI understanding and must not call separate runtime AI providers by default.
+- AI Platform Core remains the AI runtime foundation and is not a command center.
+- Feedback Hub does not own development execution, PR management, sprint management, or task assignment.
+- Feedback Hub does not own application domain source-of-truth data.
+
+The canonical feedback model is Conversation -> Message -> AI Analysis -> Issue.
