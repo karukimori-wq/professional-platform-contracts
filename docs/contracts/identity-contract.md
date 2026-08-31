@@ -126,3 +126,21 @@ Examples:
 | Feedback Hub | `feedback-hub` | `karukimori-wq/feedback-hub` |
 
 This identity is for development intelligence and repository KPI aggregation. It does not change product runtime identity contracts such as `workspaceId + userId`.
+
+## Feedback Hub Identity
+
+Feedback Hub intake must carry application and tenant/user identity from the client application.
+
+Baseline fields:
+
+- `appId`
+- `appName`
+- `workspaceId`
+- `userId`
+- `route`
+- `screenName`
+- `appVersion`
+
+Feedback Hub uses these identifiers to scope feedback, group issues, and support app-level ranking. It does not replace the identity contracts of the source application.
+
+MVP identity remains aligned with `workspaceId + userId / ownerUserId` where applicable. `professionalId` is not required as a platform-wide MVP identity dependency.
