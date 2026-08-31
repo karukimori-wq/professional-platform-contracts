@@ -563,3 +563,28 @@ Current verified baseline:
 - Failed Development Result exclusion from successful Knowledge promotion: VERIFIED.
 
 This status does not make External Intelligence a runtime dependency for application AI behavior. Application-by-application EIS integration is tracked separately in `docs/release-readiness/external-intelligence-integration-status.md`.
+
+## Feedback Hub Platform Status
+
+Feedback Hub is now a formal platform application.
+
+Current contract status:
+
+- Repository: `karukimori-wq/feedback-hub`.
+- Role: user voice intelligence and development-decision Issue preparation.
+- Inquiry is the entry point; AI analysis, clustering, impact, and priority are the core value.
+- AI processing dependency: AI Platform Core.
+- Client UI responsibility: each source application.
+- Feedback analysis responsibility: Feedback Hub.
+- Development execution responsibility: out of scope.
+- Production: TBD.
+- Durable persistence target: Cloudflare D1 for MVP.
+
+Initial integration targets:
+
+- Numeria Studio.
+- Velvet.
+- SNS Planner.
+- Communication Planner.
+- Growth Engine.
+- Future platform products.
