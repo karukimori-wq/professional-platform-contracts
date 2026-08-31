@@ -503,3 +503,24 @@ Canonical External Intelligence records:
 External Intelligence must not become the canonical owner for Customer, Reservation, Payment, Sales, Revenue, Report, Professional Memory, Communication records, SNS MessageDraft, AI Activity, AI Usage, AI Capability, or other application-owned production records.
 
 Knowledge generated from development results is reusable engineering knowledge. It is not a copy of an application's business data source of truth.
+
+## Feedback Hub Data Ownership
+
+Feedback Hub is the canonical owner for feedback-domain records only.
+
+Owned records:
+
+- Feedback Conversation.
+- Feedback Message.
+- Feedback AI Analysis.
+- Feedback Issue.
+- Similarity grouping result.
+- Impact assessment.
+- Priority score.
+- Ranking projection.
+- Emergency notification state.
+- Intake metadata received from client applications.
+
+Feedback Hub must preserve original Conversations and Messages. AI summaries and grouped Issues must not replace or erase the original user text.
+
+Feedback Hub must not become the canonical owner for Customer, Reservation, Payment, Sales, SNS PostDraft, SNS MessageDraft, Communication Planner canonical conversation records, Numeria Studio reports, Velvet professional memory, AI Activity, AI Usage, AI Capability, or development execution data.
