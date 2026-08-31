@@ -462,3 +462,35 @@ Contract rules:
 - HTTP and MCP access must follow the same Token-First policy.
 
 External Intelligence APIs are for development workflow support. They are not runtime product APIs for customer-facing application behavior.
+
+## Feedback Hub API
+
+Feedback Hub provides common intake APIs for client applications.
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/api/embed/config?appId=...` | Return app-specific embed configuration. |
+| POST | `/api/embed/feedback` | Receive feedback from embedded UI. |
+| POST | `/api/feedback/intake` | Canonical feedback intake endpoint. |
+
+Baseline intake payload:
+
+```json
+{
+  "appId": "numeria-studio",
+  "appName": "Numeria Studio",
+  "workspaceId": "ws_xxx",
+  "userId": "user_xxx",
+  "initialMessage": "保存できません",
+  "route": "/sessions/123",
+  "screenName": "鑑定詳細",
+  "appVersion": "0.1.0",
+  "device": "mobile",
+  "browser": "Safari",
+  "occurredAt": "2026-08-31T00:00:00.000Z"
+}
+```
+
+Feedback Hub API output should support the model Conversation -> Message -> AI Analysis -> Issue.
+
+AI processing should be requested through AI Platform Core rather than direct OpenAI or separate AI provider calls by default.
