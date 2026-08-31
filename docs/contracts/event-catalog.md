@@ -267,3 +267,19 @@ The current development-support baseline records:
 - Token ledger entry.
 
 Do not introduce application runtime event ownership into External Intelligence. Product events remain in their owning app and event contracts.
+
+## Feedback Hub Events
+
+Feedback Hub event names are reserved for feedback-domain lifecycle changes.
+
+Stable baseline candidates:
+
+- `feedback.conversation.started.v1`
+- `feedback.message.created.v1`
+- `feedback.analysis.created.v1`
+- `feedback.issue.created.v1`
+- `feedback.issue.merged.v1`
+- `feedback.priority.updated.v1`
+- `feedback.emergency_signal.created.v1`
+
+These events describe feedback intake, analysis, grouping, priority, and emergency signals. They must not be used to represent application business events or development execution events.
