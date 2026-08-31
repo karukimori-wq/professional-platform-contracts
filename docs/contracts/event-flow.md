@@ -1015,3 +1015,19 @@ External Intelligence supports a development-only loop:
 8. Project Snapshot is updated for later reuse.
 
 This flow is not an application runtime event flow. It must not replace product event ownership in Growth Engine, Numeria Studio, Velvet, Communication Planner, SNS Planner, AI Platform Core, Platform Admin, or Feedback Hub.
+
+## Feedback Hub Intake Flow
+
+Feedback Hub supports this product feedback flow:
+
+1. User opens the feedback UI inside a client application.
+2. Client application sends app, workspace, user, route, screen, version, device/browser, and initial message metadata.
+3. Feedback Hub creates or updates a Feedback Conversation.
+4. Feedback Hub stores Feedback Messages.
+5. Feedback Hub requests AI understanding through AI Platform Core.
+6. Feedback Hub creates AI Analysis.
+7. Feedback Hub links to an existing Issue or creates a new Issue.
+8. Feedback Hub recalculates priority score and rankings.
+9. Feedback Hub emits emergency notification signals when a critical bug or rapid duplicate increase is detected.
+
+This flow does not move ownership of source application data into Feedback Hub. Client applications keep their UI and product-domain source of truth.
