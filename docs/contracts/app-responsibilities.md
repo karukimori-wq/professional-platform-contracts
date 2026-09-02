@@ -618,3 +618,21 @@ Feedback Hub does not own:
 - GitHub Issue source of truth.
 
 Each client application owns its own question/improvement button, embedded chat or feedback UI, screen context, and first user-facing display. Feedback Hub owns the common intake API, storage, AI analysis through AI Platform Core, clustering, priority calculation, ranking, and emergency signals.
+
+## Plan Responsibility Contract
+
+Plan support does not change application responsibilities.
+
+Shared plan concepts are defined in `docs/contracts/plan-contract.md`.
+
+Responsibilities:
+
+- Each application must use canonical `PlanId` values: `free`, `pro`, `business`.
+- Each application must enforce plan-gated behavior on the server side.
+- Numeria Studio owns Numeria appraisal/session/report functionality and its Numeria-specific appraisal subject snapshots.
+- Velvet owns professional relationship memory, history, timeline, event, visit, note, recall, and next-action functionality.
+- AI Platform Core owns AI entitlement and usage enforcement for AI capabilities only.
+- Feedback Hub must allow Free and Pro users to submit bug and urgent feedback.
+- Growth Engine remains the future Business-side owner for Customer, Reservation, Payment, Sales, and business flow data.
+
+Business is a future cross-application plan. It is not purchasable in the first Numeria Studio / Velvet Free + Pro release and must not be implemented as a simple Pro extension.
