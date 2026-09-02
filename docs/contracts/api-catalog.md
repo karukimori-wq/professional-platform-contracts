@@ -494,3 +494,31 @@ Baseline intake payload:
 Feedback Hub API output should support the model Conversation -> Message -> AI Analysis -> Issue.
 
 AI processing should be requested through AI Platform Core rather than direct OpenAI or separate AI provider calls by default.
+
+## Plan API Contract
+
+Applications should expose or consume plan readiness and entitlement checks using the shared plan contract.
+
+Recommended API families:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/api/plans/status` | Return current plan, subscription status, available features, and limits for the current app/user. |
+| POST | `/api/entitlements/check` | Server-side entitlement check for `appId + workspaceId + userId + planId + featureKey`. |
+| GET | `/api/usage/status` | Return current usage, limits, period, and reset timing. |
+| POST | `/api/usage/record` | Record countable usage with idempotency. |
+| GET | `/api/plans/readiness` | Machine-readable readiness for Free / Pro / Business configuration. |
+
+Common limit error fields:
+
+- `status`: `error`
+- `errorCode`: `usage_limit_reached`
+- `planId`
+- `featureKey`
+- `limit`
+- `used`
+- `usagePeriod`
+- `upgradeAvailable`
+- `correlationId`
+
+Business purchase and Business-only APIs must not be publicly enabled during the first Free / Pro release.
