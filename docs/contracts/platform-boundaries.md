@@ -335,3 +335,18 @@ Boundary rules:
 - Feedback Hub does not own application domain source-of-truth data.
 
 The canonical feedback model is Conversation -> Message -> AI Analysis -> Issue.
+
+## Plan Boundary
+
+Free / Pro / Business plan behavior is a shared platform contract, not an app-local naming convention.
+
+Boundary rules:
+
+- Applications must not invent new plan names for platform plans.
+- Business must stay unavailable until released as a cross-application plan.
+- Server-side checks are required for all plan-gated writes, reads, AI calls, and usage counters.
+- UI-only gating is not sufficient.
+- Numeria Studio Pro and Velvet Pro are independent subscriptions.
+- Business may later unlock cross-app reference flows, but it must not merge Source of Truth ownership across apps.
+- Growth Engine remains the owner for Customer, Reservation, Payment, Sales, and business data.
+- AI Platform Core remains the owner for AI Activity, AI Usage, Capability, Prompt, and runtime AI control.
