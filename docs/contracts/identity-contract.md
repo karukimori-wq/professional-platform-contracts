@@ -144,3 +144,19 @@ Baseline fields:
 Feedback Hub uses these identifiers to scope feedback, group issues, and support app-level ranking. It does not replace the identity contracts of the source application.
 
 MVP identity remains aligned with `workspaceId + userId / ownerUserId` where applicable. `professionalId` is not required as a platform-wide MVP identity dependency.
+
+## Plan Identity
+
+Plan checks use the existing MVP identity baseline.
+
+Required baseline identifiers:
+
+- `workspaceId`
+- `userId` or `ownerUserId`
+- `appId`
+- `planId`
+- `featureKey`
+
+`professionalId` is not required for MVP Free / Pro release enforcement.
+
+Numeria Studio and Velvet must keep their app-specific scopes separate. A user can have Numeria Studio Pro without Velvet Pro, or Velvet Pro without Numeria Studio Pro.
