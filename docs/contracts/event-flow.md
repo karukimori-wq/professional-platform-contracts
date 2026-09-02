@@ -1031,3 +1031,18 @@ Feedback Hub supports this product feedback flow:
 9. Feedback Hub emits emergency notification signals when a critical bug or rapid duplicate increase is detected.
 
 This flow does not move ownership of source application data into Feedback Hub. Client applications keep their UI and product-domain source of truth.
+
+## Plan Enforcement Flow
+
+Plan-gated application actions follow this flow:
+
+1. Client requests a plan-gated action.
+2. Server resolves `workspaceId + userId / ownerUserId`, `appId`, `planId`, and `featureKey`.
+3. Server checks entitlement.
+4. Server checks usage limit and usage period.
+5. Server performs the application action only when allowed.
+6. Server records usage with idempotency when the action consumes a count.
+7. Server emits `plan.usage.recorded.v1` or `plan.usage_limit.reached.v1` as appropriate.
+8. App-specific domain events remain owned by the source application.
+
+Business-only flows must remain blocked until Business is explicitly released.
