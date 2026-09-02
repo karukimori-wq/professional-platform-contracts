@@ -588,3 +588,27 @@ Initial integration targets:
 - Communication Planner.
 - Growth Engine.
 - Future platform products.
+
+## Free / Pro / Business Plan Readiness
+
+Free / Pro / Business plan contract is now a shared platform readiness requirement.
+
+Current release target:
+
+- Numeria Studio: Free + Pro release.
+- Velvet: Free + Pro release.
+- Business: future platform-wide running development, not purchasable now.
+
+Readiness requirements before Free / Pro release:
+
+- Canonical `PlanId` values are used.
+- Existing users default to `free`.
+- Server-side entitlement checks exist.
+- Server-side usage limit enforcement exists.
+- Numeria Free limits: 20 appraisals/month and 3 appraisal subjects.
+- Numeria Pro: appraisal and appraisal-subject limits removed.
+- Velvet Free limits: 30 customers and 3 months of history visibility.
+- Velvet Pro: unlimited customers, indefinite history, integrated timeline, and event-based history.
+- Business is hidden, disabled, or coming soon.
+- Plan readiness endpoints and limit errors are machine-readable.
+- Platform Admin can monitor plan readiness without exposing payment data, secrets, conversations, or appraisal contents.
