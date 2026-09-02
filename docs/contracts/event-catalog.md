@@ -283,3 +283,16 @@ Stable baseline candidates:
 - `feedback.emergency_signal.created.v1`
 
 These events describe feedback intake, analysis, grouping, priority, and emergency signals. They must not be used to represent application business events or development execution events.
+
+## Plan Events
+
+Canonical plan event names:
+
+- `plan.subscription.changed.v1`
+- `plan.entitlement.checked.v1`
+- `plan.usage.recorded.v1`
+- `plan.usage_limit.reached.v1`
+
+These are shared platform event names for plan lifecycle, entitlement, usage, and limit enforcement.
+
+Applications must not create incompatible plan event names for the same semantics.
