@@ -193,3 +193,15 @@ Stable Numeria Studio events:
 - `studio.report.generated.v1`
 
 Legacy event names must not be used.
+
+## Free / Pro Plan Contract
+
+Numeria Studio will release Free and Pro first.
+
+- Free: 20 appraisals per month and 3 appraisal subjects.
+- Pro: appraisals and appraisal subjects are unlimited within Numeria Studio scope.
+- Business: future cross-app integration with Growth Engine and other apps; not purchasable in the first release.
+
+Numeria appraisal subjects are Numeria-specific snapshots for appraisal workflows. They must not become canonical Customer master records.
+
+Plan enforcement must be server-side and must keep the MVP identity rule: `workspaceId + userId`, without requiring `professionalId`.
