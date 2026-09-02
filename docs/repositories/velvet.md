@@ -234,3 +234,15 @@ Platform Admin stores operational snapshots only, not Velvet Professional Memory
 4. Update Platform Admin canonical monitoring.
 5. Strengthen Observability.
 6. Improve mobile-first Professional Memory UI/UX.
+
+## Free / Pro Plan Contract
+
+Velvet will release Free and Pro first.
+
+- Free: 30 customers, 3 months of history visibility, and one-record-at-a-time review.
+- Pro: unlimited customers, indefinite history, integrated timeline, and event-based history.
+- Business: future reservation, sales, appraisal, SNS, and cross-app business integration; not purchasable in the first release.
+
+Velvet owns professional relationship memory and event/history views. It must not become the Source of Truth for Reservation, Payment, Sales, or Growth Engine Customer master data.
+
+Plan enforcement must be server-side and must keep the MVP identity rule: `workspaceId + userId / ownerUserId`, without requiring `professionalId`.
