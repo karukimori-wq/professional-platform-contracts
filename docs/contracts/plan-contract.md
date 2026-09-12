@@ -1,8 +1,10 @@
 # Free / Pro / Business Plan Contract
 
-This contract is the platform-wide source of truth for plan identifiers, entitlement checks, usage limits, and plan-related events.
+This contract is the platform-wide source of truth for Free / Pro release planning and the future Business plan boundary.
 
-Applications must not invent independent plan names or incompatible entitlement semantics.
+Numeria Studio and Velvet release Free and Pro first. Business is intentionally out of the current release and continues as future running development.
+
+Applications must not invent local plan names, incompatible usage limits, AI usage contracts, Feedback Hub payloads, or release monitoring semantics.
 
 ## Canonical Types
 
@@ -10,24 +12,30 @@ Applications must not invent independent plan names or incompatible entitlement 
 | --- | --- |
 | `PlanId` | `free`, `pro`, `business` |
 | `SubscriptionStatus` | `trialing`, `active`, `past_due`, `canceled`, `expired` |
+| `ReleaseStatus` | `ready`, `in_progress`, `blocked`, `preparing`, `unavailable` |
+| `AppContractStatus` | `compliant`, `warning`, `error`, `not_applicable` |
 | `Entitlement` | A server-evaluated permission for a `FeatureKey` under a `PlanId`. |
-| `UsageLimit` | A plan-scoped limit such as monthly appraisal count or customer count. |
-| `UsagePeriod` | The reset or measurement period for usage, for example `monthly`, `rolling_3_months`, or `lifetime`. |
+| `UsageLimit` | A plan-scoped limit such as completed appraisal count, saved draft count, profile count, or history visibility. |
+| `UsagePeriod` | The measurement period for usage, for example `monthly`, `rolling_3_months`, or `lifetime`. |
 | `FeatureKey` | Stable string key used by apps and AI Platform Core to evaluate access. |
-| `PlanChangedEvent` | Event emitted when a subscription or effective plan changes. |
-| `UsageLimitReachedEvent` | Event emitted when server-side enforcement denies or warns on limit exhaustion. |
+| `PlanChangedEvent` | Canonical event emitted when a subscription or effective plan changes. |
+| `UsageLimitReachedEvent` | Canonical event emitted when server-side enforcement denies or warns on limit exhaustion. |
+
+`preparing` and `unavailable` are not `SubscriptionStatus` values. Use them under `ReleaseStatus` for Business or not-yet-released features.
 
 ## Global Rules
 
-- Canonical plan IDs are `free`, `pro`, and `business`.
+- Free and Pro are in the current release scope.
+- Business is not purchasable in the current release.
+- Business is a future cross-application business plan, not a larger Pro tier.
+- Business purchase flows and normal-user Business feature navigation must not be public.
+- Admin mode may expose Business planned features and in-development menus to administrators only.
 - Pricing must not be hard-coded in this contract.
 - Existing users default to `free` unless a valid subscription says otherwise.
-- Plan limits must be enforced server-side, not only hidden in the UI.
+- Plan limits must be enforced server-side, not only hidden in UI.
 - MVP identity remains `workspaceId + userId / ownerUserId`.
 - `professionalId` is not a required MVP dependency.
 - Numeria Studio Pro and Velvet Pro are separately purchasable products.
-- Business is not purchasable in the first Free / Pro release.
-- Business is a future cross-application business plan, not a larger Pro tier.
 - Domain Source of Truth ownership does not change because of plan enforcement.
 
 ## Subscription Status
@@ -40,39 +48,87 @@ Applications must not invent independent plan names or incompatible entitlement 
 | `canceled` | Subscription has been canceled. |
 | `expired` | Trial, grace period, or time-limited access has ended. |
 
+## Release Status
+
+| Status | Meaning |
+| --- | --- |
+| `ready` | Release scope is implemented and verified. |
+| `in_progress` | Release scope is actively being implemented. |
+| `blocked` | Release scope cannot proceed until a named issue is resolved. |
+| `preparing` | Planned or internally visible but not available to normal users. |
+| `unavailable` | Not offered and not available. |
+
+Business must report `preparing` or `unavailable` until explicitly released.
+
 ## Numeria Studio Plans
 
-Numeria Studio owns appraisal sessions, reports, appraisal logic, calculation results, and Numeria snapshots. Customer master data must not be copied into Numeria as canonical Customer data.
+Numeria Studio is the Source of Truth for Session, Report Snapshot, appraisal logic, calculation results, and AppraisalClientSnapshot.
+
+Numeria Studio must not own Customer master, Reservation, Payment, Sales, Conversation, Message, AI Activity, or AI Usage.
 
 | PlanId | Entitlements | Limits | Notes |
 | --- | --- | --- | --- |
-| `free` | Basic appraisal, basic report, appraisal history, basic templates, free-tier AI assistance. | 20 appraisals per month; 3 appraisal subjects. | PDF and branded reports are out of Free scope. |
-| `pro` | Unlimited appraisal usage and appraisal subject management within Numeria scope. | No Numeria-specific appraisal or appraisal-subject limit. | Pro is independent from Velvet Pro. |
-| `business` | Future Growth Engine and cross-app business integration. | Not purchasable in current release. | Business must not be exposed as available until implemented. |
+| `free` | Basic appraisal, basic report, basic template, free-tier AI assistance, PDF output with platform logo. | 20 completed appraisals per month; 1 saved in-progress appraisal; 3 appraisal client profiles; content view for latest 3 history items. | Count is consumed when the user presses the appraisal completion button. Session start alone does not consume monthly appraisal count. Older appraisals are not deleted; Free shows count and client info but locks full content. |
+| `pro` | Detailed appraisal, detailed report, PDF output, branded report, logo change/hide, report wording adjustment, past appraisal search, client-specific appraisal history, session memo, AI consultation organization/deepening, AI wording adjustment. | No monthly appraisal count limit; no saved draft limit; no appraisal client profile limit; no appraisal-history content-view limit. | Pro is independent from Velvet Pro. |
+| `business` | Future Growth Engine integration, reservation, sales, payment, refund, and SNS acquisition integration by reference IDs. | Not purchasable in current release. | Growth Engine remains Source of Truth for Customer, Reservation, Payment, and Sales. Numeria stores references only. |
 
-Numeria appraisal subject information is a Numeria-owned snapshot for appraisal workflows. It is not the canonical Customer master.
+Official Numeria events:
+
+- `studio.session.started.v1`
+- `studio.session.completed.v1`
+- `studio.report.generated.v1`
+
+Allowed event fields:
+
+- `appId`
+- `appVersion`
+- `workspaceId`
+- `userId`
+- `planId`
+- `featureKey`
+- `sessionId`
+- `reportId`
+- `reportRef`
+- `correlationId`
+- `occurredAt`
+- `status`
+
+Forbidden event fields:
+
+- Full appraisal text.
+- Full consultation text.
+- Full customer master record.
+- Payment details.
+- Stripe information.
+- API keys.
+- Secrets.
+- Secret prompts.
 
 ## Velvet Plans
 
-Velvet owns relationship, conversation, event, visit, note, timeline, recall, and next-action memory for the professional. Velvet does not own Sales, Reservation, or Payment truth.
+Velvet manages relationship, conversation, and event records for professional memory. Detailed Velvet feature rules may be refined in the Velvet repository, but the Free / Pro boundary below is shared.
+
+Velvet must not own Reservation, Payment, Sales, or Growth Engine Customer master truth.
 
 | PlanId | Entitlements | Limits | Notes |
 | --- | --- | --- | --- |
-| `free` | Basic customer memory and per-record history review. | 30 customers; 3 months of history visibility; records are opened one by one. | Integrated timeline is not part of Free. |
-| `pro` | Unlimited customers, indefinite history, integrated timeline, event-based history. | No Velvet-specific customer or history duration limit. | Pro is independent from Numeria Studio Pro. |
-| `business` | Future reservation, sales, appraisal, SNS, and cross-app business flow integration. | Not purchasable in current release. | Business is a cross-app plan, not Pro+. |
+| `free` | Basic registration and per-date/per-record review. | Detailed integrated timeline is limited; users inspect registered contents one by one. | Pro value must remain visible through locked or limited timeline/event organization affordances. |
+| `pro` | Integrated timeline, event timing, conversation history flow, relationship flow, AI-assisted organization/suggestions, search, and filtering. | No Pro-specific history/search limit unless Velvet defines one in its app contract. | Pro is independent from Numeria Studio Pro. |
+| `business` | Future Growth Engine, SNS, payment, reservation, appraisal, and cross-app workflow integration. | Not purchasable in current release. | Cross-app flows must use reference IDs and preserve Source of Truth boundaries. |
 
-Velvet may store customer-scoped professional memory, but Growth Engine remains the owner of Customer master, Reservation, Payment, and Sales data.
+Velvet must not pass full conversation text or full memory text to other apps by default. AI usage goes through AI Platform Core. Feedback Hub may classify inquiries from Velvet.
 
 ## Business Plan Boundary
 
-Business is a future cross-application plan for business data and workflows across Growth Engine, Numeria Studio, Velvet, SNS Planner, Communication Planner, AI Platform Core, and Platform Admin.
+Business is a future cross-application plan for business data and workflows across Growth Engine, Numeria Studio, Velvet, SNS Planner, Feedback Hub, AI Platform Core, and Platform Admin.
 
 Business must be treated as:
 
 - A future platform plan.
 - Not purchasable during the first Numeria Studio / Velvet Free + Pro release.
 - Not a simple feature extension of Pro.
+- Hidden from normal users except for coming-soon messaging where explicitly approved.
+- Visible in admin mode only as planned, preparing, or in-development functionality.
 - A plan that may unlock cross-app reference integrations while preserving each application's Source of Truth.
 
 Business implementation must not move Customer, Reservation, Payment, Sales, Report, MessageDraft, Communication, AI Activity, or AI Usage ownership away from the owning application.
@@ -84,6 +140,7 @@ Every plan-controlled action must have a server-side entitlement and usage check
 Minimum check inputs:
 
 - `appId`
+- `appVersion`
 - `workspaceId`
 - `userId` or `ownerUserId`
 - `planId`
@@ -97,17 +154,207 @@ UI gating is allowed for clarity, but it is not sufficient enforcement.
 
 | FeatureKey | Owning app | Plan scope |
 | --- | --- | --- |
-| `numeria.appraisal.create` | Numeria Studio | Free monthly limit; Pro unlimited. |
-| `numeria.subject.manage` | Numeria Studio | Free subject limit; Pro unlimited. |
+| `numeria.appraisal.complete` | Numeria Studio | Free monthly completion limit; Pro unlimited. |
+| `numeria.appraisal.save_draft` | Numeria Studio | Free 1 in-progress save; Pro unlimited. |
+| `numeria.client_profile.manage` | Numeria Studio | Free profile limit; Pro unlimited. |
+| `numeria.history.view_content` | Numeria Studio | Free latest 3 content view; Pro unlimited. |
 | `numeria.report.basic` | Numeria Studio | Free and Pro. |
-| `numeria.report.pdf` | Numeria Studio | Not Free; Pro candidate. |
-| `numeria.report.branding` | Numeria Studio | Not Free; Pro candidate. |
-| `velvet.customer_memory.manage` | Velvet | Free customer limit; Pro unlimited. |
-| `velvet.history.view` | Velvet | Free 3-month visible history; Pro indefinite. |
+| `numeria.report.detailed` | Numeria Studio | Pro. |
+| `numeria.report.pdf` | Numeria Studio | Free and Pro. |
+| `numeria.report.branding` | Numeria Studio | Pro. |
+| `numeria.report.wording_adjustment` | Numeria Studio | Pro. |
+| `velvet.record.register` | Velvet | Free and Pro. |
 | `velvet.timeline.integrated` | Velvet | Pro. |
-| `velvet.event_history.view` | Velvet | Pro. |
+| `velvet.event_history.organized` | Velvet | Pro. |
+| `velvet.ai.organize_suggest` | Velvet | Pro. |
 | `business.cross_app.flow` | Growth Engine / platform | Business future only. |
 | `feedback.intake.submit` | Feedback Hub | Available to Free and Pro; bug reports must not be blocked by plan. |
+
+## AI Platform Core Contract
+
+All application AI usage must go through AI Platform Core.
+
+AI usage and generation payloads may include:
+
+- `eventName`
+- `appId`
+- `appVersion`
+- `workspaceId`
+- `userId`
+- `planId`
+- `featureKey`
+- `traceId`
+- `correlationId`
+- `usagePeriod`
+- `usageCount`
+- `limit`
+- `overLimit`
+- `entitlementResult`
+- `status`
+- approximate token count
+
+AI Platform Core payloads must not include:
+
+- Full appraisal text.
+- Full consultation text.
+- Full conversation text.
+- Full message text.
+- Full customer master record.
+- Payment details.
+- API keys.
+- Secrets.
+- Secret prompts.
+
+AI Platform Core owns AI Activity, AI Usage, Capability, Prompt, and runtime AI control. It does not become the subscription system of record.
+
+## Feedback Hub Contract
+
+Free and Pro users must both be able to submit inquiries. Bug reports must not be blocked by plan limits.
+
+Feedback Hub inquiry metadata should include:
+
+- `sourceApp`
+- `appVersion`
+- `planId`
+- `workspaceId`
+- `userId`
+- `currentScreen`
+- `category`
+- `occurredAt`
+- `correlationId`
+
+Feedback Hub should classify at least:
+
+- Free limit.
+- Pro subscription.
+- Upgrade.
+- Plan reflection failure.
+- Authentication error.
+- Data save error.
+- PDF export error.
+- AI usage error.
+- Billing-related issue.
+- Suspected data loss.
+
+Feedback Hub must not store:
+
+- API keys.
+- Secrets.
+- Stripe Secret.
+- Card information.
+- Payment details.
+- Full appraisal text.
+- Full conversation text.
+- Full customer master record.
+
+Admin notification candidates:
+
+- Billing error.
+- Data loss.
+- Login failure.
+- Plan reflection failure.
+- Production save failure.
+
+## Platform Admin Release Monitoring
+
+Applications must expose at least:
+
+- `/health`
+- `/version`
+- `/contracts/status`
+- `/release/status`
+- `/auth/status`
+- `/persistence/status`
+
+Platform Admin should monitor:
+
+- `appId`
+- `appVersion`
+- `planContractVersion`
+- `releaseScope`
+- Free / Pro / Business state
+- Business not purchasable
+- entitlement readiness
+- usage readiness
+- auth readiness
+- persistence readiness
+- D1 / DB readiness
+- AI Platform Core integration state
+- Feedback Hub entry state
+- latest deploy state
+- primary error categories
+
+Platform Admin must not display or log:
+
+- Payment details.
+- Stripe Secret.
+- API keys.
+- Full customer conversation text.
+- Full appraisal text.
+- Full message text.
+- Secret prompts.
+
+## Growth Engine Boundary
+
+Growth Engine is the Source of Truth for:
+
+- Customer.
+- Reservation.
+- Payment.
+- Sales.
+- Public Site.
+- Business plan workflow.
+
+Numeria Studio and Velvet may return to Growth Engine:
+
+- `workspaceId`
+- `userId`
+- `customerId`
+- `reservationId`
+- `sessionId`
+- `reportId`
+- `reportRef`
+- `status`
+- `completedAt`
+- `sourceApp`
+- `correlationId`
+
+Numeria Studio and Velvet must not return:
+
+- Full appraisal text.
+- Full report text.
+- Full conversation text.
+- Payment details.
+- Sales details.
+- Full Customer master record.
+- Stripe information.
+- Secrets.
+
+## Admin Mode
+
+Admin mode is an extension of the normal plan UI. It is not a separate Platform Admin-style cross-app monitoring screen.
+
+Admin mode may show administrators:
+
+- In-development menus.
+- Planned Business menus.
+- Plan state.
+- Usage.
+- API connection state.
+- Error category.
+- Release state.
+
+Admin mode must not show:
+
+- Payment details.
+- Stripe Secret.
+- API keys.
+- Customer text.
+- Full appraisal text.
+- Full conversation text.
+- Secret prompts.
+
+Normal users must not see Business planned menus or unreleased development functions unless explicitly approved as coming-soon messaging.
 
 ## Events
 
@@ -119,26 +366,3 @@ Canonical plan event names:
 - `plan.usage_limit.reached.v1`
 
 Applications may emit app-specific domain events, but plan lifecycle and usage-limit events must use the shared names above.
-
-## AI Platform Core Usage
-
-AI Platform Core may evaluate AI-related entitlements and usage by `appId + workspaceId + userId + planId + featureKey`.
-
-AI Platform Core does not become the subscription system of record. It owns AI Activity, AI Usage, Capability, Prompt, and runtime AI control.
-
-## Feedback Hub Usage
-
-Feedback Hub intake for bugs and urgent issues must remain available for Free and Pro users. Plan-related issues such as Free limit questions, Pro upgrade reflection failures, and payment-related support signals should be categorized, but Feedback Hub does not own billing or subscription truth.
-
-## Migration Requirements
-
-Applications adding plan support must:
-
-1. Use only canonical `PlanId` values.
-2. Default existing users to `free`.
-3. Add server-side entitlement checks before plan-limited writes or reads.
-4. Add usage recording with idempotency for countable actions.
-5. Preserve application Source of Truth boundaries.
-6. Keep `professionalId` optional for MVP.
-7. Keep Business hidden or disabled until explicitly released.
-8. Add contract/readiness checks for plan config, entitlement API, usage status, and limit errors.
