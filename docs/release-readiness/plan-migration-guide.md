@@ -1,50 +1,86 @@
-# Free / Pro / Business Plan Migration Guide
+# Free / Pro / Business Release Contract Rollout Guide
 
-Use this guide when adding plan support to platform applications.
+Use this guide before sending implementation requests to Numeria Studio, Velvet, AI Platform Core, Feedback Hub, Platform Admin, and Growth Engine.
 
-## Sequence
+## Current Release Scope
 
-1. Read `docs/contracts/plan-contract.md`.
-2. Add canonical `PlanId`: `free`, `pro`, `business`.
-3. Add `SubscriptionStatus`: `trialing`, `active`, `past_due`, `canceled`, `expired`.
-4. Default existing users to `free`.
-5. Add server-side entitlement checks.
-6. Add usage counters and periods.
-7. Add limit-reached error responses.
-8. Add plan events.
-9. Add readiness checks.
-10. Verify Source of Truth boundaries.
+- Numeria Studio: Free + Pro.
+- Velvet: Free + Pro.
+- Business: future running development, not purchasable now.
 
-## Numeria Studio
+## Shared Implementation Rules
 
-- Free: 20 appraisals per month and 3 appraisal subjects.
-- Pro: appraisal and appraisal subject limits removed.
-- Business: future cross-app integration only.
+1. Use only `free`, `pro`, and `business` as `PlanId`.
+2. Use `ReleaseStatus` for Business state: `preparing` or `unavailable`.
+3. Default existing users to `free`.
+4. Keep `workspaceId + userId / ownerUserId`.
+5. Do not require `professionalId` for MVP.
+6. Enforce limits server-side.
+7. Do not hard-code prices in contracts.
+8. Do not expose Business purchase flows to normal users.
+9. Allow admin mode to view planned Business or in-development features only for administrators.
+10. Preserve every application Source of Truth boundary.
 
-Do not turn Numeria appraisal subjects into canonical Customer master data.
+## Numeria Studio Implementation Request
 
-## Velvet
+Implement the Free / Pro release using `docs/contracts/plan-contract.md` as the source of truth.
 
-- Free: 30 customers, 3 months of history visibility, one-record-at-a-time review.
-- Pro: unlimited customers, indefinite history, integrated timeline, event-based history.
-- Business: future reservation, sales, appraisal, and SNS integration.
+Required behavior:
 
-Do not move Reservation, Payment, or Sales ownership into Velvet.
+- Free monthly count is consumed only when the appraisal completion button is pressed.
+- Session start alone does not consume the monthly appraisal count.
+- Free: 20 completed appraisals per month.
+- Free: 1 in-progress save.
+- Free: 3 appraisal client profiles.
+- Free: latest 3 appraisal history content items visible.
+- Free: older history is not deleted; show count and client info, lock full content.
+- Free: basic appraisal, basic report, basic template, free-tier AI assistance.
+- Free: PDF output with logo.
+- Pro: unlimited monthly completed appraisals.
+- Pro: unlimited in-progress saves.
+- Pro: unlimited appraisal client profiles.
+- Pro: unlimited appraisal history content view.
+- Pro: detailed appraisal, detailed report, branded report, logo change/hide, report wording adjustment, past search, client-specific history, session memo, AI consultation organization/deepening, AI wording adjustment.
+- Business: unavailable/preparing only. Do not expose purchase flow.
 
-## Business
+Do not make Numeria Studio the Source of Truth for Customer, Reservation, Payment, Sales, Conversation, Message, AI Activity, or AI Usage.
 
-Business must be hidden, disabled, or marked as coming soon in the first Free / Pro release.
+## Velvet Implementation Request
 
-Business APIs must reject access when Business is not active.
+Implement the Free / Pro release using `docs/contracts/plan-contract.md` as the source of truth.
 
-## Readiness Checklist
+Required behavior:
 
-- Plan IDs use only `free`, `pro`, `business`.
-- Existing user fallback is `free`.
-- Entitlement checks run server-side.
-- Usage limits are enforced server-side.
-- Business cannot be purchased.
-- Numeria and Velvet Pro are independent.
-- `workspaceId + userId / ownerUserId` is preserved.
-- `professionalId` is not required for MVP.
-- Source of Truth boundaries remain unchanged.
+- Free users can register records.
+- Free users review registered contents by date or individual record.
+- Free users do not get full integrated timeline and event organization.
+- Pro users can see integrated timeline, event timing, conversation history flow, relationship flow, AI-assisted organization/suggestions, and past record search/filtering.
+- Business remains unavailable/preparing and is not purchasable.
+
+Do not pass full conversation or memory text to other apps by default. AI usage must go through AI Platform Core.
+
+## AI Platform Core Implementation Request
+
+Support app AI usage by `appId + workspaceId + userId + planId + featureKey`.
+
+Accept metadata, usage counts, status, token estimates, event names, and correlation IDs. Do not accept full appraisal text, full consultation text, full conversation/message text, customer master records, payment details, API keys, secrets, or secret prompts.
+
+## Feedback Hub Implementation Request
+
+Allow Free and Pro users to submit inquiries. Do not block bug reports by plan. Capture `sourceApp`, `appVersion`, `planId`, `workspaceId`, `userId`, `currentScreen`, `category`, `occurredAt`, and `correlationId`.
+
+Classify Free limit, Pro subscription, upgrade, plan reflection failure, auth error, save error, PDF error, AI usage error, billing issue, and suspected data loss.
+
+## Platform Admin Implementation Request
+
+Monitor `/health`, `/version`, `/contracts/status`, `/release/status`, `/auth/status`, and `/persistence/status`.
+
+Show release readiness, plan contract version, Free/Pro/Business state, Business unavailable/preparing, entitlement state, usage state, auth readiness, persistence readiness, AI Platform Core integration, Feedback Hub entry state, latest deploy state, and error categories.
+
+Do not show payment details, Stripe secrets, API keys, full conversations, full appraisals, full messages, or secret prompts.
+
+## Growth Engine Implementation Request
+
+Do not implement Business product features in this Free / Pro release. Prepare future Business boundaries only.
+
+Growth Engine remains the Source of Truth for Customer, Reservation, Payment, Sales, Public Site, and Business plan workflows. Numeria Studio and Velvet should return reference IDs and status only.
