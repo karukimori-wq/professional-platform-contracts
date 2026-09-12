@@ -296,3 +296,22 @@ Canonical plan event names:
 These are shared platform event names for plan lifecycle, entitlement, usage, and limit enforcement.
 
 Applications must not create incompatible plan event names for the same semantics.
+
+## Free Pro Release Events
+
+Shared plan and release event names:
+
+- `plan.subscription.changed.v1`
+- `plan.entitlement.checked.v1`
+- `plan.usage.recorded.v1`
+- `plan.usage_limit.reached.v1`
+- `release.status.checked.v1`
+- `app.contract.status.checked.v1`
+
+Numeria Studio must continue to use:
+
+- `studio.session.started.v1`
+- `studio.session.completed.v1`
+- `studio.report.generated.v1`
+
+Numeria event payloads may include metadata and references, but must not include full appraisal text, full consultation text, full customer master records, payment details, Stripe information, API keys, Secrets, or secret prompts.
