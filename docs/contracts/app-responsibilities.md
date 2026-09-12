@@ -636,3 +636,18 @@ Responsibilities:
 - Growth Engine remains the future Business-side owner for Customer, Reservation, Payment, Sales, and business flow data.
 
 Business is a future cross-application plan. It is not purchasable in the first Numeria Studio / Velvet Free + Pro release and must not be implemented as a simple Pro extension.
+
+## Free Pro Business Release Responsibilities
+
+Numeria Studio and Velvet Free / Pro release work must follow `docs/contracts/plan-contract.md`.
+
+Responsibility summary:
+
+- Numeria Studio owns appraisal Session, Report Snapshot, appraisal logic, calculation results, and AppraisalClientSnapshot.
+- Velvet owns professional relationship and event/memory records within its app boundary.
+- Growth Engine owns Customer, Reservation, Payment, Sales, Public Site, and future Business workflows.
+- AI Platform Core owns AI Activity, AI Usage, Capability, Prompt, and runtime AI controls.
+- Feedback Hub owns feedback intake, classification, issue clustering, and emergency feedback signals.
+- Platform Admin owns monitoring and release readiness visibility only.
+
+Business is future running development. It is not purchasable in the Free / Pro release and normal users must not see Business purchase flows.
