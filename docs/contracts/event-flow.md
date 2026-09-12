@@ -1046,3 +1046,18 @@ Plan-gated application actions follow this flow:
 8. App-specific domain events remain owned by the source application.
 
 Business-only flows must remain blocked until Business is explicitly released.
+
+## Free Pro Release Enforcement Flow
+
+Free / Pro plan-gated actions follow this flow:
+
+1. Client requests an action.
+2. Server resolves `appId`, `appVersion`, `workspaceId`, `userId`, `planId`, and `featureKey`.
+3. Server checks entitlement.
+4. Server checks usage limit and usage period.
+5. Server performs the action only if allowed.
+6. Server records usage with idempotency.
+7. Server emits plan usage or limit events.
+8. AI requests go through AI Platform Core using metadata and safe usage payloads only.
+9. Feedback Hub remains available for Free and Pro inquiries, especially bugs and urgent issues.
+10. Platform Admin reads release state without exposing secrets or content payloads.
