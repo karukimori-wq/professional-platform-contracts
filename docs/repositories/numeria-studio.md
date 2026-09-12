@@ -205,3 +205,45 @@ Numeria Studio will release Free and Pro first.
 Numeria appraisal subjects are Numeria-specific snapshots for appraisal workflows. They must not become canonical Customer master records.
 
 Plan enforcement must be server-side and must keep the MVP identity rule: `workspaceId + userId`, without requiring `professionalId`.
+
+## Free Pro Release Contract
+
+Numeria Studio releases Free and Pro first. Business is future running development and is not purchasable now.
+
+Source of Truth:
+
+- Session.
+- Report Snapshot.
+- Appraisal logic.
+- Calculation result.
+- AppraisalClientSnapshot.
+
+Numeria Studio must not own Customer master, Reservation, Payment, Sales, Conversation, Message, AI Activity, or AI Usage.
+
+Free:
+
+- 20 completed appraisals per month.
+- Count is consumed when the appraisal completion button is pressed.
+- Session start alone does not consume monthly count.
+- 1 in-progress save.
+- 3 appraisal client profiles.
+- Latest 3 appraisal history content items visible.
+- Older appraisals are not deleted; Free shows count and client info but locks full content.
+- Basic appraisal, basic report, basic template, free-tier AI assistance.
+- PDF output is available with logo.
+- Detailed report, brand changes, and report wording adjustment are not available.
+
+Pro:
+
+- Unlimited completed appraisals.
+- Unlimited in-progress saves.
+- Unlimited appraisal client profiles.
+- Unlimited appraisal history content view.
+- Detailed appraisal/report, branded report, logo change/hide, report wording adjustment, past search, client-specific history, session memo, AI consultation organization/deepening, AI wording adjustment.
+
+Business:
+
+- Not purchasable now.
+- Future Growth Engine integration, reservation, sales, payment, refund, and SNS acquisition.
+- Customer, Reservation, Payment, and Sales stay in Growth Engine.
+- Numeria handles reference IDs only.
