@@ -522,3 +522,21 @@ Common limit error fields:
 - `correlationId`
 
 Business purchase and Business-only APIs must not be publicly enabled during the first Free / Pro release.
+
+## Release Readiness API Contract
+
+Applications in the Free / Pro release scope should expose:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| GET | `/health` | Basic runtime health. |
+| GET | `/version` | App version and deploy identity. |
+| GET | `/contracts/status` | Contract compliance. |
+| GET | `/release/status` | Release scope, plan states, Business availability, and readiness. |
+| GET | `/auth/status` | Authentication readiness. |
+| GET | `/persistence/status` | Database/D1 persistence readiness. |
+| GET | `/api/plans/status` | Current plan, subscription status, release status, feature availability, and limits. |
+| POST | `/api/entitlements/check` | Server-side entitlement check. |
+| GET | `/api/usage/status` | Usage count, limit, period, reset or visibility state. |
+
+Business purchase endpoints must not be active for normal users in this release.
