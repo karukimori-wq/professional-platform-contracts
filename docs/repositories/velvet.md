@@ -246,3 +246,30 @@ Velvet will release Free and Pro first.
 Velvet owns professional relationship memory and event/history views. It must not become the Source of Truth for Reservation, Payment, Sales, or Growth Engine Customer master data.
 
 Plan enforcement must be server-side and must keep the MVP identity rule: `workspaceId + userId / ownerUserId`, without requiring `professionalId`.
+
+## Free Pro Release Contract
+
+Velvet releases Free and Pro first. Business is future running development and is not purchasable now.
+
+Free:
+
+- Registration is available.
+- Detailed integrated timeline is limited.
+- Users inspect registered contents by date or individual record.
+- Pro value should be visible through locked or limited timeline/event organization affordances.
+
+Pro:
+
+- Integrated timeline.
+- Event timing.
+- Conversation history flow.
+- Relationship flow.
+- AI-assisted organization and suggestions.
+- Past record search and filtering.
+
+Business:
+
+- Not purchasable now.
+- Future Growth Engine / SNS / payment / reservation cross-app integration.
+
+Velvet must not pass full conversation or memory text to other apps by default. AI usage goes through AI Platform Core. Feedback Hub can classify Velvet inquiries.
