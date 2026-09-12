@@ -395,3 +395,29 @@ Recommended fields:
 - `occurredAt`
 
 Feedback Hub should allow operators to trace from a ranked Issue back to all original Conversations and Messages.
+
+## Free Pro Release Observability
+
+Free / Pro release observability should include:
+
+- `appId`
+- `appVersion`
+- `workspaceId`
+- `userId`
+- `planId`
+- `featureKey`
+- `releaseScope`
+- `ReleaseStatus`
+- `AppContractStatus`
+- `traceId`
+- `correlationId`
+- `usagePeriod`
+- `usageCount`
+- `limit`
+- `overLimit`
+- `entitlementResult`
+- `errorCode`
+- `durationMs`
+- `occurredAt`
+
+Logs and monitoring must not expose payment details, Stripe Secrets, API keys, full customer conversation text, full appraisal text, full message text, or secret prompts.
