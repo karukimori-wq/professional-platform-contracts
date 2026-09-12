@@ -612,3 +612,21 @@ Readiness requirements before Free / Pro release:
 - Business is hidden, disabled, or coming soon.
 - Plan readiness endpoints and limit errors are machine-readable.
 - Platform Admin can monitor plan readiness without exposing payment data, secrets, conversations, or appraisal contents.
+
+## Numeria Velvet Free Pro Release Readiness
+
+Numeria Studio and Velvet are preparing for Free / Pro release. Business is future running development.
+
+Required shared readiness:
+
+- `PlanId`: `free`, `pro`, `business`.
+- `SubscriptionStatus`: `trialing`, `active`, `past_due`, `canceled`, `expired`.
+- `ReleaseStatus` includes `preparing` and `unavailable` for unreleased Business features.
+- Existing users default to Free.
+- Limits are server-enforced.
+- Numeria Free completion count is consumed only on appraisal completion.
+- Business purchase flow is unavailable to normal users.
+- AI usage goes through AI Platform Core.
+- Feedback Hub accepts Free and Pro inquiries.
+- Platform Admin monitors release readiness without exposing secrets or content payloads.
+- Growth Engine remains Source of Truth for Customer, Reservation, Payment, Sales, Public Site, and Business workflow.
