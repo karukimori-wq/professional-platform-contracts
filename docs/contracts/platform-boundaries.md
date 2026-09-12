@@ -350,3 +350,15 @@ Boundary rules:
 - Business may later unlock cross-app reference flows, but it must not merge Source of Truth ownership across apps.
 - Growth Engine remains the owner for Customer, Reservation, Payment, Sales, and business data.
 - AI Platform Core remains the owner for AI Activity, AI Usage, Capability, Prompt, and runtime AI control.
+
+## Free Pro Business Release Boundary
+
+Free and Pro are current release targets. Business is future running development.
+
+Boundary rules:
+
+- Business is not purchasable now.
+- Business planned features may be visible only in admin mode or explicitly approved coming-soon messaging.
+- Business is not a Pro feature extension; it is future cross-app business workflow.
+- Numeria Studio and Velvet may integrate with Growth Engine later by reference IDs only.
+- Full appraisal, report, conversation, payment, sales, customer master, Stripe, API key, Secret, and secret prompt payloads must not cross app boundaries.
