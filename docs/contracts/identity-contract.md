@@ -160,3 +160,18 @@ Required baseline identifiers:
 `professionalId` is not required for MVP Free / Pro release enforcement.
 
 Numeria Studio and Velvet must keep their app-specific scopes separate. A user can have Numeria Studio Pro without Velvet Pro, or Velvet Pro without Numeria Studio Pro.
+
+## Free Pro Business Identity
+
+Plan and release checks preserve the MVP identity baseline:
+
+- `workspaceId`
+- `userId` or `ownerUserId`
+- `appId`
+- `appVersion`
+- `planId`
+- `featureKey`
+
+`professionalId` is not required for MVP.
+
+Numeria Studio Pro and Velvet Pro are independent. A user may have one without the other.
