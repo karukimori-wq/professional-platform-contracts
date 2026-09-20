@@ -152,7 +152,9 @@ AI Platform Core owns AI Runtime, Capability, Prompt, Knowledge, AI Activity, an
 
 ## Growth Engine Boundary
 
-Growth Engine owns Customer, Reservation, Payment, Sales, and Revenue.
+Shared customer command/read contract: `docs/contracts/velvet-growth-customer-bridge.md`.
+
+Growth Engine owns Customer, Reservation, Payment, Sales, and Revenue. Velvet may initiate the contracted `Customer.Create` command, but Growth Engine performs and audits the canonical create; Velvet retains only `customerId` plus its allowed non-canonical memory/display snapshot.
 
 Velvet accepts reference IDs only:
 
