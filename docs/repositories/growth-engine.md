@@ -30,6 +30,7 @@ Growth Engine owns acquisition, sales, customer nurturing, and Business plan wor
 - `docs/contracts/identity-contract.md`
 - `schemas/entities/customer.schema.json`
 - `schemas/events/growth.customer.created.v1.schema.json`
+- `docs/contracts/velvet-growth-customer-bridge.md`
 
 ## Implementation Note
 
