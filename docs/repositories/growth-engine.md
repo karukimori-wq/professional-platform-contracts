@@ -23,6 +23,26 @@ Growth Engine owns acquisition, sales, customer nurturing, and Business plan wor
 - AI runtime internals
 - Duplicate Professional Studio report master
 
+## Billing Boundary
+
+Growth Engine does not own every Stripe or Billing concern.
+
+Growth Engine is the Source of Truth for future Business Payment flows where the professional's customer pays for appraisal, consultation, reservation, or service fees.
+
+Growth Engine owns:
+
+- Customer.
+- Reservation.
+- Payment.
+- Sales.
+- Public Site.
+- Business plan workflow.
+- Customer-facing Stripe payment and reconciliation.
+
+Growth Engine does not own Numeria Studio Pro or Velvet Pro SaaS subscription entitlement. Those Free / Pro subscriptions are owned by the subscribed application until a shared Billing service is explicitly contracted.
+
+Customer-facing Business Payment is not part of the Numeria Studio / Velvet Free + Pro release.
+
 ## Required Contracts
 
 - `docs/contracts/shared-glossary.md`
