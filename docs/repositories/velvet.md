@@ -150,6 +150,20 @@ Representative capabilities:
 
 AI Platform Core owns AI Runtime, Capability, Prompt, Knowledge, AI Activity, and AI Usage. Velvet sends only minimum scoped context/references and remains canonical for Professional Memory mutations.
 
+## SaaS Subscription / Billing
+
+Velvet owns the Velvet Free -> Pro SaaS subscription path when Velvet Pro billing is released.
+
+Rules:
+
+- Velvet Pro is independent from Numeria Studio Pro.
+- Existing users default to `planId=free` unless a valid Velvet Pro subscription says otherwise.
+- Stripe Customer / Subscription references must be safely mapped to `workspaceId + userId / ownerUserId` and the app auth provider user reference.
+- Server-side plan and usage enforcement is required.
+- Business remains unavailable until the Business release contract is activated.
+
+Velvet SaaS subscription is separate from Growth Engine Business Payment. Velvet must not use Growth Engine Payment/Sales as the Source of Truth for Velvet Pro entitlement.
+
 ## Growth Engine Boundary
 
 Shared customer command/read contract: `docs/contracts/velvet-growth-customer-bridge.md`.
