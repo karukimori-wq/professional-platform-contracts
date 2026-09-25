@@ -93,6 +93,21 @@ MVP identity is:
 
 `professionalId` is not required for Numeria Studio MVP or the verified Cloudflare Production flow.
 
+## SaaS Subscription / Billing
+
+Numeria Studio owns the Numeria Studio Free -> Pro SaaS subscription path for the Free / Pro release.
+
+Required release flow:
+
+- Numeria Studio user -> Stripe -> Pro Subscription established -> shared Plan Contract -> `planId=pro` / Entitlement -> Pro features unlocked.
+- Current Pro commercial setting: 2,980 JPY excluding tax.
+- Pricing is commercial configuration; feature behavior must key from `productCode`, `planId`, `SubscriptionStatus`, `Entitlement`, and `FeatureKey`.
+- Stripe Customer / Subscription references must be safely mapped to `workspaceId + userId / ownerUserId` and the app auth provider user reference.
+- Stripe Secret and webhook secret values must not be stored in this contracts repository.
+- Server-side plan and usage enforcement is required.
+
+Numeria Studio SaaS subscription is separate from Growth Engine Business Payment. Numeria Studio must not use Growth Engine Payment/Sales as the Source of Truth for Numeria Pro entitlement.
+
 ## Growth Engine Boundary
 
 Growth Engine and Numeria Studio integrate by reference IDs only.
