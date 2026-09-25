@@ -37,6 +37,10 @@ Applications must not invent local plan names, incompatible usage limits, AI usa
 - `professionalId` is not a required MVP dependency.
 - Numeria Studio Pro and Velvet Pro are separately purchasable products.
 - Domain Source of Truth ownership does not change because of plan enforcement.
+- SaaS Subscription and Business Payment are separate payment domains; see `docs/contracts/subscription-contract.md`.
+- Numeria Studio owns the Numeria Studio Pro SaaS subscription path for the Free / Pro release.
+- Velvet owns the Velvet Pro SaaS subscription path when Velvet Pro billing is released.
+- Growth Engine owns customer-facing Business Payment / Payment / Sales for the future Business scope, not every app's SaaS Pro subscription.
 
 ## Subscription Status
 
