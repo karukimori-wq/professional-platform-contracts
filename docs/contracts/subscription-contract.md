@@ -1,213 +1,193 @@
-# SaaS Subscription Contract
+# SaaS Subscription / Billing Responsibility Contract
 
-This contract defines the canonical ownership and cross-application API boundary for Professional Platform SaaS subscriptions.
+This contract separates Stripe-backed payment domains for the Professional Platform.
 
-## Scope
+It supersedes any interpretation that makes Growth Engine the canonical owner of every Stripe or Billing concern.
 
-This contract applies to subscriptions purchased by the professional user to use platform products such as Numeria Studio Pro or Velvet Pro.
+## Two Payment Domains
 
-It does **not** redefine the business customer's reservation/payment/sales domain. Customer payments for appointments, appraisals, services, refunds, and sales remain Growth Engine business-domain Payment/Sales records.
+| Domain | Payer | Payee / purpose | Canonical owner | Release scope |
+| --- | --- | --- | --- | --- |
+| SaaS Subscription | Professional application user | Pays AITEC for app access such as Numeria Studio Pro or Velvet Pro. | The subscribed application until a shared Billing service is created. | Free / Pro release scope. |
+| Business Payment | Professional's customer | Pays the professional for appraisal, consultation, reservation, or service fees. | Growth Engine. | Future Business scope. |
 
-## Canonical ownership
+Stripe may be used by both domains, but Stripe usage does not make the domains share ownership, data models, webhooks, or source-of-truth records.
 
-Growth Engine is the canonical platform billing owner for SaaS subscription payment and subscription entitlement state.
+## SaaS Subscription Ownership
 
-Stripe is the external payment processor. Stripe raw objects and card/payment credentials are not application-domain source-of-truth records and must not be copied into product applications.
+SaaS Subscription includes:
 
-Professional applications such as Numeria Studio and Velvet may keep only a minimum owner-scoped entitlement projection required for fast feature gating and resilience.
+- Free to Pro upgrade.
+- Pro monthly subscription.
+- Subscription renewal.
+- Payment state reflected into subscription status.
+- Cancellation.
+- Payment failure.
+- Downgrade or fallback to Free.
 
-AI Platform Core is not the subscription source of truth. It consumes the effective `planId` and capability/usage context supplied through the contracted app/runtime path.
+Numeria Studio owns the Numeria Studio SaaS subscription path for the Free / Pro release.
 
-Platform Admin may monitor subscription readiness/status metadata but must not store payment details or become the subscription source of truth.
+Velvet owns the Velvet SaaS subscription path when Velvet Free / Pro subscription is released.
 
-## Product independence
+Future Professional applications may own their own SaaS subscription path, while preserving this shared contract and keeping an extraction path toward a common Billing module or Billing service.
 
-Numeria Studio Pro and Velvet Pro are independent subscription products.
+Applications must not invent local plan names or subscription statuses. They must use the shared Plan Contract values for `PlanId`, `SubscriptionStatus`, `Entitlement`, `UsageLimit`, `UsagePeriod`, and `FeatureKey`.
 
-Canonical product codes:
+## Numeria Studio Release Rule
 
-- `numeria-studio`
-- `velvet`
+For the Numeria Studio Free / Pro release, the required flow is:
 
-A subscription to one product must not silently unlock the other.
+`Numeria Studio user -> Stripe -> Pro Subscription established -> shared Plan Contract -> planId=pro / Entitlement -> Pro features unlocked`
 
-Business remains unavailable for normal-user purchase until the Business release contract is explicitly activated.
+Rules:
 
-## Subscription state
+- `productCode = numeria-studio`.
+- Existing users default to `planId = free` unless a valid Pro subscription says otherwise.
+- `trialing` and `active` can unlock Pro entitlement.
+- `past_due` behavior must be explicit and server enforced.
+- `canceled`, `expired`, or no valid subscription falls back to Free.
+- Server-side entitlement checks are required; UI gating alone is not enough.
+- Business must not be purchasable or active in this release path.
+- Numeria must not persist raw Stripe objects, card data, payment details, Stripe Secret, webhook secrets, or customer-facing Business Payment records.
 
-Canonical response fields:
+Current Numeria Studio Pro commercial setting:
 
-- `workspaceId`
-- `ownerUserId`
-- `productCode`
-- `planId` (`free` | `pro`)
-- `subscriptionStatus` (`trialing` | `active` | `past_due` | `canceled` | `expired`)
-- `entitlementStatus` (`active` | `inactive` | `past_due` | `canceled`)
-- `validUntil` (optional ISO-8601 timestamp)
-- `entitlementRef`
-- `updatedAt`
+- Pro: 2,980 JPY excluding tax.
 
-Applications must default to `free` when no valid Pro entitlement exists.
+Pricing is commercial configuration, not the identity of the plan. Code and contracts must key behavior from `productCode`, `planId`, `SubscriptionStatus`, `Entitlement`, and `FeatureKey`, not from a hard-coded price.
 
-`past_due` grace behavior is product-specific and must be explicit. It must not be interpreted as fully active by accident.
+## Velvet Release Rule
 
-## Synchronous API contract
+For Velvet Free / Pro:
 
-### `Subscription.GetEntitlement`
+- `productCode = velvet`.
+- Velvet Pro is independent from Numeria Studio Pro.
+- Existing users default to `planId = free` unless a valid Velvet Pro subscription says otherwise.
+- Business remains unavailable until the Business release contract is activated.
+- Velvet must not use Growth Engine Payment/Sales as the source of truth for Velvet Pro entitlement.
 
-Owner: Growth Engine
+## Identity Mapping
 
-Consumers: Numeria Studio, Velvet, future Professional Studio products
+SaaS subscription records must be safely scoped by:
 
-Input:
+- `workspaceId`.
+- `userId` / `ownerUserId`.
+- Auth provider user reference, for example Clerk user ID where used by the app.
+- Stripe Customer reference.
+- Stripe Subscription reference.
+- `productCode`.
 
-- `workspaceId`
-- `ownerUserId`
-- `productCode`
-- `traceId` / `correlationId` / `requestId` when available
+Stripe references may be stored by the owning SaaS application or a future shared Billing service for reconciliation. They must not be exposed to unrelated apps as raw provider objects.
 
-Response:
+`professionalId` is not required for the MVP billing contract.
 
-- the canonical subscription state fields above
+## Webhook Responsibility
 
-The response must never contain:
+SaaS subscription webhooks belong to the app that owns that SaaS subscription until a common Billing service is introduced.
 
-- card numbers
-- payment method details
-- raw Stripe Customer / Subscription / Checkout objects
-- Stripe Secret
-- webhook secrets
-- invoice bodies
-- unrelated Customer master data
-- reservation/payment/sales records
+- Numeria Studio owns Numeria SaaS subscription webhook handling for the Free / Pro release.
+- Velvet owns Velvet SaaS subscription webhook handling when Velvet Pro billing is released.
+- Growth Engine owns customer-facing Business Payment webhook handling.
 
-### `Subscription.CreateCheckout`
+Webhook handlers must verify signatures, apply idempotency, translate provider events into canonical subscription state, and avoid logging secrets or raw payment payloads.
 
-Owner: Growth Engine
+## Business Payment Boundary
 
-Input:
+Business Payment covers the future flow where a professional's customer pays for appraisal, consultation, reservation, or other service fees.
 
-- `workspaceId`
-- `ownerUserId`
-- `productCode`
-- approved `priceCode` or server-resolved price reference
-- `successReturnRef`
-- `cancelReturnRef`
-- observability metadata
+Growth Engine remains Source of Truth for:
 
-Response:
+- Customer.
+- Reservation.
+- Payment.
+- Sales.
+- Public Site.
+- Business plan workflow.
+- Customer-facing Stripe payment and reconciliation.
 
-- `checkoutRef`
-- hosted `redirectUrl`
-- `productCode`
-- requested plan (`pro`)
+Business Payment is not part of the Numeria Studio / Velvet Free + Pro release.
 
-Product applications must not receive card details.
+Numeria Studio and Velvet must not copy Growth Engine Payment or Sales data into their own canonical models. They may exchange reference IDs only under the Growth Engine boundary contract.
 
-### `Subscription.RefreshEntitlement`
+## State Mapping
 
-Owner: Growth Engine
+Canonical subscription state must map into the shared plan contract:
 
-Used after checkout return or webhook processing when an application needs a fresh entitlement projection.
+| Stripe / provider result | Canonical `SubscriptionStatus` | Effective plan rule |
+| --- | --- | --- |
+| Valid trial | `trialing` | May unlock `pro` if the product allows trial access. |
+| Valid paid subscription | `active` | Unlocks `pro`. |
+| Payment issue requiring action | `past_due` | App-specific grace behavior; must not be treated as fully active by accident. |
+| Canceled subscription | `canceled` | Fallback to `free` unless paid-through access is explicitly retained until `validUntil`. |
+| Ended trial or ended paid-through period | `expired` | Fallback to `free`. |
+| Missing subscription | `expired` or app-local no-subscription state | Default to `free`. |
 
-Input:
+## Safe Data Sharing
 
-- `workspaceId`
-- `ownerUserId`
-- `productCode`
-- observability metadata
+Platform Admin may monitor only readiness and metadata:
 
-Response:
+- `appId`.
+- `workspaceId`.
+- `userId` / `ownerUserId`.
+- `productCode`.
+- `planId`.
+- `subscriptionStatus`.
+- entitlement readiness.
+- webhook readiness.
+- last sync or update timestamp.
+- status / error category.
+- trace, correlation, or request IDs.
 
-- the same canonical subscription state returned by `Subscription.GetEntitlement`
+AI Platform Core may receive `planId`, `featureKey`, entitlement result, and usage metadata for AI gating. It must not receive card details, raw Stripe payloads, or payment secrets.
 
-## Stripe webhook rule
+Feedback Hub may classify billing-related user reports, but must not store card data, Stripe secrets, payment details, or raw provider payloads.
 
-Stripe webhook verification and translation into subscription entitlement state belongs to Growth Engine.
+## Forbidden Cross-App Payloads
 
-Professional applications must not expose independent Stripe webhook endpoints for the same SaaS subscription product.
+Do not send unrelated apps:
 
-Growth Engine may persist provider references such as Stripe customer/subscription IDs internally when required for reconciliation, but must not return raw provider objects to Numeria Studio or Velvet.
+- Card numbers or payment method details.
+- Raw Stripe Customer / Subscription / Checkout / Invoice objects.
+- Stripe Secret.
+- Webhook secret.
+- Full invoice bodies.
+- Customer master full records.
+- Reservation, Payment, or Sales ledgers outside Growth Engine's Business Payment contract.
+- API keys or secrets.
 
-## Application projection rule
+## Required For Free / Pro Release
 
-Numeria Studio / Velvet may cache a projection containing only:
+Before Numeria Studio Free / Pro release:
 
-- `workspaceId`
-- `ownerUserId`
-- `productCode`
-- effective `planId`
-- `subscriptionStatus`
-- `entitlementStatus`
-- `validUntil`
-- `entitlementRef`
-- projection `updatedAt`
+- Numeria Studio owns the Pro SaaS subscription flow.
+- Clerk/user identity, `workspaceId`, and Stripe Customer/Subscription references are safely mapped.
+- Stripe subscription status is translated into shared `SubscriptionStatus`.
+- `planId=pro` and Pro entitlements are unlocked only from valid subscription state.
+- Free fallback is defined for canceled, expired, missing, or invalid subscriptions.
+- Server-side plan and usage enforcement is implemented.
+- Growth Engine Payment/Sales is not used for Numeria Pro entitlement.
 
-A projection is not a payment ledger and must not contain amount, card, invoice, Stripe secret, or raw payment-provider payloads.
+Velvet follows the same shared contract when Velvet Pro billing is released.
 
-When the canonical entitlement source is reachable, server-side plan checks must prefer the canonical response over an app-local test switch.
+## Deferred To Business Release
 
-Local plan switching is allowed only in explicitly marked development/test mode and must be disabled for normal Production users once the canonical subscription source is enabled.
+The following remain Business / Growth Engine scope and are not required for the current Free / Pro release:
 
-## Events
+- Customer-facing appraisal or service payments.
+- Reservation-linked checkout.
+- Refund workflow for customer payments.
+- Sales ledger and revenue reporting.
+- Growth Engine Payment/Sales production flows.
+- Cross-app Business plan payment workflows.
 
-Canonical plan lifecycle event:
+## Future Shared Billing Service
 
-- `plan.subscription.changed.v1`
+A common Billing module or Billing service may later own SaaS Subscription operations for multiple apps. Until that exists and is explicitly contracted, each subscribed app owns its SaaS subscription path while using this shared contract.
 
-Minimum fields:
+Such extraction must preserve:
 
-- `appId`
-- `appVersion`
-- `workspaceId`
-- `userId` / `ownerUserId`
-- `productCode`
-- `planId`
-- `subscriptionStatus`
-- `entitlementStatus`
-- `entitlementRef`
-- `correlationId`
-- `occurredAt`
-
-Do not include payment details, raw Stripe objects, full professional content, API keys, or secrets.
-
-## Numeria Studio release rule
-
-For Numeria Studio Free / Pro release:
-
-- `productCode = numeria-studio`
-- no valid entitlement => `planId = free`
-- valid active Pro entitlement => `planId = pro`
-- Business must not be returned as purchasable or active through this release flow
-- Numeria feature gates use the effective plan resolved from the Growth Engine entitlement response
-- Numeria must not persist Stripe/payment source-of-truth data
-
-## Velvet release rule
-
-For Velvet Free / Pro release:
-
-- `productCode = velvet`
-- no valid entitlement => `planId = free`
-- valid active Pro entitlement => `planId = pro`
-- Business must not be returned as purchasable or active through this release flow
-
-## Security and observability
-
-Internal Cloudflare-hosted application calls should prefer Service Binding where available.
-
-Public HTTP fallback may be used only with an authenticated integration contract.
-
-Record:
-
-- source app
-- target app
-- operation
-- `workspaceId`
-- `ownerUserId`
-- `productCode`
-- `planId`
-- status / status code
-- trace/correlation/request IDs
-- duration
-
-Never log secrets, payment credentials, card data, or full Stripe payloads.
+- Shared `PlanId` and `SubscriptionStatus` semantics.
+- Per-product independence.
+- Server-side entitlement enforcement.
+- Separation from Growth Engine Business Payment.
+- Secret and payment-data minimization.
