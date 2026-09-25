@@ -495,6 +495,25 @@ Feedback Hub API output should support the model Conversation -> Message -> AI A
 
 AI processing should be requested through AI Platform Core rather than direct OpenAI or separate AI provider calls by default.
 
+## SaaS Subscription API Boundary
+
+SaaS subscription APIs are owned by the subscribed application until a shared Billing service is explicitly contracted.
+
+Recommended app-local API families:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| POST | `/api/billing/checkout` | Create a Stripe checkout/session for the app's own Pro subscription. |
+| POST | `/api/billing/webhook` | Receive and verify Stripe webhooks for the app's own SaaS subscription product. |
+| POST | `/api/billing/refresh` | Refresh subscription state after checkout return or webhook processing. |
+| GET | `/api/plans/status` | Return effective `planId`, `SubscriptionStatus`, entitlements, and limits. |
+
+Numeria Studio owns these APIs for `productCode=numeria-studio` in the Free / Pro release. Velvet owns them for `productCode=velvet` when Velvet Pro billing is released.
+
+Growth Engine owns customer-facing Business Payment APIs only. It must not be called as the canonical entitlement source for Numeria Studio Pro or Velvet Pro unless a future shared Billing service contract replaces app ownership.
+
+Billing APIs must never return raw Stripe objects, card data, payment method details, Stripe Secret, webhook secrets, invoice bodies, or Growth Engine Payment/Sales ledgers.
+
 ## Plan API Contract
 
 Applications should expose or consume plan readiness and entitlement checks using the shared plan contract.
