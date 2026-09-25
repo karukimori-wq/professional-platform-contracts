@@ -161,6 +161,26 @@ Required baseline identifiers:
 
 Numeria Studio and Velvet must keep their app-specific scopes separate. A user can have Numeria Studio Pro without Velvet Pro, or Velvet Pro without Numeria Studio Pro.
 
+## SaaS Billing Identity
+
+SaaS subscription identity uses the MVP identity baseline and app-specific product identity.
+
+Required mapping fields:
+
+- `workspaceId`.
+- `userId` / `ownerUserId`.
+- `appId`.
+- `productCode`.
+- app auth provider user reference, for example Clerk user ID where used.
+- Stripe Customer reference.
+- Stripe Subscription reference.
+
+Numeria Studio Pro and Velvet Pro are independent subscription products. A Stripe Customer or subscription reference for one product must not silently unlock another product.
+
+`professionalId` is not required for MVP SaaS billing.
+
+Stripe references must be treated as external provider references. They are not primary platform IDs and must not be exposed to unrelated apps as raw provider objects.
+
 ## Free Pro Business Identity
 
 Plan and release checks preserve the MVP identity baseline:
