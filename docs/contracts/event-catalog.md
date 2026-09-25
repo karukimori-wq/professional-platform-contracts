@@ -293,6 +293,26 @@ Canonical plan event names:
 - `plan.usage.recorded.v1`
 - `plan.usage_limit.reached.v1`
 
+SaaS subscription event ownership follows the subscribed app until a shared Billing service is contracted:
+
+- Numeria Studio publishes `plan.subscription.changed.v1` for Numeria Studio Pro changes.
+- Velvet publishes `plan.subscription.changed.v1` for Velvet Pro changes when Velvet Pro billing is released.
+- Growth Engine publishes Business Payment / Payment / Sales events for customer-facing Business workflows, not app SaaS entitlement changes.
+
+Allowed `plan.subscription.changed.v1` fields:
+
+- `appId`.
+- `workspaceId`.
+- `userId` / `ownerUserId`.
+- `productCode`.
+- `planId`.
+- `subscriptionStatus`.
+- `entitlementStatus`.
+- `correlationId`.
+- `occurredAt`.
+
+Forbidden fields: raw Stripe objects, card data, payment method details, invoice bodies, API keys, Stripe Secret, webhook secrets, full appraisal text, full conversation text, and customer master full records.
+
 These are shared platform event names for plan lifecycle, entitlement, usage, and limit enforcement.
 
 Applications must not create incompatible plan event names for the same semantics.
