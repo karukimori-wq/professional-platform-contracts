@@ -396,6 +396,37 @@ Recommended fields:
 
 Feedback Hub should allow operators to trace from a ranked Issue back to all original Conversations and Messages.
 
+## SaaS Subscription Observability
+
+Billing observability must preserve the SaaS Subscription / Business Payment split.
+
+Allowed SaaS subscription monitoring fields:
+
+- `appId`.
+- `workspaceId`.
+- `userId` / `ownerUserId`.
+- `productCode`.
+- `planId`.
+- `subscriptionStatus`.
+- `entitlementStatus`.
+- checkout readiness.
+- webhook readiness.
+- entitlement refresh status.
+- last provider sync timestamp.
+- `traceId` / `correlationId` / `requestId`.
+- safe error code and category.
+
+Forbidden in logs and Platform Admin snapshots:
+
+- raw Stripe Customer / Subscription / Checkout / Invoice payloads.
+- card data or payment method details.
+- Stripe Secret.
+- webhook secret.
+- full invoice bodies.
+- Growth Engine Payment/Sales ledgers outside Growth Engine.
+
+Numeria Studio Pro and Velvet Pro subscription readiness may be monitored by Platform Admin as metadata only. Platform Admin must not become the billing source of truth.
+
 ## Free Pro Release Observability
 
 Free / Pro release observability should include:
