@@ -6,7 +6,7 @@ This document defines what each system owns and what it must not own.
 
 | System | Owns | Does Not Own |
 | --- | --- | --- |
-| Growth Engine | Customer canonical data, leads, reservations, payments, sales flow, nurturing, campaign intent, business workflow state, Business plan feature rules | Appraisal logic, report rendering, AI runtime internals, SNS text generation details, 1-to-1 conversation internals |
+| Growth Engine | Customer canonical data, leads, reservations, Business Payment, sales flow, nurturing, campaign intent, business workflow state, Business plan feature rules | Appraisal logic, report rendering, AI runtime internals, SNS text generation details, 1-to-1 conversation internals |
 | Professional Studio | Domain-specific workflow, professional records, report generation, appraisal history, domain calculations | Customer canonical data, acquisition strategy, cross-channel nurturing decisions |
 | Numeria Studio | Fortune-telling domain data, numerology and destiny-method workflows, Sessions, Reports, Calculation Results, Numeria Snapshots, PDF previews, D1-backed Numeria persistence | Growth strategy, customer master data, reservation/payment/sales source of truth, conversation/message source of truth, SNS draft source of truth, AI platform internals |
 | Velvet | Professional visits, customer-scoped Professional Memory, service notes, professional timeline, professional recall, Capture-related Velvet-owned structured information, D1-backed Customer Memory baseline | Customer master, reservation/payment/sales source of truth, SNS MessageDraft source of truth, Communication Planner conversation/send source of truth, AI Activity/Usage/Capability source of truth |
@@ -155,6 +155,15 @@ If a workflow requires live ConversationContext, cross-person safety prevention,
 AI SNS Growth Office may reference External Intelligence records as development knowledge, rules, decisions, or evidence.
 
 External Intelligence must not become the operational source of truth for AI SNS Growth Office tasks, approvals, drafts, media assets, publish jobs, performance snapshots, customers, payments, or sales.
+
+## Billing Boundary
+
+Stripe-backed payments are split by payment purpose.
+
+- SaaS Subscription: professional user pays AITEC for Numeria Studio Pro, Velvet Pro, or another app subscription. The subscribed application owns subscription state and entitlement until a shared Billing service is explicitly contracted.
+- Business Payment: the professional's customer pays for appraisal, consultation, reservation, or service fees. Growth Engine owns Payment, Sales, customer-facing Stripe payment state, and reconciliation.
+
+The same external processor must not collapse these responsibilities. Platform contracts, APIs, events, and monitoring must preserve this split.
 
 ## Business Plan Rule
 
@@ -346,9 +355,9 @@ Boundary rules:
 - Business must stay unavailable until released as a cross-application plan.
 - Server-side checks are required for all plan-gated writes, reads, AI calls, and usage counters.
 - UI-only gating is not sufficient.
-- Numeria Studio Pro and Velvet Pro are independent subscriptions.
+- Numeria Studio Pro and Velvet Pro are independent SaaS subscriptions owned by their subscribed application until a shared Billing service is contracted.
 - Business may later unlock cross-app reference flows, but it must not merge Source of Truth ownership across apps.
-- Growth Engine remains the owner for Customer, Reservation, Payment, Sales, and business data.
+- Growth Engine remains the owner for Customer, Reservation, Business Payment, Sales, and business data.
 - AI Platform Core remains the owner for AI Activity, AI Usage, Capability, Prompt, and runtime AI control.
 
 ## Free Pro Business Release Boundary
