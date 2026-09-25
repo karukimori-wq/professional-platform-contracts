@@ -12,7 +12,7 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | --- | --- |
 | Customer management | Growth Engine |
 | Reservation / Visit Schedule management | Growth Engine |
-| Stripe payment state | Growth Engine |
+| Business Payment Stripe state | Growth Engine |
 | Payment | Growth Engine |
 | Sales / Revenue | Growth Engine |
 | Customer-level sales aggregation | Growth Engine |
@@ -66,7 +66,7 @@ Growth Engine owns the Business foundation for each workspace and is the canonic
 - Lead / Prospect
 - Reservation / Visit Schedule
 - Payment
-- Stripe payment state
+- Business Payment Stripe state
 - Sales / Revenue
 - Customer-level sales aggregation
 - Repeat / referral / contact-measure Business state
@@ -111,6 +111,15 @@ For Communication Planner, default input is reference-first:
 - `inputRef`
 
 Growth Engine must not unnecessarily send `paymentStatus`, `salesAmount`, Stripe secrets, payment credentials, Customer master records, full message bodies, full ConversationContext bodies, or unrelated commercial payloads to Communication Planner or Professional Apps.
+
+## SaaS Subscription vs Business Payment Responsibility
+
+Billing responsibility is split by what is being paid for.
+
+- SaaS Subscription: the professional user pays AITEC for app access such as Numeria Studio Pro or Velvet Pro. The subscribed app owns this path until a shared Billing service is explicitly contracted.
+- Business Payment: the professional's customer pays for appraisal, consultation, reservation, or service fees. Growth Engine owns this future Business-scope path.
+
+Growth Engine must not be treated as the canonical owner of every Stripe or Billing concern. Numeria Studio / Velvet Pro entitlement must follow `docs/contracts/subscription-contract.md` and `docs/contracts/plan-contract.md`.
 
 ## Numeria Studio
 
@@ -563,11 +572,13 @@ Use:
 
 ## MVP Payment Rule
 
-MVP supports Stripe only for client-to-professional payment flows owned by Growth Engine.
+MVP separates SaaS Subscription from client-to-professional Business Payment flows.
 
-- Growth Engine owns Stripe payment state.
-- Other apps must not store Stripe payment data as a source of truth.
-- Stripe secrets and credentials never cross into Professional Apps, Communication Planner, SNS Planner, AI Platform Core or Platform Admin.
+- Numeria Studio owns Numeria Studio Pro SaaS subscription entitlement for the Free / Pro release.
+- Velvet owns Velvet Pro SaaS subscription entitlement when Velvet Pro billing is released.
+- Growth Engine owns client-to-professional Business Payment state, Payment records, and Sales records.
+- Other apps must not store Growth Engine Business Payment data as a source of truth.
+- Stripe secrets, webhook secrets, and credentials never cross into unrelated apps, Communication Planner, SNS Planner, AI Platform Core, Feedback Hub, or Platform Admin.
 
 ## External Intelligence Development Support Responsibility
 
