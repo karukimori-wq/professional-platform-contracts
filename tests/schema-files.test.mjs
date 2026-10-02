@@ -4,6 +4,7 @@ import path from "node:path";
 import test from "node:test";
 
 const schemaDirs = [
+  "schemas",
   "schemas/entities",
   "schemas/events",
 ];
