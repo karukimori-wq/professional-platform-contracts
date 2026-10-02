@@ -64,6 +64,8 @@ Applications must not invent local plan names, incompatible usage limits, AI usa
 
 Business must report `preparing` or `unavailable` until explicitly released.
 
+For release readiness wording, Business remains unavailable/preparing until the cross-application Business plan is explicitly launched.
+
 ## Numeria Studio Plans
 
 Numeria Studio is the Source of Truth for Session, Report Snapshot, appraisal logic, calculation results, and AppraisalClientSnapshot.
