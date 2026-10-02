@@ -167,6 +167,7 @@ UI gating is allowed for clarity, but it is not sufficient enforcement.
 | `numeria.report.pdf` | Numeria Studio | Free and Pro. |
 | `numeria.report.branding` | Numeria Studio | Pro. |
 | `numeria.report.wording_adjustment` | Numeria Studio | Pro. |
+| `numeria.report.ai_generate` | Numeria Studio / AI Platform Core | AI-assisted structured report draft generation through AI Platform Core. |
 | `velvet.record.register` | Velvet | Free and Pro. |
 | `velvet.timeline.integrated` | Velvet | Pro. |
 | `velvet.event_history.organized` | Velvet | Pro. |
