@@ -68,6 +68,7 @@ This document defines canonical ownership for shared data.
 | AI Activity Outcome | AI Platform Core | Calling app by reference/status |
 | AI Activity Feedback | AI Platform Core | Calling app by reference/status |
 | AI Prompt Template | AI Platform Core | Product runtimes by rendered output only |
+| AI Report Generation Draft | AI Platform Core | Numeria Studio by `generationId` until finalized |
 | AI Runtime Storage | AI Platform Core | AI Platform Core only unless explicit contract exists |
 
 ## SaaS Subscription Data Ownership
@@ -547,6 +548,29 @@ Owned records:
 Feedback Hub must preserve original Conversations and Messages. AI summaries and grouped Issues must not replace or erase the original user text.
 
 Feedback Hub must not become the canonical owner for Customer, Reservation, Payment, Sales, SNS PostDraft, SNS MessageDraft, Communication Planner canonical conversation records, Numeria Studio reports, Velvet professional memory, AI Activity, AI Usage, AI Capability, or development execution data.
+
+## Numeria AI Report Generation Data Ownership
+
+Numeria Studio owns confirmed appraisal data and formal reports:
+
+- selected divination method.
+- confirmed numerology/tarot/appraisal result.
+- Character Snapshot and Character Version.
+- formal Report.
+- Report Snapshot.
+- PDF/export artifact.
+
+AI Platform Core owns AI execution records only:
+
+- Base Policy / Prompt / Prompt Version.
+- Knowledge / Knowledge Version.
+- model selection.
+- `generationId`.
+- Structured Report Draft before Numeria finalization.
+- Activity.
+- Usage.
+
+The Structured Report Draft returned by APC is not a formal Report. It becomes part of a formal Report only after Numeria Studio preview, review/edit, finalization, and Report Snapshot persistence.
 
 ## Plan Data Ownership
 
