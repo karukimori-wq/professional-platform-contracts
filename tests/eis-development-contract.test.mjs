@@ -40,7 +40,7 @@ test("failed development can become reusable known failure knowledge", async () 
 test("application and repository identities are separate", async () => {
   const text = await contract();
   for (const field of ["appId", "componentId", "projectId", "repository", "commitSha"]) {
-    assert.match(text, new RegExp(`\\`${field}\\``));
+    assert.ok(text.includes(`\`${field}\``));
   }
 });
 
