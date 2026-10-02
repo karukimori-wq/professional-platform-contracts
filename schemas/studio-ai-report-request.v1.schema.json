@@ -20,11 +20,16 @@
     "characterSnapshot": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["characterId", "type", "version", "name"],
+      "required": ["characterId", "type", "characterVersion", "name"],
       "properties": {
         "characterId": { "type": "string", "minLength": 1 },
         "type": { "type": "string", "enum": ["preset", "custom"] },
-        "version": { "type": "string", "minLength": 1 },
+        "characterVersion": { "type": "string", "minLength": 1 },
+        "version": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Deprecated compatibility alias. New implementations must use characterVersion."
+        },
         "name": { "type": "string", "minLength": 1 },
         "personality": { "type": "string" },
         "speakingStyle": { "type": "string" },
