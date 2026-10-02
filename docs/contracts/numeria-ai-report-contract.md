@@ -66,7 +66,7 @@ APC must not reinterpret the request as "choose the divination method" or "calcu
 
 ## V1 API
 
-Endpoint candidate:
+Endpoint:
 
 `POST /api/v1/generations/report`
 
@@ -127,7 +127,7 @@ Character Snapshot fields:
 
 - `characterId`.
 - `type`.
-- `version`.
+- `characterVersion`.
 - `name`.
 - `personality`.
 - `speakingStyle`.
@@ -166,6 +166,7 @@ Minimum response shape:
 
 - `generationId`.
 - `correlationId`.
+- `draftType: "ai_draft"`.
 - `title`.
 - `lead`.
 - `sections[]`.
@@ -182,6 +183,8 @@ Minimum response shape:
 - `warnings`.
 
 This supports section-level editing, section-level regeneration, PDF template changes, Free / Pro differentiation, and section reordering.
+
+Numeria Studio must store the APC response as an AI Draft with the generation metadata and the exact `characterSnapshot` used for the request. The draft remains editable and must not be counted as a formal Report Snapshot until the fortune-teller confirms it.
 
 ## Formal Report Rule
 
