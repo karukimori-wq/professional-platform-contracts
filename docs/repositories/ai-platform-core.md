@@ -100,6 +100,27 @@ Examples:
 - `PostDraft.Generate`
 - `Usage.List`
 
+## Numeria AI Report Generation Role
+
+AI Platform Core supports Numeria Studio AI report generation through `AIReportGeneration.Create` / `POST /api/v1/generations/report` as defined in `docs/contracts/numeria-ai-report-contract.md`.
+
+AI Platform Core owns:
+
+- Base Policy.
+- AI Prompt and Prompt Version.
+- Divination Knowledge and Knowledge Version.
+- AI-facing interpretation of Numeria Character Snapshot.
+- AI model selection.
+- AI Generation.
+- Output Schema validation.
+- Activity and Usage recording.
+- `generationId`, `traceId`, and `correlationId` handling.
+- final plan / feature / usage check for the generation request.
+
+AI Platform Core must not own Numeria Customer/appraisal-client records, appraisal Session, confirmed divination results, formal Report, Report Snapshot, or PDF.
+
+APC may emit AI activity/usage events for execution, but must not emit `studio.report.generated.v1`.
+
 ## Next Priorities
 
 1. Formal authentication / authorization.
