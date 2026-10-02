@@ -149,6 +149,7 @@ export const apiOperations = [
   "Report.Generate",
   "Report.Preview",
   "Report.ExportPdf",
+  "AIReportGeneration.Create",
   "ServiceReference.List",
   "Capability.Register",
   "Activity.Create",
@@ -163,6 +164,7 @@ export const apiOperations = [
 export const aiCapabilities = [
   "Reading.Interpret",
   "Reading.GenerateDraft",
+  "Report.GenerateStructuredDraft",
   "Document.GenerateSection",
   "Document.SummarizeForFollowup",
 ];
