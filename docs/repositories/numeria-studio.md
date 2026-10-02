@@ -146,6 +146,23 @@ AI Platform Core remains canonical for:
 
 Numeria Studio stores only Numeria-owned references/results. It must not create an independent AI ledger or capability registry.
 
+## AI Report Generation Boundary
+
+Numeria Studio calls AI Platform Core to generate AI Draft text for appraisal reports under `docs/contracts/numeria-ai-report-contract.md`.
+
+Numeria Studio owns:
+
+- selected divination methods.
+- confirmed numerology/tarot/appraisal results.
+- Character and Character Version source of truth.
+- preview, review, edit, and finalization workflow.
+- formal Report and Report Snapshot.
+- PDF generation/export.
+
+AI Platform Core returns a Structured Report Draft with `generationId`, prompt/knowledge/model metadata, usage, and warnings. The APC response is not a formal Report.
+
+`studio.report.generated.v1` is emitted only after Numeria Studio finalizes and stores the Report Snapshot.
+
 ## Communication Planner Boundary
 
 Numeria Studio does not share or own:
