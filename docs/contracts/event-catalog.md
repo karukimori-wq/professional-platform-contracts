@@ -48,6 +48,20 @@ Allowed cross-app payload is reference-first:
 
 Numeria Studio events must not include Report body, Customer master records, Payment, Sales, conversation bodies, Communication Planner context, SNS draft bodies, AI prompts, API keys, access tokens, or provider secrets by default.
 
+### Numeria AI Report Generation Event Rule
+
+AI Platform Core may emit AI activity and usage events for `AIReportGeneration.Create`, but those events represent AI execution only.
+
+`studio.report.generated.v1` must be emitted by Numeria Studio only after:
+
+1. APC returns the Structured Report Draft.
+2. Numeria Studio shows preview.
+3. The fortune-teller reviews/edits.
+4. Numeria Studio finalizes the report.
+5. Numeria Studio stores the Report Snapshot.
+
+APC must not emit `studio.report.generated.v1` and must not treat an AI Draft as a formal Report.
+
 ## Velvet Events
 
 | Event | Publisher | Consumers | Purpose |
