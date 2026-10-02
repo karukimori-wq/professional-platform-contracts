@@ -4,12 +4,13 @@
   "title": "Studio AI Report Response v1",
   "type": "object",
   "additionalProperties": false,
-  "required": ["status", "generationId", "correlationId", "title", "lead", "sections", "closing", "promptKey", "promptVersion", "knowledgeVersions", "model", "generatedAt", "usage", "warnings"],
+  "required": ["status", "generationId", "correlationId", "draftType", "title", "lead", "sections", "closing", "promptKey", "promptVersion", "knowledgeVersions", "model", "generatedAt", "usage", "warnings"],
   "properties": {
     "status": { "type": "string", "enum": ["success", "warning"] },
     "generationId": { "type": "string", "minLength": 1 },
     "traceId": { "type": "string" },
     "correlationId": { "type": "string", "minLength": 1 },
+    "draftType": { "const": "ai_draft" },
     "title": { "type": "string", "minLength": 1 },
     "lead": { "type": "string", "minLength": 1 },
     "sections": {
