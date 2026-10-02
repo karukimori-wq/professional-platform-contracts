@@ -87,9 +87,17 @@ test("Events are versioned and use current naming", () => {
 test("API operations include cross-repository contract operations", () => {
   assert.ok(apiOperations.includes("Customer.Create"));
   assert.ok(apiOperations.includes("Report.Generate"));
+  assert.ok(apiOperations.includes("AIReportGeneration.Create"));
   assert.ok(apiOperations.includes("PostDraft.Generate"));
   assert.equal(isApiOperation("Customer.Create"), true);
   assert.equal(isApiOperation("growth.customer.created.v1"), false);
+});
+
+test("Numeria AI report generation is an AI draft contract, not formal report ownership", () => {
+  assert.ok(aiCapabilities.includes("Report.GenerateStructuredDraft"));
+  assert.equal(isApiOperation("AIReportGeneration.Create"), true);
+  assert.equal(canonicalOwners.report, "Professional Studio");
+  assert.equal(canonicalOwners.aiUsage, "AI Platform Core");
 });
 
 test("Growth Engine share payload only includes allowlisted fields", () => {
