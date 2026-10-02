@@ -45,6 +45,7 @@ Each app owns one canonical responsibility. Other apps may reference that data, 
 | ReplyDraft / SafetyCheck / send workflow | Communication Planner |
 | AI activity execution | AI Platform Core |
 | AI usage tracking | AI Platform Core |
+| AI report generation execution | AI Platform Core |
 | Capability registry | AI Platform Core |
 | Velvet professional visit history | Velvet |
 | Velvet service / conversation notes | Velvet |
@@ -161,6 +162,12 @@ Cloudflare/D1 migration completion does not change Numeria Studio's responsibili
 - AI Activity / Usage / Capability source of truth
 - AI Prompt / Knowledge / Workflow source of truth
 - Platform Admin operational monitoring source of truth
+
+### AI Report Generation Role
+
+Numeria Studio owns selected divination methods, confirmed appraisal results, Character and Character Version source of truth, AI draft review/edit/finalization, formal Report, Report Snapshot, and PDF.
+
+AI Platform Core may generate a Structured Report Draft, but that draft is not a formal Report until Numeria Studio finalizes and stores it.
 
 ### Integration Role
 Numeria Studio references Growth Engine records by ID. External deliverables must use `Report`, not `Document`.
@@ -409,6 +416,7 @@ Cloudflare/D1 migration completion does not change AI Platform Core's responsibi
 - SNS PostDraft / MessageDraft source of truth
 - Appraisal business logic
 - Numeria Report source of truth
+- Numeria formal Report or Report Snapshot source of truth
 - SNS business strategy
 - Public site publishing
 
