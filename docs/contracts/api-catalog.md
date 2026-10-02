@@ -348,10 +348,27 @@ Minimum production readiness endpoints:
 | `CommunicationReply.Generate` | Communication Planner | Reply draft candidates only; no send | `ai.activity.created.v1` / completion events |
 | `CommunicationReply.SafetyCheck` | Communication Planner | Safety assessment only; no send | `ai.activity.created.v1` / completion events |
 | `CommunicationIntent.Classify` | Communication Planner | Intent classification only; no Communication mutation | `ai.activity.created.v1` / completion events |
+| `AIReportGeneration.Create` | Numeria Studio | Structured Report Draft with `generationId` | AI Platform Core activity/usage events only; formal `studio.report.generated.v1` is emitted by Numeria after finalization |
 
 Production D1 persistence has been verified for Activity and Usage. Outcome, Feedback, Prompt Template, Event Store, and Event Dispatcher production E2E remain next hardening work.
 
 The current scoped-read E2E may use `x-client-id`, but this is not the final formal authentication contract.
+
+### Numeria AI Report Generation Contract
+
+V1 endpoint candidate:
+
+- `POST /api/v1/generations/report`
+
+Contract and schemas:
+
+- `docs/contracts/numeria-ai-report-contract.md`
+- `schemas/studio-ai-report-request.v1.schema.json`
+- `schemas/studio-ai-report-response.v1.schema.json`
+
+Numeria Studio must send the confirmed divination result, Character Snapshot, consultation request, selected divination methods, and requested output format. AI Platform Core must perform entitlement/usage checks, prompt and knowledge selection, generation, schema validation, Activity recording, and Usage recording internally.
+
+The response is an AI Draft / Structured Report Draft. It is not a formal Numeria Report until Numeria Studio preview, review/edit, finalization, and Report Snapshot persistence are complete.
 
 ### Velvet AI contract constraints
 
