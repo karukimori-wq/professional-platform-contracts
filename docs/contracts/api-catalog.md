@@ -26,6 +26,14 @@ APIs are used when the caller needs an immediate result. State changes that down
 | `Report.ExportPdf` | Studio UI | PDF artifact | `studio.report.generated.v1` when newly generated |
 | `ServiceReference.List` | Growth Engine | Service references | None |
 
+## AI Platform Core APIs
+
+| Operation | Endpoint | Caller | Response | Event |
+| --- | --- | --- | --- | --- |
+| `AIReportGeneration.Create` | `POST /api/v1/generations/report` | Numeria Studio | Structured Report AI Draft | APC records AI Activity/Usage internally; Numeria emits `studio.report.generated.v1` only after formal Report Snapshot save |
+
+Numeria Studio must call `AIReportGeneration.Create` with confirmed Numeria-owned appraisal results. AI Platform Core must not choose divination methods, calculate numerology, draw tarot cards, decide tarot reversals, or own the formal Report Snapshot.
+
 ### Numeria Studio HTTP and Cloudflare Production Mapping
 
 Numeria Studio production runtime is Cloudflare Worker API plus Cloudflare Static Assets, not Next.js.
