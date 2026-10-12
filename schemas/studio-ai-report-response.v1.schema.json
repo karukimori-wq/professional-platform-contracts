@@ -22,6 +22,11 @@
         "required": ["key", "heading", "body"],
         "properties": {
           "key": { "type": "string", "minLength": 1 },
+          "blockId": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Echoes the requested Numeria block identifier; clients must only apply a draft to the matching block."
+          },
           "heading": { "type": "string", "minLength": 1 },
           "body": { "type": "string", "minLength": 1 },
           "warnings": { "type": "array", "items": { "type": "string" } }
