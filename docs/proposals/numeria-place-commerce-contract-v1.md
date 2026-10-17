@@ -130,3 +130,17 @@ Payment success return-page alone is never authoritative: NP verifies Stripe sig
 - [ ] Provisional schemas, catalog updates, independent application test plan, migration/rollback signed off.
 
 **Approval state:** NOT READY to publish as the active platform contract; ADR approval is prerequisite.
+## 11. Mercur implementation adapter (conditional; NOT selected by this ADR)
+
+Numeria Place Notion `PoC 00 — Mercur × AWS Security Preflight (2026-10-13)` considers a Mercur/Medusa-based marketplace hosted in an isolated AWS environment; actual testing and acceptance are outstanding.
+
+- If Mercur is selected, **Mercur's commerce/order/payment records are the NP transaction system of record** (not a parallel, competing custom NP ledger). An adapter publishes the same platform-neutral NP events and runs the same NS integration commands.
+- If Mercur is not selected, NP may implement an equivalent commerce backend, but consumers must not depend on Mercur-specific identifiers or API shapes. Keep `sourceOrderId` namespaced with a source and provider mapping.
+- Mercur's documented Stripe Connect method uses Separate Charges and Transfers, and its manual payment authorization/capture lifecycle may be unsuitable for readings that take many days. Verify the version and actual payment provider implementation in the isolated PoC; do not assume a Stripe authorization can be held indefinitely.
+- A **prepaid** reading may require verified capture *before* lengthy appraisal starts; capture after an authorization hold expires is not a safe default.
+- **Full postpay** is a separate purchase flow and cannot be simulated by keeping a long-lived manual-capture authorization open. The buyer must explicitly authorize and complete a later payment; text preview and PDF release are distinct entitlements.
+- Verify transfer reversal / refund reconciliation after funds have been transferred, without assuming that refunding the charge always reverses the seller transfer.
+- Run multi-tenant access, private-PDF, webhook replays, refund/reversal, NS Business revocation and GE projection tests on an isolated AWS Tokyo sandbox using synthetic customers and test Stripe accounts only.
+- Do not deploy Mercur or alter the existing NS / GE production routes until PoC acceptance criteria pass.
+
+Reference: https://app.notion.com/p/3f8e71121fed81139c45dc3353e6a948
