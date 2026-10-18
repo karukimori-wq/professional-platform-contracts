@@ -2,6 +2,17 @@
 
 **Status:** Technical recommendation for review. No Stripe production credentials, seller accounts, NP/Mercur services or live payments have been configured.
 
+
+## Approved product direction versus open implementation choice
+
+The Numeria Place Notion "04" v1.2/v1.3 records **the individual fortune teller as contractual seller, one order/one seller, and Direct charges as the first candidate**, including a connected-account invoice for full postpay. The underlying Stripe Connect charge model is **not yet finally approved**. This direction takes precedence over Mercur's default Separate Charges and Transfers implementation.
+
+- **Option A (first-choice target): Direct charges** on each seller's Stripe connected account. The seller is the Stripe Merchant of Record and ordinarily bears payment fees/refund/chargeback deductions; platform collects application fees. Stripe Invoicing supports invoices under connected accounts with their own Stripe Customer references. NP/NS/GE do not receive card details. However, the NP platform's overall negative-balance liability depends on Connect account/loss-responsibility settings and cannot be assumed away.
+- **Option B (Mercur-native technical alternative): Separate Charges and Transfers.** Mercur's documented default makes NP platform MoR unless the payment is explicitly configured with an appropriate `on_behalf_of` setting and Stripe capability; under this type, the platform still bears charge/refund/dispute balance exposure. Validate both Stripe acceptance and legal display. NP sends funds to sellers via separate Transfers.
+- **Decision gate:** First estimate the Mercur/Medusa changes needed for Direct charges end-to-end (account-context Checkout, seller-scoped invoices and customer IDs, webhook routing, fees, order completion, payout, refunds/disputes). Compare with building a compatible custom commerce adapter, and get Stripe/Japan legal acceptance before committing to Option B.
+
+Official refs: https://docs.stripe.com/connect/charges ; https://docs.stripe.com/connect/merchant-of-record ; https://docs.stripe.com/connect/invoices .
+
 ## Verified platform constraints
 
 - Mercur's published Stripe Connect integration uses **Separate Charges and Transfers**. The payment provider is Medusa Stripe; the payout provider is Mercur Connect. One customer PaymentIntent is linked to an order group and seller child orders. Reference: https://github.com/mercurjs/mercur/blob/main/apps/docs/resources/integrations/stripe-connect.mdx
@@ -16,17 +27,17 @@
 - Mercur itself is an OSS *candidate* until PoC 00 passes; adapters isolate its implementation from NS, GE, APC.
 - Operate a single NP Stripe Connect platform (managed by NP); the legal seller and business of record need formal approval before live checkout.
 
-## Proposed PREPAID flow (for readings taking days/weeks)
+## Proposed PREPAID flow (Direct first; Mercur-native alternative requires changes)
 
 1. NP creates an order and immutable product/price/fulfillment snapshot.
-2. Buyer explicitly pays using Stripe Checkout or supported payment form. Only signed, account-checked Stripe state transitions authorize fulfillment.
-3. **Capture promptly when the checkout/order group is safely finalized**, rather than deferring capture until an unknown future reading completion. This **requires an explicit Mercur workflow adaptation** and regression tests; `capture:true` alone is not assumed safe.
+2. Buyer explicitly pays using connected-account Direct charge (preferred), or a platform charge in the reviewed Mercur-native alternative. Confirm `stripeAccountId` and seller/order mapping server-side; only provider-confirmed payment permits prepaid fulfillment.
+3. Capture the customer's prepayment promptly after the checkout/order is safely established. Under Direct, replace/adapt Mercur's default payment integration to charge within the connected-account context. Under Mercur Separate, adapt the capture workflow after safe order-group creation instead of waiting days for report fulfillment; changing `capture:true` alone is not proven safe.
 4. Mark payment as `paid` only after confirmed capture (or confirmed success of an eligible asynchronous payment method). Queue NP-only manual work or Business-eligible NS work.
 5. NS finalizes Report. NP checks buyer identity, order rights, report version and refund/hold state, and delivers.
-6. Only then schedule seller transfer according to approved seller terms; ensure the customer charge and platform commission are reconcilable to Stripe Transfer and bank payout records.
-7. Refund before/after seller transfer must work. Any reversal failures become visible reconciliation exceptions, never quietly completed.
+6. **Direct:** the seller's connected account receives the charge balance and Stripe handles payout according to its schedule; there is no NP-created seller Transfer to delay. **Separate:** NP schedules and reconciles seller Transfer based on approved terms; bank payout is yet another state. Do not promise that direct-charge cash is held until reading delivery.
+7. **Direct:** seller-balance refund and optional application-fee refund must be reconciled. **Separate:** charge refund and seller Transfer reversal are separate and reversal failure stays visible.
 
-**Why:** A seven-day authorization window is inadequate for many custom readings; capture and *seller settlement* are separate operations. Capturing early also means refund/chargeback cash-flow exposure for NP, which must be priced and contractually supported.
+**Why:** A limited manual-authorization window is inadequate for many custom readings. In Direct charges the seller account ordinarily bears initial fee/refund/chargeback deductions (the platform's additional loss liability depends on account settings). In Separate charges NP carries charge/refund/dispute exposure; that difference drives the final design.
 
 ## Proposed FULL POSTPAY flow (no long-lived card authorization)
 
@@ -39,7 +50,7 @@
 
 **Rule:** Mercur's manual capture flow is **not** reused as a week-long postpay reservation. Build a distinct order/workflow and treat the ability to view full text before payment as a product choice, not a payment guarantee.
 
-## Refund and seller transfer cases
+## Refund and seller transfer cases (Separate charges); Direct uses seller-account refunds
 
 | Scenario | Customer refund | Seller transfer | NP outcome |
 | --- | --- | --- | --- |
@@ -50,7 +61,7 @@
 | Dispute / chargeback | Stripe dispute workflow | recover from seller where contract permits | platform risk and reserve policy needed |
 | Postpay buyer never pays | no refund, no charge | no transfer | preview may already have been seen; seller accepts risk |
 
-**Event semantics:** `commerce.payment.refunded.v1` is NOT proof of seller transfer reversal. Use a separate payout/transfer-reversal state and event; a reversal may fail due to connected account balance.
+**Event semantics:** `commerce.payment.refunded.v1` is NOT proof of seller Transfer reversal under Separate. Under Direct, there may be no seller Transfer to reverse, but application-fee refund and connected-account balance liability need separate reconciliation.
 
 ## Webhook consistency and buyer access
 
@@ -71,4 +82,4 @@
 - [ ] Confirm NS SaaS subscription owner discrepancy separately; no migration implied by this document.
 - [ ] Record successful security PoC evidence in Notion 09 / PoC 00. No real customer data in test.
 
-**Recommendation:** Mercur remains the conditional preferred NP commerce base for PoC, not yet an approved production dependency. No G0 acceptance or G1 release claim until above gates are passed.
+**Recommendation:** Evaluate Mercur as an OSS candidate, with **Direct charges as the preferred business design**, not as an approved production dependency. Confirm whether Mercur customization is worth its cost compared with another payment adapter. No G0 acceptance or G1 release claim until the above gates pass.
