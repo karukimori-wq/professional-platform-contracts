@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/proposals/commerce.payment.refunded.v1.schema.json",
+  "title": "commerce.payment.refunded.v1",
+  "description": "PROPOSAL ONLY. Each refund event is separately identified and amountMinor is THIS refund's amount, not lifetime sum. Never implies seller transfer reversal.",
+  "allOf": [
+    {
+      "$ref": "./commerce-event-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "commerce.payment.refunded.v1"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceApp",
+            "sourceOrderId",
+            "sellerRef",
+            "refundRef",
+            "amountMinor",
+            "currency",
+            "refundState"
+          ],
+          "properties": {
+            "sourceApp": {
+              "enum": [
+                "numeria-place",
+                "numeria-studio"
+              ]
+            },
+            "sourceOrderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "sellerRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "refundRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "refundState": {
+              "enum": [
+                "pending",
+                "succeeded",
+                "failed"
+              ]
+            },
+            "transferReversalState": {
+              "enum": [
+                "not_required",
+                "pending",
+                "succeeded",
+                "failed",
+                "not_started"
+              ]
+            }
+          }
+        }
+      }
+    }
+  ]
+}
