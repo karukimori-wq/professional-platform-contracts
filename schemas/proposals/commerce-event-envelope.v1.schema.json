@@ -1,0 +1,102 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/proposals/commerce-event-envelope.v1.schema.json",
+  "title": "CommerceEventEnvelopeV1Proposal",
+  "description": "PROPOSAL ONLY. Separate envelope because existing event-envelope requires workspaceId and lacks numeria-place as sourceSystem.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "eventId",
+    "eventType",
+    "occurredAt",
+    "sourceSystem",
+    "scope",
+    "data"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "pattern": "^evt_[A-Za-z0-9_-]+$"
+    },
+    "eventType": {
+      "type": "string",
+      "pattern": "^[a-z]+\\.[a-z_]+\\.[a-z_]+\\.v1$"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sourceSystem": {
+      "enum": [
+        "numeria-place",
+        "numeria-studio"
+      ]
+    },
+    "correlationId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "scope": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scopeType",
+            "sellerId"
+          ],
+          "properties": {
+            "scopeType": {
+              "const": "seller"
+            },
+            "sellerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scopeType",
+            "workspaceId"
+          ],
+          "properties": {
+            "scopeType": {
+              "const": "workspace"
+            },
+            "workspaceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "scopeType",
+            "platformId"
+          ],
+          "properties": {
+            "scopeType": {
+              "const": "platform"
+            },
+            "platformId": {
+              "enum": [
+                "numeria-studio"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "data": {
+      "type": "object"
+    }
+  }
+}
