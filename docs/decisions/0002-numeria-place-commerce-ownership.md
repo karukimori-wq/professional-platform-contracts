@@ -68,3 +68,10 @@ Existing `docs/contracts/subscription-contract.md` explicitly says the subscribe
 - [ ] Update `app-responsibilities`, `data-ownership`, `platform-boundaries`, `architecture`, `plan-contract`, `subscription-contract` and any affected docs *consistently* in a major-version change.
 - [ ] Publish v1 schemas, API/events catalog, privacy tests, tenant authorization tests and idempotency/reconciliation tests.
 - [ ] Run tests and verify cross-app regression in NS, NP and GE on preview before any production migration.
+## 2026-10-19 payment-method decision context
+
+The product design in Numeria Place Notion 04 v1.2/v1.3 already identifies each fortune teller as the contractual seller and **Direct charges as the preferred Connect configuration**, with one order per seller. Mercur's default Separate Charges and Transfers is an implementation alternative that requires business-of-record and risk review; do not silently replace the seller-as-MoR requirement with the Mercur default.
+
+If Direct charges are used, card charges and refunds occur in seller connected-account context, application fees accrue to NP, and seller payouts are handled by Stripe account schedule. If Separate charges are used, NP's platform account faces refund and dispute balance exposure, plus separate Transfer reversal reconciliation. No production charge type is finally approved by this proposed ADR.
+
+Technical comparison and PoC requirements: [Stripe / Mercur lifecycle proposal](../proposals/numeria-place-stripe-mercur-payment-lifecycle.md).
