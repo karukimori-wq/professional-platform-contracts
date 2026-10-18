@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/proposals/studio.report.ready_for_delivery.v1.schema.json",
+  "title": "studio.report.ready_for_delivery.v1",
+  "description": "PROPOSAL ONLY. No report body, PDF, birth data, or disclosure via event. NP checks buyer/order rights separately.",
+  "allOf": [
+    {
+      "$ref": "./commerce-event-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "studio.report.ready_for_delivery.v1"
+        },
+        "sourceSystem": {
+          "const": "numeria-studio"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceOrderId",
+            "reportId",
+            "reportVersion",
+            "sellerId",
+            "workspaceId"
+          ],
+          "properties": {
+            "sourceOrderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "reportId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "reportVersion": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "sellerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "workspaceId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            }
+          }
+        }
+      }
+    }
+  ]
+}
