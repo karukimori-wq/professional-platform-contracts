@@ -144,3 +144,13 @@ Numeria Place Notion `PoC 00 — Mercur × AWS Security Preflight (2026-10-13)` 
 - Do not deploy Mercur or alter the existing NS / GE production routes until PoC acceptance criteria pass.
 
 Reference: https://app.notion.com/p/3f8e71121fed81139c45dc3353e6a948
+## 12. Direct-charge first choice and independent contract validation
+
+- Notion 04 v1.2/v1.3 records seller-as-contractual-seller and **Direct charges as first choice**, subject to Stripe/merchant and Japanese legal review. The Mercur-native Separate Charges and Transfers alternative is not an approved substitution.
+- Direct charge checkout and connected-account invoices require seller-context Stripe Customer mapping, connected-account scoped webhook verification, independent application-fee reconciliation and refund behavior. Direct charges do **not** use a platform-created Transfer to pay the seller.
+- If Mercur is kept as commerce backend, changing to Direct charges requires an end-to-end payment adapter and seller order/commission/refund regression checks; the NP order master must still remain Mercur or its replacement, not a second competing ledger.
+- New JSON Schemas under `schemas/proposals/` are **isolated proposals** and are not yet part of the active `schemas/events/event-envelope.schema.json`. The active envelope has a mandatory `workspaceId` and excludes NP as a publisher; these are deliberate compatibility issues to resolve in a major-version contract change.
+- The `src/proposals/commerce-projection.js` example uses a separate privacy allowlist for financial projections. Never change `growthShareAllowlist` to admit payment fields for professional session events.
+- Structural tests are added in `tests/commerce-proposal.test.mjs`; full production consumer compatibility and Stripe/Mercur sandbox validation are still required before PR approval.
+
+See [Stripe/Mercur lifecycle review](./numeria-place-stripe-mercur-payment-lifecycle.md).
