@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/proposals/place.order.paid.v1.schema.json",
+  "title": "place.order.paid.v1",
+  "description": "PROPOSAL ONLY. Marketplace prepaid order confirmed after Stripe verification. Postpay orders require a distinct accepted event; no charge at acceptance.",
+  "allOf": [
+    {
+      "$ref": "./commerce-event-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "place.order.paid.v1"
+        },
+        "sourceSystem": {
+          "const": "numeria-place"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "orderId",
+            "sellerId",
+            "listingId",
+            "paymentMode",
+            "paymentState"
+          ],
+          "properties": {
+            "orderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "sellerId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "listingId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "paymentMode": {
+              "enum": [
+                "prepaid",
+                "postpay"
+              ]
+            },
+            "paymentState": {
+              "const": "paid"
+            }
+          }
+        }
+      }
+    }
+  ]
+}

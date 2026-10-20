@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts.local/schemas/proposals/commerce.payment.completed.v1.schema.json",
+  "title": "commerce.payment.completed.v1",
+  "description": "PROPOSAL ONLY. Captured customer-payment data for GE reporting; no Stripe payload or professional information.",
+  "allOf": [
+    {
+      "$ref": "./commerce-event-envelope.v1.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "commerce.payment.completed.v1"
+        },
+        "data": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "sourceApp",
+            "sourceOrderId",
+            "sellerRef",
+            "salesChannel",
+            "amountMinor",
+            "currency",
+            "paymentState"
+          ],
+          "properties": {
+            "sourceApp": {
+              "enum": [
+                "numeria-place",
+                "numeria-studio"
+              ]
+            },
+            "sourceOrderId": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "sellerRef": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 128
+            },
+            "salesChannel": {
+              "enum": [
+                "marketplace",
+                "seller_lp",
+                "official_ai"
+              ]
+            },
+            "amountMinor": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "paymentState": {
+              "const": "paid"
+            },
+            "customerId": {
+              "type": "string",
+              "pattern": "^cus_[A-Za-z0-9_-]+$"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
