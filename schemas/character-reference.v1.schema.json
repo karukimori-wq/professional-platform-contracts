@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://professional-platform-contracts/schemas/character-reference.v1.schema.json",
+  "title": "Character Reference v1 (proposal)",
+  "description": "NS immutable version reference. NP stores its applied publication and order-fixed reference separately. No hidden values, prompts, personal data or ReadingConfig.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["characterId", "characterVersion"],
+  "properties": {
+    "characterId": { "type": "string", "minLength": 1 },
+    "characterVersion": { "type": "string", "minLength": 1 }
+  }
+}
