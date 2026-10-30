@@ -1,0 +1,17 @@
+name: Character contract proposal
+on:
+  push:
+    branches: ['feat/character-contract-v1-20261028']
+  pull_request:
+    paths: ['src/proposals/character-order-policy.js', 'tests/character-proposal.test.mjs', 'schemas/character-reference.v1.schema.json', '.github/workflows/character-contract.yml']
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm test
